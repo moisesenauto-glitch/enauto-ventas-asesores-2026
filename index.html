@@ -1077,13 +1077,7 @@ async function fetchLiveData(){
     var result=Papa.parse(text,{header:true,skipEmptyLines:true,dynamicTyping:false});
     var rows=result.data;
     if(rows.length<5)throw new Error('Pocas filas: '+rows.length);
-    var newOrders=parseCSVtoOrders(rows);
-    if(newOrders.length>0){
-      D.orders26=newOrders;
-      [{m:'ENERO',s:'ene'},{m:'FEBRERO',s:'feb'},{m:'MARZO',s:'mar'},{m:'ABRIL',s:'abr'},{m:'MAYO',s:'may'}]
-        .forEach(function(x){renderMonth(x.m,x.s);});
-      buildMonthly(curF);
-    }
+    // Ene-May data is static (correctly embedded) — only update June
     var newJune=parseCSVtoJune(rows);
     JD.payments=newJune.payments;
     JD.ingresados=newJune.ingresados;
@@ -1092,7 +1086,7 @@ async function fetchLiveData(){
     renderJune();
     renderBusq(D.orders26);
     var ahora=new Date().toLocaleString('es-GT');
-    showBar('✅ Datos actualizados · '+ahora+' · '+newOrders.length+' órdenes', true);
+    showBar('✅ Junio actualizado desde Google Sheets · '+ahora, true);
   }catch(e){
     console.error('Error al actualizar:',e.message);
     showBar('⚠️ '+e.message, false);
