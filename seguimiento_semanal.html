@@ -370,7 +370,7 @@ function renderWeek(){
    +kpi('Meta combinada','Q '+GOAL_UTIL_T.toLocaleString('es-GT'),'Q28,750 × 2 asesores = Q57,500','linear-gradient(90deg,#1f2340,#2B4FE8)','#5a5e8a');
 
   // Advisor cards
-  function advCard(a,rows,pag,proj,newW,pendA,clr){
+  function advCard(a,rows,pag,proj,newW,pendA,clr,monthData,monthLbl,avgData){
     const n=rows.length;
     const p=Math.min(Math.round(proj/GOAL_UTIL*100),200);
     const pO=Math.min(Math.round(n/GOAL_ORDS*100),200);
