@@ -66,6 +66,19 @@ body{background:var(--bg);color:var(--text);font-family:Barlow,sans-serif;min-he
 .origin-info{display:flex;gap:20px;flex-wrap:wrap;margin:10px 0 18px;padding:12px 18px;background:var(--bg3);border-radius:10px;border:1px solid var(--border)}
 .origin-item{display:flex;align-items:center;gap:8px;font-size:12px}
 .origin-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+/* Monthly accumulated + weekly average blocks inside advisor cards */
+.month-acc{margin-top:12px;padding:10px 12px;background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.18);border-radius:9px}
+.month-acc-ttl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#00d4ff;margin-bottom:8px;font-weight:700}
+.month-acc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.week-avg{margin-top:10px;padding:10px 12px;background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.18);border-radius:9px}
+.week-avg-ttl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#a855f7;margin-bottom:8px;font-weight:700}
+.week-avg-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+/* Combined weekly averages panel */
+.wa-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:18px}
+.wa-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:15px 16px}
+.wa-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.wa-val{font-family:Barlow Condensed,sans-serif;font-size:22px;font-weight:800;color:var(--white);line-height:1}
+.wa-sub{font-size:10px;color:var(--muted);margin-top:5px}
 /* Section tabs */
 .sec-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:18px;margin-top:24px}
 .section-tab{padding:10px 20px;cursor:pointer;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);border-bottom:3px solid transparent;transition:all .2s}
@@ -101,6 +114,8 @@ tbody tr{border-bottom:1px solid rgba(255,255,255,.03);transition:background .15
   #kpis{grid-template-columns:repeat(3,1fr);gap:8px}
   .two-col,.cmp-grid,.adv-grid4{grid-template-columns:1fr}
   #adv-cards{grid-template-columns:1fr}
+  .wa-grid{grid-template-columns:1fr}
+  .month-acc-grid{grid-template-columns:1fr 1fr 1fr}
 }
 @media(max-width:600px){
   .hdr-ttl{font-size:9px;letter-spacing:1px}.yr-chip,.hdr-sub{display:none}
@@ -143,6 +158,8 @@ tbody tr{border-bottom:1px solid rgba(255,255,255,.03);transition:background .15
 <div class="sec">Resultados de la Semana</div>
 <div id="kpis"></div>
 <div class="meta-box">📊 <strong>Meta combinada:</strong> Q57,500 utilidad (Q28,750 × 2) · <strong>22 órdenes</strong> totales (11 × 2) · Marco 60.7% util · Daniel 64.3% util</div>
+<div class="sec">Promedios Semanales</div>
+<div id="week-avg-summary" class="wa-grid"></div>
 <div class="sec">Por Asesor — Semana Actual</div>
 <div id="adv-cards"></div>
 <div id="origin-info" class="origin-info"></div>
@@ -229,6 +246,8 @@ function weekLabel(mon){
   return sm+' — '+ef;
 }
 function weekShort(mon){const M=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];const fri=fridayOf(mon);return mon.getDate()+'/'+M[mon.getMonth()]+'-'+fri.getDate()+'/'+M[fri.getMonth()];}
+function monthKey(d){return d.getFullYear()+'-'+d.getMonth();}
+function monthLabel(d){const M=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];return M[d.getMonth()]+' '+d.getFullYear();}
 function daysAgo(d){if(!d)return null;return Math.floor((Date.now()-d.getTime())/86400000);}
 function Q0(v){return 'Q '+((v||0).toLocaleString('es-GT',{maximumFractionDigits:0}));}
 function pct(v,t){return t>0?(v/t*100).toFixed(1)+'%':'0%';}
@@ -244,7 +263,7 @@ function parseRows(rows){
     const dIng=parseDate(r['FECHA DE INGRESO']);
     const dSal=parseDate(r['FECHA DE SALIDA']);
     const dPago=parseDate(r['FECHA REPORTE DE PAGO']);
-    const fup=String(r['FECHA ULTIMO PAGO']||'').trim();
+    const fup=String(r['FECHA ULTIMO PAGO_1']||'').trim();
     return{
       orden:String(r['ORDEN']||'').trim(),
       cliente:r['NOMBRE CLIENTE']||'',vehiculo:r['IDMARCALINEA']||'',placa:r['PLACA']||'',
@@ -308,6 +327,37 @@ function renderWeek(){
   const pctUtil=Math.round(totProj/GOAL_UTIL_T*100);
   const pctOrd=Math.round(wr.length/GOAL_ORDS_T*100);
 
+  // ── Acumulado del mes (todas las semanas del mismo mes que la semana actual) ──
+  const curMonthKey=monthKey(wk.mon);
+  const monthWeeks=WEEKS.filter(function(w){return monthKey(w.mon)===curMonthKey;});
+  function monthTotals(asesor){
+    let ord=0,pag=0;
+    monthWeeks.forEach(function(w){
+      getWeekRows(ALL_ROWS,w.key).filter(function(r){return r.asesor===asesor;}).forEach(function(r){ord++;pag+=r.pag;});
+    });
+    const avgU=asesor==='MARCO'?AVG_M:AVG_D;
+    return{ord:ord,pag:pag,proj:Math.round(pag*avgU)};
+  }
+  const mMonth=monthTotals('MARCO');
+  const dMonth=monthTotals('DANIEL');
+  const monthLbl=monthLabel(wk.mon);
+
+  // ── Promedios semanales (sobre todas las semanas con datos) ──
+  function weeklyAverages(asesor){
+    if(WEEKS.length===0)return{ord:0,pag:0,proj:0};
+    let ord=0,pag=0;
+    WEEKS.forEach(function(w){
+      getWeekRows(ALL_ROWS,w.key).filter(function(r){return r.asesor===asesor;}).forEach(function(r){ord++;pag+=r.pag;});
+    });
+    const avgU=asesor==='MARCO'?AVG_M:AVG_D;
+    const n=WEEKS.length;
+    return{ord:Math.round(ord/n*10)/10,pag:Math.round(pag/n),proj:Math.round(pag*avgU/n)};
+  }
+  const mAvg=weeklyAverages('MARCO');
+  const dAvg=weeklyAverages('DANIEL');
+  const tAvgOrd=Math.round((mAvg.ord+dAvg.ord)*10)/10;
+  const tAvgProj=mAvg.proj+dAvg.proj;
+
   // KPI strip (general)
   document.getElementById('kpis').innerHTML=
     kpi('Órdenes Semana',wr.length,'Meta: '+GOAL_ORDS_T+' ('+GOAL_ORDS+' c/u)','linear-gradient(90deg,#2B4FE8,#00d4ff)','#7a9fff',
@@ -345,11 +395,38 @@ function renderWeek(){
         +'<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:3px"><span>Órdenes vs meta '+GOAL_ORDS+'</span><span style="color:'+(n>=GOAL_ORDS?'#00e5a0':'#ff8fa0')+'">'+pO+'%</span></div>'
       +'</div>'
       +'<div class="prog-track"><div class="prog-fill" style="width:'+Math.min(pO,100)+'%;background:rgba(255,255,255,.2)"></div></div>'
+      +'<div class="month-acc">'
+        +'<div class="month-acc-ttl">📅 Acumulado de '+monthLbl+'</div>'
+        +'<div class="month-acc-grid">'
+          +'<div><div class="sl">Órdenes</div><div class="sv" style="color:'+clr+';font-size:16px">'+monthData.ord+'</div></div>'
+          +'<div><div class="sl">Cobrado AR</div><div class="sv" style="font-size:13px">'+Q0(monthData.pag)+'</div></div>'
+          +'<div><div class="sl">Util. Proy.</div><div class="sv" style="color:#f59e0b;font-size:13px">'+Q0(monthData.proj)+'</div></div>'
+        +'</div>'
+      +'</div>'
+      +'<div class="week-avg">'
+        +'<div class="week-avg-ttl">📊 Promedio Semanal</div>'
+        +'<div class="week-avg-grid">'
+          +'<div><div class="sl">Órdenes/sem.</div><div class="sv" style="color:'+clr+';font-size:14px">'+avgData.ord+'</div></div>'
+          +'<div><div class="sl">Util. Proy./sem.</div><div class="sv" style="color:#a855f7;font-size:14px">'+Q0(avgData.proj)+'</div></div>'
+        +'</div>'
+      +'</div>'
     +'</div>';
   }
   document.getElementById('adv-cards').innerHTML=
-    advCard('MARCO',mRows,mPag,mProj,mNew,mPend,'#2B4FE8')
-   +advCard('DANIEL',dRows,dPag,dProj,dNew,dPend,'#FF4B6E');
+    advCard('MARCO',mRows,mPag,mProj,mNew,mPend,'#2B4FE8',mMonth,monthLbl,mAvg)
+   +advCard('DANIEL',dRows,dPag,dProj,dNew,dPend,'#FF4B6E',dMonth,monthLbl,dAvg);
+
+  // ── Promedios semanales combinados (panel general) ──
+  document.getElementById('week-avg-summary').innerHTML=
+    '<div class="wa-item"><div class="wa-lbl">Promedio Órdenes / Semana</div>'
+      +'<div class="wa-val">'+tAvgOrd+'</div>'
+      +'<div class="wa-sub">Marco: '+mAvg.ord+' · Daniel: '+dAvg.ord+'</div></div>'
+    +'<div class="wa-item"><div class="wa-lbl">Promedio Utilidad Proy. / Semana</div>'
+      +'<div class="wa-val" style="color:#a855f7">'+Q0(tAvgProj)+'</div>'
+      +'<div class="wa-sub">Marco: '+Q0(mAvg.proj)+' · Daniel: '+Q0(dAvg.proj)+'</div></div>'
+    +'<div class="wa-item"><div class="wa-lbl">Semanas con datos</div>'
+      +'<div class="wa-val" style="color:#00d4ff">'+WEEKS.length+'</div>'
+      +'<div class="wa-sub">Histórico completo</div></div>';
 
   // Origin summary
   document.getElementById('origin-info').innerHTML=
