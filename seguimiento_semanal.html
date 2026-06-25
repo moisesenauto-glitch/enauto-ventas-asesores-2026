@@ -210,8 +210,15 @@ tbody tr{border-bottom:1px solid rgba(255,255,255,.03);transition:background .15
   <div class="filters">
     <div class="fg"><label>Buscar</label><input id="pf-txt" placeholder="Orden, cliente o placa..." oninput="filterPending()"></div>
     <div class="fg"><label>Asesor</label><select id="pf-adv" onchange="filterPending()"><option value="">Todos</option><option>MARCO</option><option>DANIEL</option></select></div>
-    <button class="btn-clr" onclick="document.getElementById('pf-txt').value='';document.getElementById('pf-adv').value='';filterPending()">✕</button>
+    <div class="fg"><label>Salió...</label><select id="pf-period" onchange="filterPending()">
+      <option value="">Todos</option>
+      <option value="antes">Antes de junio</option>
+      <option value="junio">Desde 1 junio</option>
+      <option value="sinfecha">Sin fecha</option>
+    </select></div>
+    <button class="btn-clr" onclick="document.getElementById('pf-txt').value='';document.getElementById('pf-adv').value='';document.getElementById('pf-period').value='';filterPending()">✕</button>
   </div>
+  <div class="tbl-info" id="pf-res-info"></div>
   <div class="tbl-wrap"><div class="tbl-scroll"><table><thead><tr>
     <th>#</th><th>Orden</th><th>Asesor</th><th>Cliente</th><th>Vehículo</th>
     <th>Placa</th><th>Fecha Entrega</th><th>Días sin pago</th><th>Pendiente</th>
@@ -283,7 +290,7 @@ function buildWeeks(rows){
   return Object.entries(keys).sort(function(a,b){return a[0]<b[0]?-1:1;}).map(function(e){return{key:e[0],mon:e[1],label:weekLabel(e[1]),short:weekShort(e[1])};});
 }
 
-function getPending(rows){return rows.filter(function(r){return r.entre==='SI'&&r.pag<=0&&!r.fup&&r.pend>0;});}
+function getPending(rows){return rows.filter(function(r){return r.entre==='SI'&&r.pag<=0&&r.pend>0;});}
 function getWeekRows(rows,wKey){return rows.filter(function(r){return r.wKey===wKey;});}
 
 // ── KPI card ──────────────────────────────────────────────
@@ -469,15 +476,35 @@ function renderWeekTable(rows,wKey){
 }
 
 // ── Pending table ─────────────────────────────────────────
+const JUNE_CUTOFF = new Date(2026,5,1); // 1 de junio 2026
+
 function renderPendingTable(pending){
   const txt=(document.getElementById('pf-txt').value||'').toLowerCase().trim();
   const adv=document.getElementById('pf-adv').value||'';
+  const per=document.getElementById('pf-period')?document.getElementById('pf-period').value:'';
   const filtered=pending.filter(function(r){
     if(adv&&r.asesor!==adv)return false;
+    if(per==='antes'&&!(r.dSal&&r.dSal<JUNE_CUTOFF))return false;
+    if(per==='junio'&&!(r.dSal&&r.dSal>=JUNE_CUTOFF))return false;
+    if(per==='sinfecha'&&r.dSal)return false;
     if(txt&&!r.orden.includes(txt)&&!r.cliente.toLowerCase().includes(txt)&&!r.placa.toLowerCase().includes(txt))return false;
     return true;
   });
-  document.getElementById('pending-count').innerHTML='<span style="color:#ff8fa0;font-family:Barlow Condensed,sans-serif;font-size:28px;font-weight:900">'+pending.length+'</span> carros entregados pendientes de cobrar';
+
+  const antesJun=pending.filter(function(r){return r.dSal&&r.dSal<JUNE_CUTOFF;}).length;
+  const desdeJun=pending.filter(function(r){return r.dSal&&r.dSal>=JUNE_CUTOFF;}).length;
+  const sinFecha=pending.filter(function(r){return !r.dSal;}).length;
+
+  document.getElementById('pending-count').innerHTML=
+    '<span style="color:#ff8fa0;font-family:Barlow Condensed,sans-serif;font-size:28px;font-weight:900">'+pending.length+'</span> carros entregados pendientes de cobrar'
+    +'<div style="display:flex;gap:18px;margin-top:8px;flex-wrap:wrap">'
+      +'<span style="font-size:11px;color:var(--muted)">🗓️ Antes de junio: <strong style="color:#fbbf24">'+antesJun+'</strong></span>'
+      +'<span style="font-size:11px;color:var(--muted)">🆕 Desde 1 junio: <strong style="color:#00e5a0">'+desdeJun+'</strong></span>'
+      +(sinFecha>0?'<span style="font-size:11px;color:var(--muted)">❔ Sin fecha: <strong style="color:#5a5e8a">'+sinFecha+'</strong></span>':'')
+    +'</div>';
+
+  document.getElementById('pf-res-info').innerHTML=filtered.length===pending.length?'<strong>'+pending.length+'</strong> carros':'Mostrando <strong>'+filtered.length+'</strong> de <strong>'+pending.length+'</strong> carros';
+
   document.getElementById('tb-pending').innerHTML=filtered.map(function(r,i){
     const dias=r.dSal?daysAgo(r.dSal):null;
     const clr=dias===null?'var(--muted)':dias>14?'#ff8fa0':dias>7?'#fbbf24':'#00e5a0';
