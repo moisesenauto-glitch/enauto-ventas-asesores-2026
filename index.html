@@ -82,6 +82,9 @@ tbody tr{border-bottom:1px solid rgba(255,255,255,.03);transition:background .15
 .det-sec-ttl{font-family:Barlow Condensed,sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;padding-bottom:7px;border-bottom:1px solid var(--border)}
 .det-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0}.det-lbl{font-size:10px;color:var(--muted)}.det-v{font-family:Barlow Condensed,sans-serif;font-size:13px;font-weight:600}
 .vp{color:var(--green);font-weight:600}.vn{color:var(--red);font-weight:600}.vw{color:var(--white)}
+.may-tab{background:transparent;border:none;color:var(--muted);padding:9px 18px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s}
+.may-tab:hover{color:var(--white)}.may-tab.active{color:var(--white);border-bottom-color:var(--blue)}
+.pending-hero{background:linear-gradient(135deg,rgba(255,75,110,.08),rgba(255,75,110,.03));border:1px solid rgba(255,75,110,.25);border-radius:12px;padding:16px 20px;margin-bottom:14px;display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
 .jun-hero{background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(239,68,68,.05));border:1px solid rgba(245,158,11,.25);border-radius:14px;padding:20px 24px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:20px}
 .jun-badge{display:inline-block;background:rgba(245,158,11,.2);border:1px solid rgba(245,158,11,.4);border-radius:99px;padding:3px 12px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;color:#f59e0b;text-transform:uppercase;margin-bottom:8px}
 .jun-title{font-family:Barlow Condensed,sans-serif;font-size:28px;font-weight:800;color:var(--white);margin-bottom:4px}.jun-sub{font-size:11px;color:var(--muted)}
@@ -298,6 +301,55 @@ tbody tr{border-bottom:1px solid rgba(255,255,255,.03);transition:background .15
   <div class="tbl-wrap"><div class="tbl-scroll"><table>
     <thead><tr><th>#</th><th>Orden</th><th>Asesor</th><th>Cliente</th><th>Vehículo</th><th>Placa</th><th>Tipo</th><th>Total</th><th>Utilidad</th><th>% Util.</th><th>Ord.2025</th></tr></thead>
     <tbody id="tb-may"></tbody></table></div></div>
+
+  <!-- ── Sección inferior Mayo: dos pestañas adicionales ── -->
+  <div class="sec" style="margin-top:28px">Información Adicional — Mayo 2026</div>
+  <div class="mtbl-filter" style="padding:4px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:9px;gap:0;margin-bottom:16px">
+    <button class="may-tab active" id="may-tab-pend" onclick="mayShowTab('pend')">🚗 Carros Pendientes de Pago</button>
+    <button class="may-tab" id="may-tab-inc" onclick="mayShowTab('inc')">🎯 Detalle de Incentivos</button>
+  </div>
+
+  <!-- Panel pendientes -->
+  <div id="may-panel-pend">
+    <div class="pending-hero" style="margin-bottom:12px">
+      <div id="may-pend-count">Cargando datos...</div>
+    </div>
+    <div class="mtbl-filter">
+      <div class="mf-g"><label>Buscar</label><input id="may-pf-txt" placeholder="Orden, cliente o placa..." oninput="mayFilterPend()" style="min-width:190px"></div>
+      <div class="mf-g"><label>Asesor</label>
+        <select id="may-pf-adv" onchange="mayFilterPend()">
+          <option value="">Todos</option><option>MARCO</option><option>DANIEL</option></select></div>
+      <div class="mf-g"><label>Salió...</label>
+        <select id="may-pf-per" onchange="mayFilterPend()">
+          <option value="">Todos</option>
+          <option value="antes">Antes de junio</option>
+          <option value="junio">Desde 1 junio</option>
+          <option value="sinfecha">Sin fecha</option>
+        </select></div>
+      <button class="btn-clr" onclick="document.getElementById('may-pf-txt').value='';document.getElementById('may-pf-adv').value='';document.getElementById('may-pf-per').value='';mayFilterPend()">✕</button>
+    </div>
+    <div class="mtbl-info" id="may-pf-res"></div>
+    <div class="tbl-wrap"><div class="tbl-scroll"><table>
+      <thead><tr><th>#</th><th>Orden</th><th>Asesor</th><th>Cliente</th><th>Vehículo</th>
+        <th>Placa</th><th>Fecha Salida</th><th>Días sin pago</th><th>Pendiente</th></tr></thead>
+      <tbody id="may-tb-pend"></tbody>
+    </table></div></div>
+  </div>
+
+  <!-- Panel incentivos -->
+  <div id="may-panel-inc" style="display:none">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px" id="may-inc-cards"></div>
+    <div class="mtbl-filter">
+      <div class="mf-g"><label>Asesor</label>
+        <select id="may-inc-adv" onchange="mayFilterInc()">
+          <option value="">Todos</option><option>MARCO</option><option>DANIEL</option></select></div>
+    </div>
+    <div class="tbl-wrap"><div class="tbl-scroll"><table>
+      <thead><tr><th>#</th><th>Orden</th><th>Asesor</th><th>Cliente</th><th>Placa</th>
+        <th>Total Orden</th><th>Tipo Cliente</th><th>Tramo</th><th>Incentivo Q</th></tr></thead>
+      <tbody id="may-tb-inc"></tbody>
+    </table></div></div>
+  </div>
 </div>
 
 
@@ -648,15 +700,19 @@ function clrFilter(sfx){
   ['mf-txt-','mf-adv-','mf-tp-'].forEach(p=>{const e=document.getElementById(p+sfx);if(e)e.value='';});
   filterTbl(sfx);
 }
+const INCENTIVOS = {MARCO:{rows:[{"orden": "18590", "cliente": "ROSARIO GUERRA", "placa": "P599KXF", "tipo": "NUEVO", "tramo": "Tramo 4 (Q5001+)", "total": 25381, "incentivo": 350}, {"orden": "18625", "cliente": "INVENTAS", "placa": "P063DHB", "tipo": "RECUPERADO", "tramo": "Tramo 3 (Q3501-5000)", "total": 3620, "incentivo": 250}, {"orden": "18624", "cliente": "ALEX ALVAREZ", "placa": "P457GDB", "tipo": "NUEVO", "tramo": "Tramo 4 (Q5001+)", "total": 7020, "incentivo": 350}, {"orden": "18646", "cliente": "JOSE DOMINGUEZ", "placa": "P160JCM", "tipo": "NUEVO", "tramo": "Tramo 3 (Q3501-5000)", "total": 4390, "incentivo": 250}, {"orden": "18662", "cliente": "OSBERTO CACAO", "placa": "P576GLS", "tipo": "NUEVO", "tramo": "Tramo 4 (Q5001+)", "total": 7757, "incentivo": 350}, {"orden": "18681", "cliente": "WILLSON CUC", "placa": "P433LRF", "tipo": "NUEVO", "tramo": "Tramo 4 (Q5001+)", "total": 15455, "incentivo": 350}, {"orden": "18628", "cliente": "ALEJANDRO DE LEON", "placa": "P773JPX", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800-2000)", "total": 890, "incentivo": 100}, {"orden": "18669", "cliente": "ELVIN ORDOÑEZ BANGUAT", "placa": "P800KVK", "tipo": "NUEVO", "tramo": "Tramo 4 (Q5001+)", "total": 15163, "incentivo": 350}],total:2350},DANIEL:{rows:[{"orden": "18620", "cliente": "DANIEL ROCA", "placa": "P287HYZ", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800-2000)", "total": 1010, "incentivo": 100}, {"orden": "18606", "cliente": "ERICK MCKNIGHT", "placa": "P177FSM", "tipo": "NUEVO", "tramo": "Tramo 4 (Q5001+)", "total": 5955, "incentivo": 350}, {"orden": "18638", "cliente": "JOHAN REGALADO", "placa": "P193JVC", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800-2000)", "total": 1770, "incentivo": 100}, {"orden": "18660", "cliente": "MUSIA FRANCO GORDILLO", "placa": "P762GLT", "tipo": "NUEVO", "tramo": "Tramo 4 (Q5001+)", "total": 7475, "incentivo": 350}, {"orden": "18651", "cliente": "ANGELICA ORRELLANA", "placa": "P432LLM", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800-2000)", "total": 1470, "incentivo": 100}, {"orden": "18654", "cliente": "RONALD ENRIQUE GARCIA", "placa": "P412FCL", "tipo": "NUEVO", "tramo": "Tramo 2 (Q2001-3500)", "total": 2415, "incentivo": 175}],total:1175}};
 function bonusCard(a,mes,util){
   const b=calcBonus(util),e=b.esc;
+  const inc=(mes==='Mayo'&&INCENTIVOS[a])?INCENTIVOS[a].total:0;
+  const grandTotal=b.total+inc;
   return'<div class="bonus-card"><div class="bonus-hdr">'
     +'<div class="bonus-ttl">💰 Comisión '+mes+' 2026</div>'
     +'<div class="esc-badge" style="background:'+e.clr+'33;color:'+e.clr+';border:1px solid '+e.clr+'55">'+e.label+' — '+(e.rate*100).toFixed(2)+'%</div>'
   +'</div><div style="font-size:10px;color:var(--muted);margin-bottom:9px">'+e.desc+'</div>'
   +'<div class="brows"><div class="brow"><div class="bl">Sueldo Base</div><div class="bv">'+Q(BASE_SAL)+'</div></div>'
-  +'<div class="brow"><div class="bl">Bono</div><div class="bv" style="color:'+(b.bono>0?'var(--green)':'var(--muted)')+'">'+Q(b.bono)+'</div></div>'
-  +'<div class="btot"><div class="bl">Total a Recibir</div><div class="bv">'+Q(b.total)+'</div></div></div></div>';
+  +'<div class="brow"><div class="bl">Bono Utilidad</div><div class="bv" style="color:'+(b.bono>0?'var(--green)':'var(--muted)')+'">'+Q(b.bono)+'</div></div>'
+  +(inc>0?'<div class="brow"><div class="bl">Incentivo Clientes Nuevos/Recup.</div><div class="bv" style="color:#f59e0b">'+Q(inc)+'</div></div>':'')
+  +'<div class="btot"><div class="bl">'+(inc>0?'Total Final':'Total a Recibir')+'</div><div class="bv">'+Q(grandTotal)+'</div></div></div></div>';
 }
 function renderMonth(mes,sfx){
   const rows=D.orders26.filter(r=>r.mes===mes),agg=buildAgg26(mes);
@@ -1026,6 +1082,8 @@ window.addEventListener('DOMContentLoaded',()=>{
   [{m:'ENERO',s:'ene'},{m:'FEBRERO',s:'feb'},{m:'MARZO',s:'mar'},{m:'ABRIL',s:'abr'},{m:'MAYO',s:'may'}]
     .forEach(({m,s})=>renderMonth(m,s));
   renderJune();
+  mayRenderPend();
+  mayRenderInc();
   renderBusq(D.orders26);
   document.getElementById('res-info').innerHTML='Todos los <strong style="color:var(--white)">'+D.orders26.length+'</strong> registros';
   document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
@@ -1187,6 +1245,8 @@ async function fetchLiveData(){
     JD.meta=newJune.meta;
     JD.pendientes=newJune.pendientes||[];
     renderJune();
+    mayRenderPend();
+    mayRenderInc();
     renderBusq(D.orders26);
     var ahora=new Date().toLocaleString('es-GT');
     showBar('✅ Mayo y Junio actualizados desde Google Sheets · '+ahora, true);
@@ -1199,6 +1259,117 @@ async function fetchLiveData(){
 }
 
 function refreshNow(){fetchLiveData();}
+
+
+// ── Mayo tab: two extra panels ─────────────────────────────
+const MAY_JUNE_CUT = new Date(2026,5,1);
+
+function mayShowTab(which){
+  document.querySelectorAll('.may-tab').forEach(function(t){t.classList.remove('active');});
+  document.getElementById('may-tab-'+which).classList.add('active');
+  document.getElementById('may-panel-pend').style.display = which==='pend'?'':'none';
+  document.getElementById('may-panel-inc').style.display  = which==='inc'?'':'none';
+}
+
+function mayRenderPend(){
+  const pend = JD.pendientes||[];
+  const antes  = pend.filter(function(r){return r.dSal&&r.dSal<MAY_JUNE_CUT;}).length;
+  const desdeJ = pend.filter(function(r){return r.dSal&&r.dSal>=MAY_JUNE_CUT;}).length;
+  const sinF   = pend.filter(function(r){return !r.dSal;}).length;
+  document.getElementById('may-pend-count').innerHTML =
+    '<span style="color:#ff8fa0;font-family:Barlow Condensed,sans-serif;font-size:28px;font-weight:900">'+pend.length+'</span> carros entregados pendientes de cobrar'
+    +'<div style="display:flex;gap:18px;margin-top:8px;flex-wrap:wrap">'
+      +'<span style="font-size:11px;color:var(--muted)">🗓️ Antes de junio: <strong style="color:#fbbf24">'+antes+'</strong></span>'
+      +'<span style="font-size:11px;color:var(--muted)">🆕 Desde 1 junio: <strong style="color:#00e5a0">'+desdeJ+'</strong></span>'
+      +(sinF>0?'<span style="font-size:11px;color:var(--muted)">❔ Sin fecha: <strong style="color:#5a5e8a">'+sinF+'</strong></span>':'')
+    +'</div>';
+  mayFilterPend();
+}
+
+function mayFilterPend(){
+  const pend = JD.pendientes||[];
+  const txt = (document.getElementById('may-pf-txt')?document.getElementById('may-pf-txt').value:'').toLowerCase().trim();
+  const adv = document.getElementById('may-pf-adv')?document.getElementById('may-pf-adv').value:'';
+  const per = document.getElementById('may-pf-per')?document.getElementById('may-pf-per').value:'';
+  const filtered = pend.filter(function(r){
+    if(adv&&r.asesor!==adv)return false;
+    if(per==='antes'&&!(r.dSal&&r.dSal<MAY_JUNE_CUT))return false;
+    if(per==='junio'&&!(r.dSal&&r.dSal>=MAY_JUNE_CUT))return false;
+    if(per==='sinfecha'&&r.dSal)return false;
+    if(txt&&!String(r.orden).includes(txt)&&!(r.cliente||'').toLowerCase().includes(txt)&&!(r.placa||'').toLowerCase().includes(txt))return false;
+    return true;
+  });
+  const res = document.getElementById('may-pf-res');
+  if(res)res.innerHTML = filtered.length===pend.length?'<strong>'+pend.length+'</strong> carros':'Mostrando <strong>'+filtered.length+'</strong> de <strong>'+pend.length+'</strong>';
+  const tb = document.getElementById('may-tb-pend');
+  if(!tb)return;
+  tb.innerHTML = filtered.map(function(r,i){
+    const dias = r.dSal ? Math.floor((Date.now()-r.dSal.getTime())/86400000) : null;
+    const clr  = dias===null?'var(--muted)':dias>14?'#ff8fa0':dias>7?'#fbbf24':'#00e5a0';
+    const diasTxt = dias!==null?dias+' días':'sin fecha';
+    return '<tr>'
+      +'<td style="color:var(--muted)">'+(i+1)+'</td>'
+      +'<td style="font-family:Barlow Condensed,sans-serif;font-weight:700;font-size:14px;color:#eef0ff">'+r.orden+'</td>'
+      +'<td>'+advB(r.asesor)+'</td>'
+      +'<td style="max-width:140px;overflow:hidden;text-overflow:ellipsis">'+(r.cliente||'—')+'</td>'
+      +'<td style="color:var(--muted)">'+(r.vehiculo||'—')+'</td>'
+      +'<td style="font-family:monospace;font-size:11px;color:var(--muted)">'+(r.placa||'—')+'</td>'
+      +'<td>'+(r.fecha_salida||'—')+'</td>'
+      +'<td><span style="background:rgba(0,0,0,.2);color:'+clr+';padding:2px 9px;border-radius:99px;font-size:10px;font-weight:700">'+diasTxt+'</span></td>'
+      +'<td style="color:#f59e0b">Q'+r.pendiente.toLocaleString('es-GT',{maximumFractionDigits:0})+'</td>'
+    +'</tr>';
+  }).join('');
+}
+
+function mayRenderInc(){
+  // Summary cards
+  var advs=['MARCO','DANIEL'];
+  var acClr={MARCO:'#2B4FE8',DANIEL:'#FF4B6E'};
+  document.getElementById('may-inc-cards').innerHTML = advs.map(function(a){
+    var d=INCENTIVOS[a]; var clr=acClr[a];
+    return '<div class="adv-card" style="--ac:'+clr+';--ag:rgba(0,0,0,.3)">'
+      +'<div class="adv-stripe"></div>'
+      +'<div class="adv-name" style="color:'+clr+'">'+a+'</div>'
+      +'<div class="adv-role">Incentivos clientes nuevos/recuperados · 25 May – 25 Jun</div>'
+      +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px">'
+        +'<div><div class="sl">Clientes</div><div class="sv" style="color:'+clr+';font-size:22px">'+d.rows.length+'</div></div>'
+        +'<div><div class="sl">Total Incentivo</div><div class="sv" style="color:#f59e0b;font-size:18px">Q'+d.total.toLocaleString('es-GT')+'</div></div>'
+        +'<div><div class="sl">Promedio</div><div class="sv" style="font-size:16px">Q'+Math.round(d.total/d.rows.length)+'</div></div>'
+      +'</div>'
+    +'</div>';
+  }).join('');
+  mayFilterInc();
+}
+
+function mayFilterInc(){
+  var adv = document.getElementById('may-inc-adv')?document.getElementById('may-inc-adv').value:'';
+  var all = [];
+  ['MARCO','DANIEL'].forEach(function(a){
+    if(adv&&adv!==a)return;
+    INCENTIVOS[a].rows.forEach(function(r){all.push({asesor:a,...r});});
+  });
+  var acClr={MARCO:'#2B4FE8',DANIEL:'#FF4B6E'};
+  var tipoBadge=function(t){
+    if(t==='NUEVO')return'<span style="background:rgba(0,229,160,.15);color:#00e5a0;padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700">NUEVO</span>';
+    if(t==='RECUPERADO')return'<span style="background:rgba(245,158,11,.15);color:#fbbf24;padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700">RECUPERADO</span>';
+    return t;
+  };
+  var tb=document.getElementById('may-tb-inc');
+  if(!tb)return;
+  tb.innerHTML = all.map(function(r,i){
+    return '<tr>'
+      +'<td style="color:var(--muted)">'+(i+1)+'</td>'
+      +'<td style="font-family:Barlow Condensed,sans-serif;font-weight:700;font-size:14px;color:#eef0ff">'+r.orden+'</td>'
+      +'<td><span class="badge" style="background:'+(r.asesor==='MARCO'?'rgba(43,79,232,.18)':'rgba(255,75,110,.18)')+';color:'+(r.asesor==='MARCO'?'#7a9fff':'#ff8fa0')+'">'+r.asesor+'</span></td>'
+      +'<td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">'+(r.cliente||'—')+'</td>'
+      +'<td style="font-family:monospace;font-size:11px;color:var(--muted)">'+(r.placa||'—')+'</td>'
+      +'<td class="vw">Q'+r.total.toLocaleString('es-GT',{maximumFractionDigits:0})+'</td>'
+      +'<td>'+tipoBadge(r.tipo)+'</td>'
+      +'<td style="color:var(--muted);font-size:11px">'+r.tramo+'</td>'
+      +'<td style="color:#f59e0b;font-weight:700;font-family:Barlow Condensed,sans-serif;font-size:16px">Q'+r.incentivo+'</td>'
+    +'</tr>';
+  }).join('');
+}
 
 if(!JD.pendientes) JD.pendientes = [];
 window.addEventListener('load', function(){
