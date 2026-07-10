@@ -25,7 +25,7 @@ body{background:var(--bg);color:var(--text);font-family:Barlow,sans-serif;min-he
 .tabs::-webkit-scrollbar{height:3px}.tabs::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 .tab{padding:11px 15px;cursor:pointer;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;flex-shrink:0}
 .tab:hover{color:var(--white)}.tab.active{color:var(--white);border-bottom-color:var(--blue)}
-.tab.t-25.active{border-bottom-color:var(--cyan)}.tab.t-feb.active{border-bottom-color:var(--red)}.tab.t-mar.active{border-bottom-color:var(--purple)}.tab.t-abr.active{border-bottom-color:var(--teal)}.tab.t-may.active{border-bottom-color:var(--orange)}.tab.t-jun.active{border-bottom-color:#f59e0b}
+.tab.t-25.active{border-bottom-color:var(--cyan)}.tab.t-feb.active{border-bottom-color:var(--red)}.tab.t-mar.active{border-bottom-color:var(--purple)}.tab.t-abr.active{border-bottom-color:var(--teal)}.tab.t-may.active{border-bottom-color:var(--orange)}.tab.t-jun.active{border-bottom-color:#10b981}.tab.t-jul.active{border-bottom-color:#f59e0b}
 .page{display:none;padding:20px 28px 60px;animation:fadeUp .3s ease both}.page.active{display:block}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .sec{font-family:Barlow Condensed,sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;margin-top:24px;display:flex;align-items:center;gap:10px}
@@ -111,7 +111,8 @@ tbody tr{border-bottom:1px solid rgba(255,255,255,.03);transition:background .15
   <div class="tab t-mar" onclick="showTab('mar26')">Marzo 2026</div>
   <div class="tab t-abr" onclick="showTab('abr26')">Abril 2026</div>
   <div class="tab t-may" onclick="showTab('may26')">Mayo 2026</div>
-  <div class="tab t-jun" onclick="showTab('jun26')">🔄 Junio 2026</div>
+  <div class="tab t-jun" onclick="showTab('jun26')">Junio 2026</div>
+  <div class="tab t-jul" onclick="showTab('jul26')">🔄 Julio 2026</div>
   <div class="tab" onclick="showTab('busq')">🔍 Búsqueda</div>
 </nav>
 
@@ -354,76 +355,112 @@ tbody tr{border-bottom:1px solid rgba(255,255,255,.03);transition:background .15
 
 
 <div class="page" id="page-jun26">
+  <div class="sec">Resumen — Junio 2026</div><div class='bonus-badge'>💰 Incluye cálculo de comisión</div>
+  <div class="kpis" id="kpi-jun"></div>
+  <div class="sec" style="margin-top:26px">Rendimiento por Asesor</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1080px" id="adv-jun"></div>
+  <div class="two-col" style="margin-top:18px">
+    <div class="cc"><div class="cc-ttl">Mecánica vs Pintura</div>
+      <div class="cc-sub"><span style="color:#3d9bff">■ Mec</span> &nbsp;<span style="color:#ff8c00">■ Pin</span></div>
+      <div style="position:relative;height:270px"><canvas id="c-jun-area"></canvas></div></div>
+    <div class="cc"><div class="cc-ttl">vs Meta Q.115,000</div>
+      <div class="cc-sub">Progreso mensual</div>
+      <div style="position:relative;height:270px"><canvas id="c-jun-meta"></canvas></div></div>
+  </div>
+  <div class="sec" style="margin-top:26px">Órdenes — Junio 2026</div>
+  <div class="mtbl-filter">
+    <div class="mf-g"><label>Buscar</label><input id="mf-txt-jun" placeholder="Orden, cliente o placa..." oninput="filterTbl('jun')" style="min-width:200px"></div>
+    <div class="mf-g"><label>Asesor</label>
+      <select id="mf-adv-jun" onchange="filterTbl('jun')">
+        <option value="">Todos</option><option>MARCO</option><option>DANIEL</option></select></div>
+    <div class="mf-g"><label>Tipo</label>
+      <select id="mf-tp-jun" onchange="filterTbl('jun')">
+        <option value="">Todos</option>
+        <option value="MECANICA">Mecánica</option><option value="PINTURA">Pintura</option><option value="AMBOS">Mec+Pin</option></select></div>
+    <button class="btn-clr" onclick="clrFilter('jun')">✕ Limpiar</button>
+  </div>
+  <div class="mtbl-info" id="mf-res-jun"></div>
+  <div class="tbl-wrap"><div class="tbl-scroll"><table>
+    <thead><tr><th>#</th><th>Orden</th><th>Asesor</th><th>Cliente</th><th>Vehículo</th><th>Placa</th><th>Tipo</th><th>Total</th><th>Utilidad</th><th>% Util.</th><th>Ord.2025</th></tr></thead>
+    <tbody id="tb-jun"></tbody></table></div></div>
+
+  </div>
+
+
+
+<div class="page" id="page-jul26">
   <div class="jun-hero">
     <div>
-      <div class="jun-badge">Semana 1 &nbsp;·&nbsp; Junio 2026</div>
-      <div class="jun-title">Resultados Preliminares</div>
-      <div class="jun-sub">Pagado reporte (AR) pendiente confirmación en banco · % utilidad basado en promedio histórico Ene–May</div>
+      <div class="jul-badge">Resultados &nbsp;·&nbsp; Julio 2026</div>
+      <div class="jul-title">Resultados Preliminares</div>
+      <div class="jul-sub">Pagado reporte (AR) pendiente confirmación en banco · % utilidad basado en promedio histórico Ene–Jun</div>
     </div>
-    <div class="jun-warn">⚠️ Datos preliminares — utilidad proyectada es estimación sobre el cobrado reportado</div>
+    <div class="jul-warn">⚠️ Datos preliminares — utilidad proyectada es estimación sobre el cobrado reportado</div>
   </div>
-  <div class="jun-kpis" id="jun-kpis"></div>
-  <div class="sec">Rendimiento por Asesor — Junio 2026</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1000px;margin-bottom:20px" id="jun-adv-cards"></div>
+  <div class="jul-kpis" id="jul-kpis"></div>
+  <div class="sec">Rendimiento por Asesor — Julio 2026</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1000px;margin-bottom:20px" id="jul-adv-cards"></div>
 
   <div class="sec">🚗 Carros Entregados Pendientes de Pago</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1000px;margin-bottom:14px" id="jun-pend-cards"></div>
   <div class="mtbl-filter">
-    <div class="mf-g"><label>Buscar</label><input id="pend-txt" placeholder="Orden, cliente o placa..." oninput="filterPendCars()" style="min-width:200px"></div>
+    <div class="mf-g"><label>Buscar</label><input id="jul-pend-txt" placeholder="Orden, cliente o placa..." oninput="filterJulPendCars()" style="min-width:200px"></div>
     <div class="mf-g"><label>Asesor</label>
-      <select id="pend-adv" onchange="filterPendCars()">
+      <select id="jul-pend-adv" onchange="filterJulPendCars()">
         <option value="">Todos</option><option>MARCO</option><option>DANIEL</option></select></div>
-    <button class="btn-clr" onclick="document.getElementById('pend-txt').value='';document.getElementById('pend-adv').value='';filterPendCars()">✕ Limpiar</button>
+    <button class="btn-clr" onclick="document.getElementById('pend-txt').value='';document.getElementById('pend-adv').value='';filterJulPendCars()">✕ Limpiar</button>
   </div>
-  <div class="mtbl-info" id="pend-res-info"></div>
+  <div class="mtbl-info" id="jul-pend-res-info"></div>
   <div class="tbl-wrap" style="margin-bottom:24px"><div class="tbl-scroll">
     <table><thead><tr>
       <th>#</th><th>Orden</th><th>Asesor</th><th>Cliente</th><th>Vehículo</th><th>Placa</th>
       <th>Fecha Salida</th><th>Días sin pago</th><th>Pendiente</th>
-    </tr></thead><tbody id="tb-pend-cars"></tbody></table>
+    </tr></thead><tbody id="tb-jul-pend-cars"></tbody></table>
   </div></div>
 
   <div class="two-col" style="margin-bottom:18px">
     <div class="cc">
       <div class="cc-ttl">Cobrado vs Utilidad Proyectada</div>
       <div class="cc-sub">Pagado reporte (AR) y estimación de utilidad por asesor</div>
-      <div style="position:relative;height:270px"><canvas id="c-jun-cobrado"></canvas></div>
+      <div style="position:relative;height:270px"><canvas id="c-jul-cobrado"></canvas></div>
     </div>
     <div class="cc">
-      <div class="cc-ttl">Carros Ingresados en Junio</div>
-      <div class="cc-sub">Distribución por asesor — Semana 1 (Jun 1–8)</div>
-      <div style="position:relative;height:270px"><canvas id="c-jun-ing"></canvas></div>
+      <div class="cc-ttl">Carros Ingresados en Julio</div>
+      <div class="cc-sub">Distribución por asesor — Resultados (Jun 1–8)</div>
+      <div style="position:relative;height:270px"><canvas id="c-jul-ing"></canvas></div>
     </div>
   </div>
   <div class="cc full" style="margin-bottom:18px">
-    <div class="cc-ttl">Origen de los Pagos de Junio</div>
+    <div class="cc-ttl">Origen de los Pagos de Julio</div>
     <div class="cc-sub">¿Los carros pagados en Junio ingresaron en Junio o en meses anteriores?</div>
-    <div style="position:relative;height:200px"><canvas id="c-jun-origen"></canvas></div>
+    <div style="position:relative;height:200px"><canvas id="c-jul-origen"></canvas></div>
   </div>
-  <div class="sec">Pagos Reportados — Junio 2026</div>
+  <div class="sec">Pagos Reportados — Julio 2026</div>
   <div class="mtbl-filter">
-    <div class="mf-g"><label>Buscar</label><input id="mf-txt-jun" placeholder="Orden, cliente o placa..." oninput="junTblFilter()" style="min-width:200px"></div>
+    <div class="mf-g"><label>Buscar</label><input id="mf-txt-jul" placeholder="Orden, cliente o placa..." oninput="julTblFilter()" style="min-width:200px"></div>
     <div class="mf-g"><label>Asesor</label>
-      <select id="mf-adv-jun" onchange="junTblFilter()">
+      <select id="mf-adv-jul" onchange="julTblFilter()">
         <option value="">Todos</option><option>MARCO</option><option>DANIEL</option></select></div>
     <div class="mf-g"><label>Origen</label>
-      <select id="mf-src-jun" onchange="junTblFilter()">
+      <select id="mf-src-jul" onchange="julTblFilter()">
         <option value="">Todos</option>
-        <option value="junio">Ingresaron en Junio</option>
+        <option value="julio">Ingresaron en Junio</option>
         <option value="prev">Meses anteriores</option></select></div>
-    <button class="btn-clr" onclick="junTblClear()">✕ Limpiar</button>
+    <button class="btn-clr" onclick="julTblClear()">✕ Limpiar</button>
   </div>
-  <div class="mtbl-info" id="mf-res-jun"></div>
+  <div class="mtbl-info" id="mf-res-jul"></div>
   <div class="tbl-wrap"><div class="tbl-scroll">
     <table><thead><tr>
       <th>#</th><th>Orden</th><th>Asesor</th><th>Cliente</th><th>Vehículo</th><th>Placa</th>
       <th>Tipo</th><th>Fecha Ingreso</th><th>Pagado (AR)</th><th>Bancos (AQ)</th><th>Origen</th>
-    </tr></thead><tbody id="tb-jun"></tbody></table>
+    </tr></thead><tbody id="tb-jul"></tbody></table>
   </div></div>
 </div>
 
 
-<div class="page" id="page-busq">
+<div class="page" 
+
+id="page-busq">
   <div class="search-bar">
     <div class="ctrl"><label>Orden / Cliente / Placa</label><input id="s-txt" placeholder="Buscar..." style="min-width:200px"></div>
     <div class="ctrl"><label>Asesor</label>
@@ -538,7 +575,7 @@ const barLabels={id:'barLabels',afterDatasetsDraw(chart){
 Chart.register(stackLabels);
 
 // ── Tabs ──────────────────────────────────────────────────────
-const TAB_MAP={t25:0,ene26:1,feb26:2,mar26:3,abr26:4,may26:5,jun26:6,busq:7};
+const TAB_MAP={t25:0,ene26:1,feb26:2,mar26:3,abr26:4,may26:5,jun26:6,jul26:7,busq:8};
 function showTab(t){
   document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -773,6 +810,9 @@ function renderMonth(mes,sfx){
 let cJunPag=null,cJunIng=null,cJunPie=null;
 
 function renderJune(){
+  renderMonth('JUNIO','jun');
+}
+function renderJulio(){
   const pays=JD.payments,ings=JD.ingresados,avg=JD.avg_util,meta=JD.meta;
   const AC2={MARCO:'#2B4FE8',DANIEL:'#FF4B6E'};
 
@@ -780,8 +820,8 @@ function renderJune(){
   const totPag=pays.reduce((s,r)=>s+r.pagado_reporte,0);
   const totProj=meta.marco_proj+meta.daniel_proj;
   const totIng=ings.length;
-  document.getElementById('jun-kpis').innerHTML=
-    kpiCard('Pagos Reportados Junio',pays.length+' órdenes','Pendiente confirmación banco','linear-gradient(90deg,#f59e0b,#f97316)','#fbbf24')
+  document.getElementById('jul-kpis').innerHTML=
+    kpiCard('Pagos Reportados Julio',pays.length+' órdenes','Pendiente confirmación banco','linear-gradient(90deg,#f59e0b,#f97316)','#fbbf24')
    +kpiCard('Total Cobrado (AR)','Q '+totPag.toLocaleString('es-GT',{maximumFractionDigits:0}),'Pagado reporte semana 1','linear-gradient(90deg,#00e5a0,#00d4ff)','#00e5a0')
    +kpiCard('Util. Proyectada','Q '+totProj.toLocaleString('es-GT',{maximumFractionDigits:0}),'Estimado histórico','linear-gradient(90deg,#a855f7,#ec4899)','#c084fc')
    +kpiCard('Carros Ingresados Jun.',totIng+' carros','En Semana 1','linear-gradient(90deg,#2B4FE8,#4a6fff)','#7a9fff')
@@ -798,8 +838,8 @@ function renderJune(){
   renderJunCharts(pays,ings,AC2);
 
   // Table
-  junTblFilter();
-  filterPendCars();
+  julTblFilter();
+  filterJulPendCars();
 }
 
 function renderPendCars(pend,AC2){
@@ -1082,6 +1122,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   [{m:'ENERO',s:'ene'},{m:'FEBRERO',s:'feb'},{m:'MARZO',s:'mar'},{m:'ABRIL',s:'abr'},{m:'MAYO',s:'may'}]
     .forEach(({m,s})=>renderMonth(m,s));
   renderJune();
+  renderJulio();
   mayRenderPend();
   mayRenderInc();
   renderBusq(D.orders26);
@@ -1089,6 +1130,77 @@ window.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
   document.querySelector('.t-25').classList.add('active');
 });
+
+
+
+function julTblClear(){
+  ['mf-txt-jul','mf-adv-jul','mf-src-jul'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  julTblFilter();
+}
+
+function julTblFilter(){
+  const txt=(document.getElementById('mf-txt-jul')?.value||'').toLowerCase().trim();
+  const adv=document.getElementById('mf-adv-jul')?.value||'';
+  const src=document.getElementById('mf-src-jul')?.value||'';
+  const all=[...JD.payments];
+  const filtered=all.filter(r=>{
+    if(adv&&r.asesor!==adv)return false;
+    if(src==='junio'&&!r.es_jun_ingreso)return false;
+    if(src==='prev'&&r.es_jun_ingreso)return false;
+    if(txt&&!String(r.orden).includes(txt)&&!(r.cliente||'').toLowerCase().includes(txt)&&!(r.placa||'').toLowerCase().includes(txt))return false;
+    return true;
+  });
+  const tb=document.getElementById('tb-jul');
+  if(tb)tb.innerHTML=filtered.map((r,i)=>{
+    const origenBadge=r.es_jun_ingreso
+      ?'<span style="background:rgba(0,229,160,.12);color:#00e5a0;padding:2px 7px;border-radius:99px;font-size:9px;font-weight:700">Jun.2026</span>'
+      :'<span style="background:rgba(245,158,11,.12);color:#f59e0b;padding:2px 7px;border-radius:99px;font-size:9px;font-weight:700">'+r.origen+'</span>';
+    return'<tr>'
+      +'<td style="color:var(--muted)">'+(i+1)+'</td>'
+      +'<td style="font-family:Barlow Condensed,sans-serif;font-weight:700;font-size:14px;color:var(--white)">'+r.orden+'</td>'
+      +'<td>'+advB(r.asesor)+'</td>'
+      +'<td style="max-width:140px;overflow:hidden;text-overflow:ellipsis">'+(r.cliente||'—')+'</td>'
+      +'<td style="color:var(--muted)">'+(r.vehiculo||'—')+'</td>'
+      +'<td style="font-family:monospace;font-size:11px;color:var(--muted)">'+(r.placa||'—')+'</td>'
+      +'<td>'+tipoB(r.tipo||'')+'</td>'
+      +'<td>'+(r.fecha_ingreso||'—')+'</td>'
+      +'<td style="color:#00e5a0;font-weight:600">Q '+r.pagado_reporte.toLocaleString('es-GT',{maximumFractionDigits:0})+'</td>'
+      +'<td style="color:'+(r.bancos>0?'#00e5a0':'#5a5e8a')+'">Q '+r.bancos.toLocaleString('es-GT',{maximumFractionDigits:0})+'</td>'
+      +'<td>'+origenBadge+'</td>'
+    +'</tr>';
+  }).join('');
+  const res=document.getElementById('mf-res-jul');
+  if(res)res.innerHTML=filtered.length===all.length?'<strong>'+all.length+'</strong> registros':'Mostrando <strong>'+filtered.length+'</strong> de <strong>'+all.length+'</strong>';
+}
+function filterJulPendCars(){
+  var pend=JD.pendientes||[];
+  var txt=(document.getElementById('jul-pend-txt')?.value||'').toLowerCase().trim();
+  var adv=document.getElementById('jul-pend-adv')?.value||'';
+  var filtered=pend.filter(function(r){
+    if(adv&&r.asesor!==adv)return false;
+    if(txt&&!String(r.orden).includes(txt)&&!(r.cliente||'').toLowerCase().includes(txt)&&!(r.placa||'').toLowerCase().includes(txt))return false;
+    return true;
+  });
+  var tb=document.getElementById('tb-jul-pend-cars');
+  if(tb)tb.innerHTML=filtered.map(function(r,i){
+    var diasBadge=r.dias!==null
+      ?'<span style="background:'+(r.dias>14?'rgba(255,75,110,.2)':r.dias>7?'rgba(245,158,11,.2)':'rgba(0,229,160,.15)')+';color:'+(r.dias>14?'#ff8fa0':r.dias>7?'#fbbf24':'#00e5a0')+';padding:2px 9px;border-radius:99px;font-size:10px;font-weight:700">'+r.dias+' días</span>'
+      :'<span style="color:var(--muted);font-size:11px">sin fecha</span>';
+    return '<tr>'
+      +'<td style="color:var(--muted)">'+(i+1)+'</td>'
+      +'<td style="font-family:Barlow Condensed,sans-serif;font-weight:700;font-size:14px;color:var(--white)">'+r.orden+'</td>'
+      +'<td>'+advB(r.asesor)+'</td>'
+      +'<td style="max-width:140px;overflow:hidden;text-overflow:ellipsis">'+(r.cliente||'—')+'</td>'
+      +'<td style="color:var(--muted)">'+(r.vehiculo||'—')+'</td>'
+      +'<td style="font-family:monospace;font-size:11px;color:var(--muted)">'+(r.placa||'—')+'</td>'
+      +'<td>'+(r.fecha_salida||'—')+'</td>'
+      +'<td>'+diasBadge+'</td>'
+      +'<td style="color:#f59e0b">Q'+r.pendiente.toLocaleString('es-GT',{maximumFractionDigits:0})+'</td>'
+    +'</tr>';
+  }).join('');
+  var res=document.getElementById('jul-pend-res-info');
+  if(res)res.innerHTML=filtered.length===pend.length?'<strong>'+pend.length+'</strong> carros pendientes':'Mostrando <strong>'+filtered.length+'</strong> de <strong>'+pend.length+'</strong> carros';
+}
 
 
 // AUTO-UPDATE FROM GOOGLE SHEETS
@@ -1114,7 +1226,7 @@ function showBar(msg,ok){
 }
 
 function parseCSVtoOrders(rows){
-  const PAST={'ENERO':1,'FEBRERO':2,'MARZO':3,'ABRIL':4,'MAYO':5};
+  const PAST={'ENERO':1,'FEBRERO':2,'MARZO':3,'ABRIL':4,'MAYO':5,'JUNIO':6};
   const orders=[];
   rows.forEach(function(r){
     const fup=String(r['FECHA ULTIMO PAGO_1']||'').trim().toUpperCase();
@@ -1139,6 +1251,81 @@ function parseCSVtoOrders(rows){
     });
   });
   return orders;
+}
+
+function parseCSVtoJulio(rows){
+  // Same as parseCSVtoJune but filter FECHA REPORTE DE PAGO in July 2026
+  var avgUtil={MARCO:JD.avg_util?JD.avg_util.MARCO:0.607,DANIEL:JD.avg_util?JD.avg_util.DANIEL:0.643};
+  ['MARCO','DANIEL'].forEach(function(a){
+    var vals=[];
+    rows.forEach(function(r){
+      var fup=String(r['FECHA ULTIMO PAGO_1']||'').trim().toUpperCase();
+      if(['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO'].indexOf(fup)<0)return;
+      if(shortAL(r['IDASESOR']||'')!==a)return;
+      if(safeN(r['PENDIENTE'])!==0)return;
+      var t=safeN(r['TOTAL GENERAL']),u=safeN(r['UTILIDAD GENERAL']);
+      if(t>0&&u>0&&u/t<1.0)vals.push(u/t);
+    });
+    if(vals.length>5)avgUtil[a]=Math.round(vals.reduce(function(s,v){return s+v;},0)/vals.length*10000)/10000;
+  });
+  // July payments: pagado reporte > 0 with FECHA REPORTE DE PAGO in July
+  var payments=[],seen=new Set(),ingresados=[];
+  rows.forEach(function(r){
+    var pagRep=safeN(r['pagado reporte']);
+    if(pagRep<=0)return;
+    var dPago=parseDL(r['FECHA REPORTE DE PAGO']);
+    if(!dPago||dPago.getFullYear()!==2026||dPago.getMonth()!==6)return;  // month 6 = July (0-indexed)
+    var fup=String(r['FECHA ULTIMO PAGO_1']||'').trim().toUpperCase();
+    var bancos=safeN(r['BANCOS']);
+    var dIng=parseDL(r['FECHA DE INGRESO']);
+    var esJul=!!(dIng&&dIng.getFullYear()===2026&&dIng.getMonth()===6);
+    payments.push({orden:r['ORDEN']||'',asesor:shortAL(r['IDASESOR']||''),
+      cliente:r['NOMBRE CLIENTE']||'',vehiculo:r['IDMARCALINEA']||'',
+      placa:r['PLACA']||'',tipo:r['TIPO_SERVICIO']||'',
+      fecha_ingreso:r['FECHA DE INGRESO']||'',
+      pagado_reporte:pagRep,bancos:bancos,pendiente:safeN(r['PENDIENTE']),
+      total:safeN(r['TOTAL GENERAL']),es_jun_ingreso:esJul,
+      origen:esJul?'Julio 2026':(dIng&&dIng.getMonth()===5?'Junio 2026':'Anterior')});
+  });
+  rows.forEach(function(r){
+    var dIng=parseDL(r['FECHA DE INGRESO']);
+    if(!dIng||dIng.getFullYear()!==2026||dIng.getMonth()!==6)return;
+    if(seen.has(r['ORDEN']))return;seen.add(r['ORDEN']);
+    ingresados.push({orden:r['ORDEN']||'',asesor:shortAL(r['IDASESOR']||''),
+      cliente:r['NOMBRE CLIENTE']||'',vehiculo:r['IDMARCALINEA']||'',
+      placa:r['PLACA']||'',tipo:r['TIPO_SERVICIO']||'',
+      fecha_ingreso:r['FECHA DE INGRESO']||'',
+      pagado_reporte:safeN(r['pagado reporte']),bancos:safeN(r['BANCOS']),
+      pendiente:safeN(r['PENDIENTE']),semana:1});
+  });
+  // Pendientes (reuse logic - all ENTREGADO=SI + no pago)
+  var pendientes=[];
+  rows.forEach(function(r){
+    var entre=String(r['ENTREGADO']||'').trim().toUpperCase();
+    if(entre!=='SI')return;
+    if(safeN(r['pagado reporte'])>0)return;
+    if(safeN(r['PENDIENTE'])<=0)return;
+    var dSal=parseDL(r['FECHA DE SALIDA']);
+    var dias=dSal?Math.floor((Date.now()-dSal.getTime())/86400000):null;
+    pendientes.push({orden:r['ORDEN']||'',asesor:shortAL(r['IDASESOR']||''),
+      cliente:r['NOMBRE CLIENTE']||'',vehiculo:r['IDMARCALINEA']||'',
+      placa:r['PLACA']||'',fecha_salida:r['FECHA DE SALIDA']||'',
+      dias:dias,pendiente:safeN(r['PENDIENTE']),
+      dSal:dSal});
+  });
+  var meta={
+    marco_n:ingresados.filter(function(r){return r.asesor==='MARCO';}).length,
+    daniel_n:ingresados.filter(function(r){return r.asesor==='DANIEL';}).length,
+    marco_pag_rep:payments.filter(function(r){return r.asesor==='MARCO';}).reduce(function(s,r){return s+r.pagado_reporte;},0),
+    daniel_pag_rep:payments.filter(function(r){return r.asesor==='DANIEL';}).reduce(function(s,r){return s+r.pagado_reporte;},0),
+    marco_bancos:payments.filter(function(r){return r.asesor==='MARCO';}).reduce(function(s,r){return s+r.bancos;},0),
+    daniel_bancos:payments.filter(function(r){return r.asesor==='DANIEL';}).reduce(function(s,r){return s+r.bancos;},0),
+    marco_pend_n:pendientes.filter(function(r){return r.asesor==='MARCO';}).length,
+    daniel_pend_n:pendientes.filter(function(r){return r.asesor==='DANIEL';}).length,
+  };
+  meta.marco_proj=Math.round(meta.marco_pag_rep*(avgUtil['MARCO'])*100)/100;
+  meta.daniel_proj=Math.round(meta.daniel_pag_rep*(avgUtil['DANIEL'])*100)/100;
+  return{payments:payments,ingresados:ingresados,avg_util:avgUtil,meta:meta,pendientes:pendientes};
 }
 
 function parseCSVtoJune(rows){
@@ -1230,26 +1417,38 @@ async function fetchLiveData(){
     var result=Papa.parse(text,{header:true,skipEmptyLines:true,dynamicTyping:false});
     var rows=result.data;
     if(rows.length<5)throw new Error('Pocas filas: '+rows.length);
-    // Ene-Abril quedan estáticos (cerrados). Mayo y Junio se recalculan en vivo.
+    // Ene-Abr estáticos. Mayo + Junio (confirmados) + Julio (preliminar) en vivo.
     var allOrders=parseCSVtoOrders(rows);
+    // Actualizar Mayo (PENDIENTE=0, FECHA ULTIMO PAGO_1=MAYO)
     var newMayo=allOrders.filter(function(o){return o.mes==='MAYO';});
     if(newMayo.length>0){
       D.orders26=D.orders26.filter(function(o){return o.mes!=='MAYO';}).concat(newMayo);
-      renderMonth('MAYO','may');
-      buildMonthly(curF);
     }
-    var newJune=parseCSVtoJune(rows);
-    JD.payments=newJune.payments;
-    JD.ingresados=newJune.ingresados;
-    JD.avg_util=newJune.avg_util;
-    JD.meta=newJune.meta;
-    JD.pendientes=newJune.pendientes||[];
-    renderJune();
+    // Actualizar Junio (PENDIENTE=0, FECHA ULTIMO PAGO_1=JUNIO)
+    var newJunio=allOrders.filter(function(o){return o.mes==='JUNIO';});
+    if(newJunio.length>0){
+      D.orders26=D.orders26.filter(function(o){return o.mes!=='JUNIO';}).concat(newJunio);
+    }
+    // Re-render Mayo y Junio si hay datos
+    [{m:'MAYO',s:'may'},{m:'JUNIO',s:'jun'}].forEach(function(x){
+      var hasData=D.orders26.some(function(o){return o.mes===x.m;});
+      if(hasData){renderMonth(x.m,x.s);}
+    });
+    buildMonthly(curF);
+    // Julio: resultados preliminares (FECHA REPORTE DE PAGO en julio)
+    var newJulio=parseCSVtoJulio(rows);
+    JD.payments=newJulio.payments;
+    JD.ingresados=newJulio.ingresados;
+    JD.avg_util=newJulio.avg_util;
+    JD.meta=newJulio.meta;
+    JD.pendientes=newJulio.pendientes||[];
+    renderJune();   // ahora renderMonth('JUNIO','jun') - no-op si ya hecho arriba
+    renderJulio();
     mayRenderPend();
     mayRenderInc();
     renderBusq(D.orders26);
     var ahora=new Date().toLocaleString('es-GT');
-    showBar('✅ Mayo y Junio actualizados desde Google Sheets · '+ahora, true);
+    showBar('✅ Mayo, Junio y Julio actualizados · '+ahora, true);
   }catch(e){
     console.error('Error al actualizar:',e.message);
     showBar('⚠️ '+e.message, false);
