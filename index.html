@@ -86,6 +86,12 @@ tbody tr{border-bottom:1px solid rgba(255,255,255,.03);transition:background .15
 .may-tab:hover{color:var(--white)}.may-tab.active{color:var(--white);border-bottom-color:var(--blue)}
 .pending-hero{background:linear-gradient(135deg,rgba(255,75,110,.08),rgba(255,75,110,.03));border:1px solid rgba(255,75,110,.25);border-radius:12px;padding:16px 20px;margin-bottom:14px;display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
 .jun-hero{background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(239,68,68,.05));border:1px solid rgba(245,158,11,.25);border-radius:14px;padding:20px 24px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.jul-hero{background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(239,68,68,.05));border:1px solid rgba(245,158,11,.25);border-radius:14px;padding:20px 24px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.jul-badge,.jun-badge{display:inline-block;background:rgba(245,158,11,.2);border:1px solid rgba(245,158,11,.4);border-radius:99px;padding:3px 12px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;color:#f59e0b;text-transform:uppercase;margin-bottom:8px}
+.jul-title,.jun-title{font-family:Barlow Condensed,sans-serif;font-size:28px;font-weight:800;color:var(--white);margin-bottom:4px}
+.jul-sub,.jun-sub{font-size:11px;color:var(--muted)}
+.jul-warn,.jun-warn{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:9px;padding:10px 14px;font-size:11px;color:#fbbf24;max-width:380px}
+.jul-kpis,.jun-kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:11px;margin-bottom:20px}
 .jun-badge{display:inline-block;background:rgba(245,158,11,.2);border:1px solid rgba(245,158,11,.4);border-radius:99px;padding:3px 12px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;color:#f59e0b;text-transform:uppercase;margin-bottom:8px}
 .jun-title{font-family:Barlow Condensed,sans-serif;font-size:28px;font-weight:800;color:var(--white);margin-bottom:4px}.jun-sub{font-size:11px;color:var(--muted)}
 .jun-warn{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:9px;padding:10px 14px;font-size:11px;color:#fbbf24;max-width:380px}
@@ -402,7 +408,7 @@ tbody tr{border-bottom:1px solid rgba(255,255,255,.03);transition:background .15
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1000px;margin-bottom:20px" id="jul-adv-cards"></div>
 
   <div class="sec">🚗 Carros Entregados Pendientes de Pago</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1000px;margin-bottom:14px" id="jun-pend-cards"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1000px;margin-bottom:14px" id="jul-pend-cards"></div>
   <div class="mtbl-filter">
     <div class="mf-g"><label>Buscar</label><input id="jul-pend-txt" placeholder="Orden, cliente o placa..." oninput="filterJulPendCars()" style="min-width:200px"></div>
     <div class="mf-g"><label>Asesor</label>
@@ -500,7 +506,7 @@ const M26=['ENERO','FEBRERO','MARZO','ABRIL','MAYO'];
 const AC={MARCO:'#2B4FE8',DANIEL:'#FF4B6E',SERGIO:'#00d4ff',IRVIN:'#ffd166'};
 const AG={MARCO:'rgba(43,79,232,.3)',DANIEL:'rgba(255,75,110,.3)',SERGIO:'rgba(0,212,255,.25)',IRVIN:'rgba(255,209,102,.2)'};
 const AF={MARCO:'Marco Antonio Orozco',DANIEL:'Rony Daniel López',SERGIO:'Sergio (2025)',IRVIN:'Irvin (2025)'};
-const MACC={ENERO:'#2B4FE8',FEBRERO:'#FF4B6E',MARZO:'#a855f7',ABRIL:'#00b894',MAYO:'#e67e22'};
+const MACC={ENERO:'#2B4FE8',FEBRERO:'#FF4B6E',MARZO:'#a855f7',ABRIL:'#00b894',MAYO:'#e67e22',JUNIO:'#10b981'};
 const MEC='#3d9bff',PIN='#ff8c00';
 const TS={backgroundColor:'rgba(10,12,28,.97)',borderColor:'rgba(255,255,255,.1)',borderWidth:1,titleColor:'#eef0ff',bodyColor:'#bbbddd',padding:12};
 const ESC=[
@@ -754,8 +760,8 @@ function bonusCard(a,mes,util){
 function renderMonth(mes,sfx){
   const rows=D.orders26.filter(r=>r.mes===mes),agg=buildAgg26(mes);
   const totCob=rows.reduce((s,r)=>s+r.total_general,0),totUtil=rows.reduce((s,r)=>s+r.utilidad_general,0);
-  const lbl=({ENERO:'Enero',FEBRERO:'Febrero',MARZO:'Marzo',ABRIL:'Abril',MAYO:'Mayo'})[mes]||mes;
-  const acc=MACC[mes]||'#2B4FE8',hasBonus=mes==='ABRIL'||mes==='MAYO';
+  const lbl=({ENERO:'Enero',FEBRERO:'Febrero',MARZO:'Marzo',ABRIL:'Abril',MAYO:'Mayo',JUNIO:'Junio'})[mes]||mes;
+  const acc=MACC[mes]||'#2B4FE8',hasBonus=mes==='ABRIL'||mes==='MAYO'||mes==='JUNIO';
   document.getElementById('kpi-'+sfx).innerHTML=
     kpiCard('Órdenes',rows.length,'PENDIENTE = 0','linear-gradient(90deg,'+acc+',#00d4ff)')
    +kpiCard('Total Facturado','Q '+totCob.toLocaleString('es-GT',{maximumFractionDigits:0}),lbl+' 2026','linear-gradient(90deg,'+acc+',#4a6fff)')
@@ -832,7 +838,7 @@ function renderJulio(){
   renderJunCards(pays,ings,avg,meta,AC2);
 
   // Pending cars (entregados sin pago)
-  renderPendCars(JD.pendientes||[],AC2);
+  renderPendCars(JD.pendientes||[],AC2,'jul-pend-cards');
 
   // Charts
   renderJunCharts(pays,ings,AC2);
@@ -842,9 +848,10 @@ function renderJulio(){
   filterJulPendCars();
 }
 
-function renderPendCars(pend,AC2){
+function renderPendCars(pend,AC2,targetId){
+  targetId=targetId||'jun-pend-cards';
   var advs=['MARCO','DANIEL'];
-  document.getElementById('jun-pend-cards').innerHTML=advs.map(function(a){
+  document.getElementById(targetId).innerHTML=advs.map(function(a){
     var pa=pend.filter(function(r){return r.asesor===a;});
     var totPend=pa.reduce(function(s,r){return s+r.pendiente;},0);
     var conDias=pa.filter(function(r){return r.dias!==null;});
