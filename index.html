@@ -814,6 +814,7 @@ function renderMonth(mes,sfx){
 
 // ── JUNIO 2026 ────────────────────────────────────────────────
 let cJunPag=null,cJunIng=null,cJunPie=null;
+let cJulPag=null,cJulIng=null,cJulPie=null;
 
 function renderJune(){
   renderMonth('JUNIO','jun');
@@ -835,13 +836,13 @@ function renderJulio(){
    +kpiCard('Daniel Cobrado (AR)','Q '+meta.daniel_pag_rep.toLocaleString('es-GT',{maximumFractionDigits:0}),'Proyección: Q'+meta.daniel_proj.toLocaleString('es-GT',{maximumFractionDigits:0}),'linear-gradient(90deg,#FF4B6E,#FF4B6E)','#ff8fa0');
 
   // Advisor cards
-  renderJunCards(pays,ings,avg,meta,AC2);
+  renderJunCards(pays,ings,avg,meta,AC2,"jul");
 
   // Pending cars (entregados sin pago)
   renderPendCars(JD.pendientes||[],AC2,'jul-pend-cards');
 
   // Charts
-  renderJunCharts(pays,ings,AC2);
+  renderJulCharts(pays,ings,AC2);
 
   // Table
   julTblFilter();
@@ -900,9 +901,10 @@ function filterPendCars(){
   if(res)res.innerHTML=filtered.length===pend.length?'<strong>'+pend.length+'</strong> carros pendientes':'Mostrando <strong>'+filtered.length+'</strong> de <strong>'+pend.length+'</strong> carros';
 }
 
-function renderJunCards(pays,ings,avg,meta,AC2){
+function renderJunCards(pays,ings,avg,meta,AC2,sfx){
+  sfx=sfx||'jun';
   const advs=['MARCO','DANIEL'];
-  document.getElementById('jun-adv-cards').innerHTML=advs.map(a=>{
+  document.getElementById(sfx+'-adv-cards').innerHTML=advs.map(a=>{
     const pa=pays.filter(r=>r.asesor===a);
     const ia=ings.filter(r=>r.asesor===a);
     const pag=pa.reduce((s,r)=>s+r.pagado_reporte,0);
@@ -914,7 +916,7 @@ function renderJunCards(pays,ings,avg,meta,AC2){
     const desdePrev=pa.length-desdeJun;
     return'<div class="adv-card" style="--ac:'+AC2[a]+';--ag:rgba(0,0,0,.3)">'
       +'<div class="adv-stripe"></div><div class="adv-name">'+a+'</div>'
-      +'<div class="adv-role">Seguimiento — Junio 2026 · Semana 1</div>'
+      +'<div class="adv-role">Seguimiento — '+(sfx==='jul'?'Julio':'Junio')+' 2026</div>'
       +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">'
         +'<div><div class="sl">Pagos reportados</div><div class="sv" style="color:'+AC2[a]+';font-size:18px">'+pa.length+' órdenes</div></div>'
         +'<div><div class="sl">Cobrado AR</div><div class="sv" style="color:#00e5a0">Q'+pag.toLocaleString('es-GT',{maximumFractionDigits:0})+'</div></div>'
@@ -936,7 +938,7 @@ function renderJunCards(pays,ings,avg,meta,AC2){
       // Origin breakdown
       +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
         +'<div style="background:rgba(0,229,160,.07);border:1px solid rgba(0,229,160,.2);border-radius:8px;padding:9px 12px">'
-          +'<div style="font-size:9px;color:#00e5a0;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Ingresaron en Junio</div>'
+          +'<div style="font-size:9px;color:#00e5a0;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Ingresaron en '+(sfx==='jul'?'Julio':'Junio')+'</div>'
           +'<div style="font-family:Barlow Condensed,sans-serif;font-size:22px;font-weight:800;color:#00e5a0">'+desdeJun+'</div>'
         +'</div>'
         +'<div style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:8px;padding:9px 12px">'
@@ -991,6 +993,52 @@ function renderJunCharts(pays,ings,AC2){
     options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:16}},
       scales:{x:{grid:{display:false},ticks:{color:'#5a5e8a',font:{family:'Barlow Condensed',size:14}}},
                y:{border:{color:'transparent'},grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#5a5e8a',font:{family:'Barlow Condensed',size:11},stepSize:1}}},
+      plugins:{legend:{labels:{color:'#bbbddd',font:{family:'Barlow Condensed',size:12}}},tooltip:{...TS,callbacks:{label:c=>'  '+c.label+': '+c.raw+' carros'}}}}});
+}
+
+function renderJulCharts(pays,ings,AC2){
+  // Chart 1: pagos por asesor (bar)
+  const ctx1=document.getElementById('c-jul-cobrado').getContext('2d');
+  if(cJulPag)cJulPag.destroy();
+  const advs=['MARCO','DANIEL'];
+  cJulPag=new Chart(ctx1,{type:'bar',plugins:[barLabels],
+    data:{labels:advs,datasets:[
+      {label:'Cobrado (AR)',data:advs.map(a=>Math.round(pays.filter(r=>r.asesor===a).reduce((s,r)=>s+r.pagado_reporte,0))),backgroundColor:advs.map(a=>AC2[a]+'bb'),borderColor:advs.map(a=>AC2[a]),borderWidth:1,borderRadius:6},
+      {label:'Util. Proyectada',data:advs.map(a=>{const pag=pays.filter(r=>r.asesor===a).reduce((s,r)=>s+r.pagado_reporte,0);return Math.round(pag*(JD.avg_util[a]||0.62));}),backgroundColor:['rgba(245,158,11,.4)','rgba(245,158,11,.4)'],borderColor:['#f59e0b','#f59e0b'],borderWidth:1,borderRadius:6},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:28}},
+      scales:{x:{grid:{display:false},ticks:{color:'#5a5e8a',font:{family:'Barlow Condensed',size:14}}},
+               y:{border:{color:'transparent'},grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#5a5e8a',font:{family:'Barlow Condensed',size:11},callback:v=>'Q '+(v/1000).toFixed(0)+'k'}}},
+      plugins:{legend:{labels:{color:'#bbbddd',font:{family:'Barlow Condensed',size:12}}},tooltip:{...TS,callbacks:{label:c=>'  '+c.dataset.label+': Q'+c.raw.toLocaleString('es-GT',{maximumFractionDigits:0})}}}}});
+
+  // Chart 2: carros ingresados donut
+  const ctx2=document.getElementById('c-jul-ing').getContext('2d');
+  if(cJulIng)cJulIng.destroy();
+  const ingCounts=advs.map(a=>ings.filter(r=>r.asesor===a).length);
+  const otro=ings.filter(r=>!['MARCO','DANIEL'].includes(r.asesor)).length;
+  cJulIng=new Chart(ctx2,{type:'doughnut',
+    data:{labels:[...advs,'Otro'],datasets:[{data:[...ingCounts,otro],backgroundColor:[AC2.MARCO+'cc',AC2.DANIEL+'cc','rgba(100,100,100,.5)'],borderColor:[AC2.MARCO,AC2.DANIEL,'#444'],borderWidth:2,hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{
+      legend:{position:'bottom',labels:{color:'#bbbddd',font:{family:'Barlow Condensed',size:13},padding:12}},
+      tooltip:{...TS,callbacks:{label:c=>'  '+c.label+': '+c.raw+' carros'}}
+    }}});
+
+  // Chart 3: origen de pagos
+  const ctx3=document.getElementById('c-jul-origen').getContext('2d');
+  if(cJulPie)cJulPie.destroy();
+  const origenData=advs.map(a=>({
+    a,
+    junio:pays.filter(r=>r.asesor===a&&r.es_jun_ingreso).length,
+    prev:pays.filter(r=>r.asesor===a&&!r.es_jun_ingreso).length,
+  }));
+  cJulPie=new Chart(ctx3,{type:'bar',
+    data:{labels:advs,datasets:[
+      {label:'Ingresaron en Junio',data:origenData.map(d=>d.junio),backgroundColor:'rgba(0,229,160,.6)',borderColor:'#00e5a0',borderWidth:1,borderRadius:4},
+      {label:'Meses anteriores',data:origenData.map(d=>d.prev),backgroundColor:'rgba(245,158,11,.5)',borderColor:'#f59e0b',borderWidth:1,borderRadius:4},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:16}},
+      scales:{x:{grid:{display:false},ticks:{color:'#5a5e8a',font:{family:'Barlow Condensed',size:14}}},
+               y:{border:{color:'transparent'},grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#5a5e8a',font:{family:'Barlow Condensed',size:11},stepSize:1}}},
       plugins:{legend:{labels:{color:'#bbbddd',font:{family:'Barlow Condensed',size:12}}},tooltip:{...TS}}}});
 }
 
@@ -1001,7 +1049,7 @@ function junTblFilter(){
   const all=[...JD.payments];
   const filtered=all.filter(r=>{
     if(adv&&r.asesor!==adv)return false;
-    if(src==='junio'&&!r.es_jun_ingreso)return false;
+    if(src==='julio'&&!r.es_jun_ingreso)return false;
     if(src==='prev'&&r.es_jun_ingreso)return false;
     if(txt&&!String(r.orden).includes(txt)&&!(r.cliente||'').toLowerCase().includes(txt)&&!(r.placa||'').toLowerCase().includes(txt))return false;
     return true;
@@ -1152,7 +1200,7 @@ function julTblFilter(){
   const all=[...JD.payments];
   const filtered=all.filter(r=>{
     if(adv&&r.asesor!==adv)return false;
-    if(src==='junio'&&!r.es_jun_ingreso)return false;
+    if(src==='julio'&&!r.es_jun_ingreso)return false;
     if(src==='prev'&&r.es_jun_ingreso)return false;
     if(txt&&!String(r.orden).includes(txt)&&!(r.cliente||'').toLowerCase().includes(txt)&&!(r.placa||'').toLowerCase().includes(txt))return false;
     return true;
