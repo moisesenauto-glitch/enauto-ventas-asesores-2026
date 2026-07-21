@@ -563,7 +563,7 @@ const SHEET_VENTAS  = '1_chDpO-n0rXy_rpE79_00urPz63fv80CiUz7aUPEn7Y'; // Cuadro 
 
 // Google Apps Script web app URL for writing data (replace with your deployed URL)
 // To create: Tools > Script Editor > Deploy as Web App > Anyone can access
-const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyarW6FVlh5gizJ1BEktjSiS6inNf5giwscHLYW7FJt9uc0NMptRcE5GycsiMaef1xB/exec';
 
 const ESC = [
   {lo:0,      hi:80001,  rate:0.000, label:'E0', color:'rgba(255,255,255,.2)', pct:0},
@@ -926,7 +926,7 @@ function submitIncentive(){
   localStorage.setItem(storageKey('incentivos'), JSON.stringify(stored));
 
   // Try to send to Apps Script (if configured)
-  if(APPS_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE'){
+  if(APPS_SCRIPT_URL !== 'https://script.google.com/macros/s/AKfycbyarW6FVlh5gizJ1BEktjSiS6inNf5giwscHLYW7FJt9uc0NMptRcE5GycsiMaef1xB/exec'){
     fetch(APPS_SCRIPT_URL, {method:'POST', body:JSON.stringify(registro)})
       .then(()=>console.log('Sent to Google Sheets'))
       .catch(e=>console.log('Apps Script not available:', e));
