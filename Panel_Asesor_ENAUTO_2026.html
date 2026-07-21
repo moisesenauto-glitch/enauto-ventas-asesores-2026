@@ -43,9 +43,9 @@ body{font-family:'Inter',sans-serif;background:linear-gradient(160deg,#060F1E 0%
   width:100%;margin-top:20px;padding:14px;border:none;border-radius:12px;
   background:var(--blue);color:#fff;font-family:'Inter',sans-serif;
   font-size:.95rem;font-weight:700;cursor:pointer;transition:.2s;
-  opacity:.4;pointer-events:none;
+  opacity:.4;
 }
-.enter-btn.ready{opacity:1;pointer-events:all}
+.enter-btn.ready{opacity:1;pointer-events:auto}
 .enter-btn.ready:hover{background:var(--blue-mid)}
 
 /* ─── APP ────────────────────────────────── */
@@ -263,7 +263,7 @@ tr:hover td{background:rgba(255,255,255,.03)}
         <div class="btn-fullname">Rony Daniel López</div>
       </button>
     </div>
-    <button class="enter-btn" id="enterBtn" onclick="enterApp()">Ingresar</button>
+    <button class="enter-btn" id="enterBtn" onclick="enterApp()" disabled>Ingresar</button>
   </div>
 </div>
 
@@ -604,16 +604,18 @@ function storageKey(key){return `enauto_${asesorActual}_${key}`}
 // ── LOGIN ──────────────────────────────────────────────────────
 function selectAsesor(name){
   asesorActual = name;
-  document.querySelectorAll('.asesor-btn').forEach(b=>b.classList.remove('sel'));
-  document.querySelector(`.btn-${name.toLowerCase()}`).classList.add('sel');
-  document.getElementById('enterBtn').classList.add('ready');
+  document.querySelectorAll('.asesor-btn').forEach(function(b){ b.classList.remove('sel'); });
+  document.querySelector('.btn-' + name.toLowerCase()).classList.add('sel');
+  var btn = document.getElementById('enterBtn');
+  btn.removeAttribute('disabled');
+  btn.classList.add('ready');
 }
 function enterApp(){
-  if(!asesorActual) return;
+  if(!asesorActual){ alert('Selecciona Marco o Daniel primero'); return; }
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('app').style.display='flex';
   document.getElementById('topAsesor').textContent = asesorActual;
-  document.getElementById('topAsesor').className = `topbar-asesor ta-${asesorActual.toLowerCase()}`;
+  document.getElementById('topAsesor').className = 'topbar-asesor ta-' + asesorActual.toLowerCase();
   document.getElementById('topMes').textContent = currentPeriod;
   initApp();
 }
@@ -621,7 +623,9 @@ function logout(){
   document.getElementById('loginScreen').style.display='flex';
   document.getElementById('app').style.display='none';
   document.querySelectorAll('.asesor-btn').forEach(b=>b.classList.remove('sel'));
-  document.getElementById('enterBtn').classList.remove('ready');
+  var btn = document.getElementById('enterBtn');
+  btn.setAttribute('disabled', '');
+  btn.classList.remove('ready');
   asesorActual = null; currentOrderData = null;
 }
 
