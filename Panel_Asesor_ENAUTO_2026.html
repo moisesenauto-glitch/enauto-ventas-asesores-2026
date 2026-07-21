@@ -7,263 +7,210 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --navy:#0B1F3A; --navy2:#0D2B4E; --blue:#1565C0; --blue-mid:#1E88E5; --blue-lt:#E3F2FD;
-  --accent:#00BCD4; --gold:#F9A825; --green:#00C853; --green-dk:#2E7D32;
-  --red:#EF5350; --orange:#FF9800;
-  --daniel:#FF6B8A; --marco:#4FC3F7;
-  --card:rgba(255,255,255,.06); --border:rgba(255,255,255,.1);
-  --text:rgba(255,255,255,.92); --text2:rgba(255,255,255,.5);
-  --input-bg:rgba(255,255,255,.08);
+  --navy:#0B1F3A;--blue:#1565C0;--blue2:#1E88E5;--accent:#00BCD4;
+  --gold:#F9A825;--green:#00C853;--red:#EF5350;--orange:#FF9800;
+  --daniel:#FF6B8A;--marco:#4FC3F7;
+  --card:rgba(255,255,255,.07);--border:rgba(255,255,255,.1);
+  --text:rgba(255,255,255,.92);--dim:rgba(255,255,255,.5);
+  --inbg:rgba(255,255,255,.08);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:'Inter',sans-serif;background:linear-gradient(160deg,#060F1E 0%,#0B1F3A 60%,#0D2B4E 100%);
+body{font-family:'Inter',sans-serif;background:linear-gradient(155deg,#060F1E 0%,#0B1F3A 55%,#0D2B4E 100%);
      color:var(--text);min-height:100vh;overflow-x:hidden}
 
-/* ─── LOGIN ─────────────────────────────── */
-#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
-.login-box{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:20px;
-           padding:40px;width:100%;max-width:420px;text-align:center}
-.login-logo{font-size:2rem;font-weight:900;color:var(--accent);margin-bottom:6px;letter-spacing:-1px}
-.login-sub{color:var(--text2);font-size:.85rem;margin-bottom:32px}
-.login-title{font-size:1rem;font-weight:600;margin-bottom:16px;color:var(--text2);text-transform:uppercase;letter-spacing:1px}
-.asesor-btns{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.asesor-btn{
-  padding:18px 12px;border-radius:14px;border:2px solid transparent;
-  cursor:pointer;font-family:'Inter',sans-serif;font-size:.95rem;font-weight:700;
-  transition:all .2s;background:rgba(255,255,255,.06);color:var(--text);
-}
-.asesor-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
-.btn-marco{border-color:rgba(79,195,247,.4)}
-.btn-marco:hover,.btn-marco.sel{background:rgba(79,195,247,.15);border-color:var(--marco);color:var(--marco)}
-.btn-daniel{border-color:rgba(255,107,138,.4)}
-.btn-daniel:hover,.btn-daniel.sel{background:rgba(255,107,138,.15);border-color:var(--daniel);color:var(--daniel)}
-.btn-fullname{font-size:.72rem;font-weight:400;color:var(--text2);margin-top:3px}
-.enter-btn{
-  width:100%;margin-top:20px;padding:14px;border:none;border-radius:12px;
-  background:var(--blue);color:#fff;font-family:'Inter',sans-serif;
-  font-size:.95rem;font-weight:700;cursor:pointer;transition:.2s;
-  opacity:.4;
-}
-.enter-btn.ready{opacity:1;pointer-events:auto}
-.enter-btn.ready:hover{background:var(--blue-mid)}
+/* LOGIN */
+#login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.lbox{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:20px;
+       padding:40px 32px;width:100%;max-width:400px;text-align:center}
+.lbox h1{font-size:2rem;font-weight:900;color:var(--accent);margin-bottom:4px}
+.lbox .sub{color:var(--dim);font-size:.85rem;margin-bottom:30px}
+.lbox .who{font-size:.8rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+            color:var(--dim);margin-bottom:14px}
+.abts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:4px}
+.abt{padding:18px 12px;border-radius:14px;border:2px solid rgba(255,255,255,.15);
+      background:rgba(255,255,255,.05);color:rgba(255,255,255,.6);
+      cursor:pointer;font-family:'Inter',sans-serif;font-size:.95rem;font-weight:700;
+      transition:all .2s;display:block;width:100%}
+.abt .fn{font-size:.72rem;font-weight:400;color:rgba(255,255,255,.4);margin-top:3px}
+.abt-marco:hover,.abt-marco.sel{background:rgba(79,195,247,.15);border-color:var(--marco);color:var(--marco)}
+.abt-daniel:hover,.abt-daniel.sel{background:rgba(255,107,138,.15);border-color:var(--daniel);color:var(--daniel)}
 
-/* ─── APP ────────────────────────────────── */
+/* APP */
 #app{display:none;flex-direction:column;min-height:100vh}
+.topbar{background:rgba(11,31,58,.96);border-bottom:1px solid var(--border);
+         display:flex;align-items:center;gap:10px;padding:10px 16px;
+         position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+.topbar-logo{font-size:1.05rem;font-weight:900;color:var(--accent)}
+.tbadge{padding:3px 12px;border-radius:20px;font-size:.78rem;font-weight:700}
+.tbadge-marco{background:rgba(79,195,247,.15);color:var(--marco);border:1px solid rgba(79,195,247,.3)}
+.tbadge-daniel{background:rgba(255,107,138,.15);color:var(--daniel);border:1px solid rgba(255,107,138,.3)}
+.tbmes{color:var(--dim);font-size:.78rem;margin-left:auto}
+.tbout{background:none;border:1px solid var(--border);color:var(--dim);
+        padding:4px 12px;border-radius:8px;font-family:'Inter',sans-serif;
+        font-size:.75rem;cursor:pointer;transition:.2s}
+.tbout:hover{border-color:rgba(255,255,255,.35);color:#fff}
 
-/* ─── TOP BAR ───────────────────────────── */
-.topbar{
-  background:rgba(11,31,58,.95);border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:12px;padding:10px 16px;
-  position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);
-}
-.topbar-logo{font-size:1.1rem;font-weight:900;color:var(--accent);letter-spacing:-.5px}
-.topbar-asesor{
-  padding:4px 14px;border-radius:20px;font-size:.8rem;font-weight:700;margin-left:2px;
-}
-.ta-marco{background:rgba(79,195,247,.15);color:var(--marco);border:1px solid rgba(79,195,247,.3)}
-.ta-daniel{background:rgba(255,107,138,.15);color:var(--daniel);border:1px solid rgba(255,107,138,.3)}
-.topbar-mes{color:var(--text2);font-size:.8rem;margin-left:auto}
-.topbar-logout{
-  background:none;border:1px solid var(--border);color:var(--text2);
-  padding:5px 12px;border-radius:8px;font-family:'Inter',sans-serif;
-  font-size:.78rem;cursor:pointer;transition:.2s;
-}
-.topbar-logout:hover{border-color:rgba(255,255,255,.3);color:#fff}
+/* TABS */
+.tabs{display:flex;overflow-x:auto;background:rgba(0,0,0,.2);
+       border-bottom:1px solid var(--border);scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:12px 18px;border:none;background:none;color:var(--dim);
+      font-family:'Inter',sans-serif;font-size:.82rem;font-weight:500;
+      cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:.2s}
+.tab:hover{color:#fff}
+.tab.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
 
-/* ─── TABS ───────────────────────────────── */
-.tab-bar{
-  display:flex;overflow-x:auto;background:rgba(0,0,0,.2);
-  border-bottom:1px solid var(--border);gap:0;padding:0 8px;
-  scrollbar-width:none;
-}
-.tab-bar::-webkit-scrollbar{display:none}
-.tab-btn2{
-  padding:12px 16px;border:none;background:none;color:var(--text2);
-  font-family:'Inter',sans-serif;font-size:.82rem;font-weight:500;
-  cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;
-  transition:.2s;
-}
-.tab-btn2:hover{color:#fff}
-.tab-btn2.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
-
-/* ─── PANELS ─────────────────────────────── */
+/* PANELS */
 .panels{flex:1;overflow-y:auto}
-.panel2{display:none;padding:16px;max-width:960px;margin:0 auto;padding-bottom:40px;
-        animation:fadeIn .3s ease}
-.panel2.active{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.pnl{display:none;padding:16px;max-width:960px;margin:0 auto;padding-bottom:48px}
+.pnl.on{display:block;animation:fi .3s ease}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
-/* ─── CARD ───────────────────────────────── */
+/* CARDS */
 .card{background:var(--card);border:1px solid var(--border);border-radius:14px;
-      padding:20px;margin-bottom:16px}
-.card-hdr{font-size:.85rem;font-weight:700;margin-bottom:14px;
-          display:flex;align-items:center;gap:8px;color:#fff;
-          border-bottom:1px solid var(--border);padding-bottom:10px}
-.card-hdr span{font-size:.78rem;font-weight:400;color:var(--text2);margin-left:auto}
+       padding:20px;margin-bottom:16px}
+.chdr{font-size:.87rem;font-weight:700;color:#fff;margin-bottom:14px;
+        display:flex;align-items:center;gap:8px;
+        border-bottom:1px solid var(--border);padding-bottom:10px}
+.chdr .csub{font-size:.75rem;font-weight:400;color:var(--dim);margin-left:auto}
 
-/* ─── KPI ROW ────────────────────────────── */
-.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
-.kpi2{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:12px;
-      padding:14px;text-align:center}
-.kpi2 .v{font-size:1.5rem;font-weight:900;line-height:1}
-.kpi2 .l{font-size:.68rem;color:var(--text2);margin-top:4px;text-transform:uppercase;letter-spacing:.4px}
+/* KPIS */
+.krow{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px;margin-bottom:16px}
+.kpi{background:rgba(255,255,255,.05);border:1px solid var(--border);
+      border-radius:12px;padding:14px;text-align:center}
+.kpi .v{font-size:1.45rem;font-weight:900}
+.kpi .l{font-size:.68rem;color:var(--dim);margin-top:4px;text-transform:uppercase;letter-spacing:.4px}
 
-/* Progress bar */
-.prog-wrap{margin:12px 0}
-.prog-labels{display:flex;justify-content:space-between;font-size:.75rem;color:var(--text2);margin-bottom:6px}
-.prog-bar{height:8px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden}
+/* PROGRESS */
+.prog-bar{height:7px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden;margin-top:6px}
 .prog-fill{height:100%;border-radius:4px;transition:width .6s ease}
 
-/* Escalon badge */
-.esc-badge2{display:inline-flex;align-items:center;gap:8px;
-            padding:6px 14px;border-radius:20px;font-size:.82rem;font-weight:700;margin-bottom:4px}
+/* STATUS CHIPS */
+.chip{display:inline-block;padding:3px 11px;border-radius:12px;font-size:.74rem;font-weight:700}
+.c-new{background:rgba(0,200,83,.2);color:#69F0AE}
+.c-rec{background:rgba(30,136,229,.2);color:#90CAF9}
+.c-reg{background:rgba(239,83,80,.15);color:#EF9A9A}
+.c-pen{background:rgba(249,168,37,.15);color:var(--gold)}
+.c-unk{background:rgba(255,255,255,.1);color:rgba(255,255,255,.45)}
 
-/* Incentive rule pill */
-.inc-rule-pill{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:8px 16px;border-radius:10px;font-size:.83rem;font-weight:600;
-}
+/* TRAMO CHIPS */
+.t1{background:rgba(79,195,247,.15);color:#4FC3F7}
+.t2{background:rgba(100,181,246,.2);color:#64B5F6}
+.t3{background:rgba(30,136,229,.25);color:#90CAF9}
+.t4{background:rgba(21,101,192,.4);color:#BBDEFB}
+.tna{background:rgba(255,255,255,.07);color:rgba(255,255,255,.35)}
+
+/* PILL */
+.irp{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:10px;font-size:.82rem;font-weight:600}
 .irp-50{background:rgba(249,168,37,.12);border:1px solid rgba(249,168,37,.3);color:var(--gold)}
 .irp-100{background:rgba(0,200,83,.12);border:1px solid rgba(0,200,83,.3);color:var(--green)}
 
-/* ─── FORM ───────────────────────────────── */
-.form-group{margin-bottom:14px}
-.form-label{font-size:.75rem;font-weight:600;color:var(--text2);text-transform:uppercase;
-            letter-spacing:.5px;margin-bottom:6px;display:block}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.form-input,.form-select,.form-textarea{
-  width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid var(--border);
-  background:var(--input-bg);color:var(--text);font-family:'Inter',sans-serif;font-size:.88rem;
-  outline:none;transition:.2s;
-}
-.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent);background:rgba(255,255,255,.1)}
-.form-input::placeholder{color:rgba(255,255,255,.25)}
-.form-select option{background:#0D2B4E;color:#fff}
-.form-textarea{resize:vertical;min-height:70px}
-.form-hint{font-size:.72rem;color:var(--text2);margin-top:4px}
+/* FORMS */
+.fg{margin-bottom:13px}
+.fl{font-size:.73rem;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.fi,.fs,.fta{width:100%;padding:10px 13px;border-radius:9px;border:1.5px solid var(--border);
+              background:var(--inbg);color:var(--text);font-family:'Inter',sans-serif;
+              font-size:.87rem;outline:none;transition:.2s}
+.fi:focus,.fs:focus,.fta:focus{border-color:var(--accent);background:rgba(255,255,255,.1)}
+.fi::placeholder{color:rgba(255,255,255,.22)}
+.fs option{background:#0D2B4E}
+.fta{resize:vertical;min-height:65px}
+.fhint{font-size:.71rem;color:var(--dim);margin-top:3px}
 
-/* Lookup result card */
-.lookup-result{
-  background:rgba(0,188,212,.08);border:1px solid rgba(0,188,212,.2);
-  border-radius:12px;padding:14px 16px;margin-top:12px;display:none;
-}
-.lr-row{display:flex;justify-content:space-between;font-size:.82rem;padding:4px 0;
+/* LOOKUP */
+.lkres{background:rgba(0,188,212,.07);border:1px solid rgba(0,188,212,.2);
+        border-radius:12px;padding:14px;margin-top:12px;display:none}
+.lkrow{display:flex;justify-content:space-between;font-size:.82rem;padding:4px 0;
         border-bottom:1px solid rgba(255,255,255,.06)}
-.lr-row:last-child{border-bottom:none}
-.lr-lbl{color:var(--text2)}
-.lr-val{font-weight:600}
-.status-chip{display:inline-block;padding:3px 12px;border-radius:12px;font-size:.75rem;font-weight:700}
-.sc-new{background:rgba(0,200,83,.2);color:#69F0AE}
-.sc-recovered{background:rgba(30,136,229,.2);color:#90CAF9}
-.sc-regular{background:rgba(239,83,80,.15);color:#EF9A9A}
-.sc-pending{background:rgba(249,168,37,.15);color:var(--gold)}
-.sc-unknown{background:rgba(255,255,255,.1);color:rgba(255,255,255,.5)}
+.lkrow:last-child{border-bottom:none}
+.lk-l{color:var(--dim)} .lk-v{font-weight:600}
 
-/* Tramo chip */
-.tramo-chip{display:inline-block;padding:4px 12px;border-radius:12px;font-size:.78rem;font-weight:700}
-.tc-t1{background:rgba(79,195,247,.15);color:#4FC3F7}
-.tc-t2{background:rgba(100,181,246,.2);color:#64B5F6}
-.tc-t3{background:rgba(30,136,229,.25);color:#90CAF9}
-.tc-t4{background:rgba(21,101,192,.35);color:#BBDEFB}
-.tc-na{background:rgba(255,255,255,.08);color:rgba(255,255,255,.4)}
+/* BUTTONS */
+.btn-submit{width:100%;padding:12px;border:none;border-radius:10px;background:var(--blue);
+             color:#fff;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:700;
+             cursor:pointer;transition:.2s;margin-top:4px}
+.btn-submit:hover{background:var(--blue2)}
+.btn-submit:disabled{opacity:.4;cursor:not-allowed}
+.btn-pend{background:rgba(249,168,37,.25);border:1px solid var(--gold);color:var(--gold)}
+.btn-pend:hover{background:rgba(249,168,37,.4)}
+.btn-sm{padding:7px 14px;border:1px solid var(--border);border-radius:8px;background:none;
+          color:var(--dim);font-family:'Inter',sans-serif;font-size:.76rem;cursor:pointer;transition:.2s}
+.btn-sm:hover{border-color:rgba(255,255,255,.3);color:#fff}
 
-/* Submit button */
-.submit-btn{
-  width:100%;padding:13px;border:none;border-radius:10px;
-  background:var(--blue);color:#fff;font-family:'Inter',sans-serif;
-  font-size:.9rem;font-weight:700;cursor:pointer;transition:.2s;margin-top:4px;
-}
-.submit-btn:hover{background:var(--blue-mid)}
-.submit-btn:disabled{opacity:.4;cursor:not-allowed}
-.submit-btn-pending{background:rgba(249,168,37,.3);border:1px solid var(--gold);color:var(--gold)}
-.submit-btn-pending:hover{background:rgba(249,168,37,.45)}
-
-/* ─── TABLE ──────────────────────────────── */
-.tbl-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:.82rem}
+/* TABLE */
+.twrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.81rem}
 thead tr{background:rgba(255,255,255,.06)}
-th{padding:9px 12px;text-align:left;font-weight:600;color:var(--text2);
-   text-transform:uppercase;font-size:.72rem;letter-spacing:.5px;white-space:nowrap;
-   border-bottom:1px solid var(--border)}
-td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.05);white-space:nowrap}
+th{padding:9px 12px;text-align:left;font-weight:600;color:var(--dim);
+    text-transform:uppercase;font-size:.7rem;letter-spacing:.4px;white-space:nowrap;
+    border-bottom:1px solid var(--border)}
+td{padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.05);white-space:nowrap}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:rgba(255,255,255,.03)}
 
-/* ─── BONO CALC ──────────────────────────── */
-.calc-mini{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
-.calc-num-input{
-  width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:10px;
-  background:rgba(255,255,255,.08);color:#fff;font-family:'Inter',sans-serif;
-  font-size:1.3rem;font-weight:800;outline:none;transition:.2s;
-}
-.calc-num-input:focus{border-color:var(--accent)}
-.result-box{background:linear-gradient(135deg,rgba(13,27,56,.9),rgba(21,65,136,.5));
-            border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:18px}
-.rb-row{display:flex;justify-content:space-between;font-size:.83rem;color:rgba(255,255,255,.6);padding:3px 0}
-.rb-row strong{color:#fff}
-.rb-total{font-size:2rem;font-weight:900;color:var(--gold);margin-top:8px}
+/* ALERTS */
+.al{padding:10px 13px;border-radius:9px;font-size:.81rem;margin-bottom:12px;
+     display:flex;gap:8px;align-items:flex-start;line-height:1.5}
+.al-info{background:rgba(0,188,212,.1);border:1px solid rgba(0,188,212,.25);color:rgba(255,255,255,.8)}
+.al-warn{background:rgba(249,168,37,.1);border:1px solid rgba(249,168,37,.25);color:rgba(255,255,255,.8)}
+.al-ok{background:rgba(0,200,83,.1);border:1px solid rgba(0,200,83,.25);color:rgba(255,255,255,.8)}
+.al-err{background:rgba(239,83,80,.1);border:1px solid rgba(239,83,80,.25);color:rgba(255,255,255,.8)}
 
-/* ─── ALERT ──────────────────────────────── */
-.alert{padding:10px 14px;border-radius:9px;font-size:.82rem;margin-bottom:12px;
-       display:flex;gap:8px;align-items:flex-start;line-height:1.5}
-.alert-info{background:rgba(0,188,212,.1);border:1px solid rgba(0,188,212,.25);color:rgba(255,255,255,.8)}
-.alert-warn{background:rgba(249,168,37,.1);border:1px solid rgba(249,168,37,.25);color:rgba(255,255,255,.8)}
-.alert-success{background:rgba(0,200,83,.1);border:1px solid rgba(0,200,83,.25);color:rgba(255,255,255,.8)}
-.alert-error{background:rgba(239,83,80,.1);border:1px solid rgba(239,83,80,.25);color:rgba(255,255,255,.8)}
+/* CALC */
+.calc-wrap{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+.calc-num{width:100%;padding:11px 13px;border:2px solid var(--border);border-radius:9px;
+           background:rgba(255,255,255,.08);color:#fff;font-family:'Inter',sans-serif;
+           font-size:1.25rem;font-weight:800;outline:none;transition:.2s}
+.calc-num:focus{border-color:var(--accent)}
+.rbox{background:linear-gradient(135deg,rgba(13,27,56,.9),rgba(21,65,136,.5));
+       border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:18px}
+.rrow{display:flex;justify-content:space-between;font-size:.82rem;color:rgba(255,255,255,.6);padding:3px 0}
+.rrow strong{color:#fff}
+.rtotal{font-size:2rem;font-weight:900;color:var(--gold);margin-top:8px}
 
-/* ─── MONTH HISTORY ──────────────────────── */
-.month-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
-.month-card{background:rgba(255,255,255,.04);border:1px solid var(--border);
-            border-radius:12px;padding:16px;border-left:4px solid}
+/* MONTH CARDS */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.mc{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;
+     padding:15px;border-left:4px solid}
 .mc-ok{border-left-color:var(--green)}
 .mc-warn{border-left-color:var(--gold)}
 .mc-bad{border-left-color:var(--red)}
-.mc-neutral{border-left-color:rgba(255,255,255,.2)}
-.mc-name{font-size:.78rem;font-weight:700;color:var(--text2);margin-bottom:8px;text-transform:uppercase}
-.mc-util{font-size:1.1rem;font-weight:800}
-.mc-detail{font-size:.75rem;color:var(--text2);margin-top:4px}
 
-/* ─── LOADING ────────────────────────────── */
-.loading{text-align:center;padding:32px;color:var(--text2);font-size:.85rem}
-.spinner{display:inline-block;width:24px;height:24px;border:2px solid rgba(255,255,255,.1);
-         border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;
-         margin-right:8px;vertical-align:middle}
+/* LOADING */
+.ld{text-align:center;padding:28px;color:var(--dim);font-size:.83rem}
+.spin{display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,.1);
+       border-top-color:var(--accent);border-radius:50%;
+       animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ─── RESPONSIVE ─────────────────────────── */
+/* RESPONSIVE */
 @media(max-width:600px){
-  .form-row{grid-template-columns:1fr}
-  .calc-mini{grid-template-columns:1fr}
-  .kpi-row{grid-template-columns:1fr 1fr}
-  .month-grid{grid-template-columns:1fr 1fr}
-  .panel2{padding:12px;padding-bottom:32px}
-  .topbar{padding:8px 12px}
+  .frow,.calc-wrap{grid-template-columns:1fr}
+  .krow{grid-template-columns:1fr 1fr}
+  .pnl{padding:12px;padding-bottom:36px}
 }
 @media(max-width:380px){
-  .kpi-row,.month-grid{grid-template-columns:1fr}
+  .krow,.mgrid{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
 
 <!-- ══ LOGIN ══════════════════════════════════════════════════ -->
-<div id="loginScreen">
-  <div class="login-box">
-    <div class="login-logo">ENAUTO</div>
-    <div class="login-sub">Panel de Asesor · 2026</div>
-    <div class="login-title">¿Quién eres?</div>
-    <div class="asesor-btns">
-      <button class="asesor-btn btn-marco" onclick="selectAsesor('MARCO')">
-        <div>MARCO</div>
-        <div class="btn-fullname">Marco Antonio Orozco</div>
+<div id="login">
+  <div class="lbox">
+    <h1>ENAUTO</h1>
+    <div class="sub">Panel de Asesor · 2026</div>
+    <div class="who">¿Quién eres?</div>
+    <div class="abts">
+      <button class="abt abt-marco" id="btn-MARCO" onclick="doLogin('MARCO')">
+        MARCO<div class="fn">Marco Antonio Orozco</div>
       </button>
-      <button class="asesor-btn btn-daniel" onclick="selectAsesor('DANIEL')">
-        <div>DANIEL</div>
-        <div class="btn-fullname">Rony Daniel López</div>
+      <button class="abt abt-daniel" id="btn-DANIEL" onclick="doLogin('DANIEL')">
+        DANIEL<div class="fn">Rony Daniel López</div>
       </button>
     </div>
-    <button class="enter-btn" id="enterBtn" onclick="enterApp()" disabled>Ingresar</button>
   </div>
 </div>
 
@@ -271,282 +218,224 @@ tr:hover td{background:rgba(255,255,255,.03)}
 <div id="app">
   <div class="topbar">
     <div class="topbar-logo">ENAUTO</div>
-    <div class="topbar-asesor" id="topAsesor">—</div>
-    <div class="topbar-mes" id="topMes"></div>
-    <button class="topbar-logout" onclick="logout()">Salir</button>
+    <span class="tbadge" id="tbadge">—</span>
+    <span class="tbmes" id="tbmes"></span>
+    <button class="tbout" onclick="doLogout()">Salir</button>
   </div>
 
-  <div class="tab-bar">
-    <button class="tab-btn2 active" onclick="showPanel('pDash',this)">📊 Mi Mes</button>
-    <button class="tab-btn2" onclick="showPanel('pInc',this)">⭐ Registrar Incentivo</button>
-    <button class="tab-btn2" onclick="showPanel('pMisInc',this)">📋 Mis Incentivos</button>
-    <button class="tab-btn2" onclick="showPanel('pCalc',this)">🧮 Calculadora</button>
-    <button class="tab-btn2" onclick="showPanel('pHist',this)">📅 Historial</button>
+  <div class="tabs">
+    <button class="tab on"  onclick="showP('pMes',this)">📊 Mi Mes</button>
+    <button class="tab"     onclick="showP('pReg',this)">⭐ Registrar</button>
+    <button class="tab"     onclick="showP('pMis',this)">📋 Mis Incentivos</button>
+    <button class="tab"     onclick="showP('pCalc',this)">🧮 Calculadora</button>
+    <button class="tab"     onclick="showP('pHist',this)">📅 Historial</button>
   </div>
 
   <div class="panels">
 
-    <!-- ── PANEL: MI MES ─────────────────────────────────── -->
-    <div id="pDash" class="panel2 active">
-      <div class="kpi-row" id="dashKpis">
-        <div class="kpi2"><div class="v" id="kUtil" style="color:var(--accent)">—</div><div class="l">Utilidad del mes</div></div>
-        <div class="kpi2"><div class="v" id="kPct" style="color:var(--gold)">—</div><div class="l">% de meta Q115k</div></div>
-        <div class="kpi2"><div class="v" id="kBono" style="color:var(--green)">—</div><div class="l">Bono generado</div></div>
-        <div class="kpi2"><div class="v" id="kTotal" style="color:#fff">—</div><div class="l">Total a recibir</div></div>
+    <!-- ── MI MES ─────────────────────────────────────────── -->
+    <div id="pMes" class="pnl on">
+      <div class="krow">
+        <div class="kpi"><div class="v" id="kUtil" style="color:var(--accent)">—</div><div class="l">Utilidad del mes</div></div>
+        <div class="kpi"><div class="v" id="kPct"  style="color:var(--gold)">—</div><div class="l">% de meta</div></div>
+        <div class="kpi"><div class="v" id="kBono" style="color:var(--green)">—</div><div class="l">Bono generado</div></div>
+        <div class="kpi"><div class="v" id="kTot"  style="color:#fff">—</div><div class="l">Total comisión</div></div>
       </div>
-
       <div class="card">
-        <div class="card-hdr">📈 Progreso hacia la meta <span id="dashMesLabel">—</span></div>
-        <div id="dashEsc" style="margin-bottom:10px"></div>
-        <div class="prog-wrap">
-          <div class="prog-labels"><span>Q0</span><span id="progMeta">Meta Q115,000</span></div>
-          <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%;background:var(--blue-mid)"></div></div>
+        <div class="chdr">📈 Progreso hacia meta Q115,000 <span class="csub" id="dashMes">—</span></div>
+        <div id="dashEsc"></div>
+        <div style="display:flex;justify-content:space-between;font-size:.73rem;color:var(--dim);margin:8px 0 4px">
+          <span>Q0</span><span>Meta Q115,000</span>
         </div>
-        <div id="dashIncRule" style="margin-top:14px"></div>
+        <div class="prog-bar"><div class="prog-fill" id="pFill" style="width:0%;background:var(--blue2)"></div></div>
+        <div id="dashRule" style="margin-top:12px"></div>
       </div>
-
       <div class="card">
-        <div class="card-hdr">💰 Detalle de comisión</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:14px">
-            <div style="font-size:.72rem;color:var(--text2);margin-bottom:4px">SUELDO BASE</div>
-            <div style="font-size:1.2rem;font-weight:800">Q7,000.00</div>
+        <div class="chdr">💰 Detalle</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div style="background:rgba(255,255,255,.04);border-radius:9px;padding:13px">
+            <div style="font-size:.7rem;color:var(--dim);margin-bottom:3px">SUELDO BASE</div>
+            <div style="font-size:1.1rem;font-weight:800">Q7,000.00</div>
           </div>
-          <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:14px">
-            <div style="font-size:.72rem;color:var(--text2);margin-bottom:4px">BONO UTILIDAD</div>
-            <div style="font-size:1.2rem;font-weight:800;color:var(--accent)" id="dashBonoDetail">Q0.00</div>
+          <div style="background:rgba(255,255,255,.04);border-radius:9px;padding:13px">
+            <div style="font-size:.7rem;color:var(--dim);margin-bottom:3px">BONO UTILIDAD</div>
+            <div style="font-size:1.1rem;font-weight:800;color:var(--accent)" id="dBono">Q0.00</div>
           </div>
         </div>
-        <div style="margin-top:10px;background:rgba(0,188,212,.08);border:1px solid rgba(0,188,212,.2);border-radius:10px;padding:12px;display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:.82rem;color:var(--text2)">TOTAL COMISIÓN</span>
-          <span style="font-size:1.2rem;font-weight:900;color:var(--accent)" id="dashTotalComision">Q7,000.00</span>
+        <div style="background:rgba(0,200,83,.07);border:1px solid rgba(0,200,83,.2);border-radius:9px;padding:11px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:.8rem;color:var(--dim)">TOTAL COMISIÓN</span>
+          <span style="font-size:1.1rem;font-weight:900;color:var(--accent)" id="dComision">Q7,000.00</span>
         </div>
-        <div id="dashIncTotal" style="margin-top:8px;padding:10px 12px;border-radius:10px;background:rgba(0,200,83,.08);border:1px solid rgba(0,200,83,.2);display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:.82rem;color:var(--text2)">INCENTIVOS EST. (pendiente aprobación)</span>
-          <span style="font-size:1rem;font-weight:700;color:var(--green)" id="dashIncAmt">Q0.00</span>
+        <div style="background:rgba(249,168,37,.07);border:1px solid rgba(249,168,37,.2);border-radius:9px;padding:11px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:.8rem;color:var(--dim)">INCENTIVOS REGISTRADOS</span>
+          <span style="font-size:1rem;font-weight:700;color:var(--gold)" id="dInc">Q0.00</span>
         </div>
-        <div style="margin-top:10px;background:linear-gradient(135deg,rgba(13,71,161,.4),rgba(21,101,192,.3));
-                    border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:.9rem;font-weight:700">TOTAL ESTIMADO DEL MES</span>
-          <span style="font-size:1.4rem;font-weight:900;color:var(--gold)" id="dashGrandTotal">Q7,000.00</span>
+        <div style="background:linear-gradient(135deg,rgba(13,71,161,.4),rgba(21,101,192,.3));border-radius:9px;padding:13px;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:.88rem;font-weight:700">TOTAL ESTIMADO DEL MES</span>
+          <span style="font-size:1.35rem;font-weight:900;color:var(--gold)" id="dGrand">Q7,000.00</span>
         </div>
-      </div>
-
-      <div class="alert alert-info">
-        ℹ️ <div>Los datos de utilidad y bono se cargan del cuadro de ventas. Los incentivos registrados en este panel están pendientes de aprobación hasta que el administrador los confirme.</div>
       </div>
     </div>
 
-    <!-- ── PANEL: REGISTRAR INCENTIVO ───────────────────── -->
-    <div id="pInc" class="panel2">
-      <div class="alert alert-info">
-        ℹ️ <div><strong>¿Cómo funciona?</strong> Ingresa el número de orden y el sistema buscará los datos del cliente y verificará si aplica como nuevo o recuperado (más de 10 meses sin venir). Si hay duda, puedes enviarlo con comentario para aprobación.</div>
-      </div>
-
+    <!-- ── REGISTRAR INCENTIVO ─────────────────────────────── -->
+    <div id="pReg" class="pnl">
+      <div class="al al-info">ℹ️ <div>Ingresa el número de orden. El sistema busca los datos del cliente y verifica si aplica como nuevo o recuperado (más de 10 meses sin venir).</div></div>
       <div class="card">
-        <div class="card-hdr">🔍 Buscar orden</div>
-        <div class="form-group">
-          <label class="form-label">Número de Orden</label>
+        <div class="chdr">🔍 Buscar orden</div>
+        <div class="fg">
+          <label class="fl">Número de Orden</label>
           <div style="display:flex;gap:10px">
-            <input type="number" class="form-input" id="ordenInput" placeholder="Ej. 18590" style="font-size:1.1rem;font-weight:700">
-            <button onclick="lookupOrden()" style="padding:10px 20px;border:none;border-radius:10px;background:var(--blue);color:#fff;font-family:'Inter',sans-serif;font-weight:700;cursor:pointer;white-space:nowrap;transition:.2s" onmouseover="this.style.background='#1E88E5'" onmouseout="this.style.background='#1565C0'">Buscar</button>
+            <input class="fi" type="number" id="nOrden" placeholder="Ej. 18590"
+                   style="font-size:1.1rem;font-weight:700"
+                   onkeydown="if(event.key==='Enter')buscar()">
+            <button onclick="buscar()" style="padding:10px 18px;border:none;border-radius:9px;background:var(--blue);color:#fff;font-family:'Inter',sans-serif;font-weight:700;cursor:pointer;white-space:nowrap" onmouseover="this.style.background='#1E88E5'" onmouseout="this.style.background='var(--blue)'">Buscar</button>
           </div>
         </div>
-
-        <div id="lookupLoading" style="display:none" class="loading">
-          <span class="spinner"></span> Buscando orden...
-        </div>
-
-        <div id="lookupResult" class="lookup-result">
+        <div id="ldBuscar" class="ld" style="display:none"><span class="spin"></span>Buscando orden...</div>
+        <div id="lkErr" class="al al-err" style="display:none">⚠️ <span id="lkErrMsg"></span></div>
+        <div id="lkRes" class="lkres">
           <div style="margin-bottom:10px;display:flex;align-items:center;gap:10px">
-            <span style="font-weight:700;font-size:.9rem" id="lr_cliente">—</span>
-            <span class="status-chip" id="lr_status">—</span>
+            <span style="font-weight:700;font-size:.9rem" id="lk_cli">—</span>
+            <span class="chip" id="lk_st">—</span>
           </div>
-          <div class="lr-row"><span class="lr-lbl">Placa</span><span class="lr-val" id="lr_placa">—</span></div>
-          <div class="lr-row"><span class="lr-lbl">Vehículo</span><span class="lr-val" id="lr_vehiculo">—</span></div>
-          <div class="lr-row"><span class="lr-lbl">Fecha de pago</span><span class="lr-val" id="lr_fecha">—</span></div>
-          <div class="lr-row"><span class="lr-lbl">Total de orden</span><span class="lr-val" id="lr_total">—</span></div>
-          <div class="lr-row"><span class="lr-lbl">Asesor</span><span class="lr-val" id="lr_asesor">—</span></div>
-          <div class="lr-row"><span class="lr-lbl">Última visita anterior</span><span class="lr-val" id="lr_ultima">—</span></div>
-          <div class="lr-row"><span class="lr-lbl">Meses sin venir</span><span class="lr-val" id="lr_meses">—</span></div>
-          <div class="lr-row"><span class="lr-lbl">Tramo</span><span class="lr-val"><span class="tramo-chip" id="lr_tramo">—</span></span></div>
-          <div class="lr-row"><span class="lr-lbl">Incentivo calculado</span><span class="lr-val" id="lr_incentivo" style="font-size:1.1rem;font-weight:900;color:var(--gold)">—</span></div>
-        </div>
-
-        <div id="lookupError" style="display:none" class="alert alert-error" style="margin-top:12px">
-          ⚠️ <span id="lookupErrorMsg">No se encontró la orden.</span>
+          <div class="lkrow"><span class="lk-l">Placa</span><span class="lk-v" id="lk_pla">—</span></div>
+          <div class="lkrow"><span class="lk-l">Fecha pago</span><span class="lk-v" id="lk_fec">—</span></div>
+          <div class="lkrow"><span class="lk-l">Total orden</span><span class="lk-v" id="lk_tot">—</span></div>
+          <div class="lkrow"><span class="lk-l">Asesor</span><span class="lk-v" id="lk_ase">—</span></div>
+          <div class="lkrow"><span class="lk-l">Última visita anterior</span><span class="lk-v" id="lk_ult">—</span></div>
+          <div class="lkrow"><span class="lk-l">Meses sin venir</span><span class="lk-v" id="lk_mes">—</span></div>
+          <div class="lkrow"><span class="lk-l">Tramo</span><span class="lk-v"><span class="chip" id="lk_tra">—</span></span></div>
+          <div class="lkrow"><span class="lk-l">Incentivo calculado</span><span class="lk-v" id="lk_inc" style="font-size:1.05rem;font-weight:900;color:var(--gold)">—</span></div>
         </div>
       </div>
 
-      <div id="registerForm" style="display:none">
+      <div id="regForm" style="display:none">
         <div class="card">
-          <div class="card-hdr">📝 Registrar incentivo</div>
-
-          <div class="form-group">
-            <label class="form-label">Tipo de cliente</label>
-            <select class="form-select" id="tipoCliente" onchange="onTipoChange()">
+          <div class="chdr">📝 Registrar</div>
+          <div class="fg">
+            <label class="fl">Tipo de cliente</label>
+            <select class="fs" id="tipoC" onchange="onTipo()">
               <option value="">— Seleccionar —</option>
               <option value="NUEVO">✅ Cliente Nuevo</option>
-              <option value="RECUPERADO">🔄 Cliente Recuperado (&gt;10 meses)</option>
+              <option value="RECUPERADO">🔄 Cliente Recuperado</option>
               <option value="FLOTILLA_NUEVO">🚛 Flotilla Nueva</option>
               <option value="FLOTILLA_RECUPERADO">🚛 Flotilla Recuperada</option>
               <option value="NO_APLICA">❌ No aplica</option>
             </select>
           </div>
-
-          <div id="flotillaInfo" style="display:none">
-            <div class="alert alert-info">🚛 <div>Para flotilla debe haber al menos <strong>3 servicios</strong> a 3 vehículos distintos de la misma empresa en el período. El incentivo es de <strong>Q500</strong> por flotilla, no por orden individual.</div></div>
-            <div class="form-group">
-              <label class="form-label">Nombre de la empresa / flotilla</label>
-              <input type="text" class="form-input" id="flotillaEmpresa" placeholder="Nombre de la empresa">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Órdenes de la flotilla (mínimo 3, separadas por coma)</label>
-              <input type="text" class="form-input" id="flotillaOrdenes" placeholder="Ej. 18590, 18624, 18646">
-            </div>
+          <div id="flotInfo" style="display:none">
+            <div class="al al-info">🚛 <div>Mínimo 3 servicios a 3 vehículos distintos de la misma empresa. Incentivo: <strong>Q500</strong> por flotilla.</div></div>
+            <div class="fg"><label class="fl">Empresa / flotilla</label><input class="fi" id="flotEmp" placeholder="Nombre de la empresa"></div>
+            <div class="fg"><label class="fl">Órdenes de la flotilla (separadas por coma)</label><input class="fi" id="flotOrds" placeholder="18590, 18624, 18646"></div>
           </div>
-
-          <div id="comentarioSection" style="display:none">
-            <div class="alert alert-warn">⚠️ <div>Esta orden tiene observaciones o no cumple todos los criterios automáticamente. Puedes enviarla con un comentario para que el administrador la revise y apruebe.</div></div>
-            <div class="form-group">
-              <label class="form-label">Comentario / justificación</label>
-              <textarea class="form-textarea" id="comentario" placeholder="Explica por qué crees que aplica este incentivo..."></textarea>
-            </div>
+          <div id="comentReq" style="display:none">
+            <div class="al al-warn">⚠️ <div>Esta orden tiene observaciones. Puedes enviarla con comentario para aprobación del administrador.</div></div>
+            <div class="fg"><label class="fl">Comentario / justificación</label><textarea class="fta" id="comentR" placeholder="Explica por qué crees que aplica..."></textarea></div>
           </div>
-
-          <div id="comentarioOptional">
-            <div class="form-group">
-              <label class="form-label">Comentario adicional (opcional)</label>
-              <textarea class="form-textarea" id="comentarioOpt" placeholder="Cualquier observación adicional..." style="min-height:50px"></textarea>
-            </div>
+          <div id="comentOpt">
+            <div class="fg"><label class="fl">Comentario adicional (opcional)</label><textarea class="fta" id="comentO" placeholder="Cualquier observación..." style="min-height:48px"></textarea></div>
           </div>
-
-          <div id="incResumen" style="display:none;margin-bottom:14px;padding:14px;background:rgba(0,200,83,.08);border:1px solid rgba(0,200,83,.2);border-radius:10px">
-            <div style="font-size:.78rem;color:var(--text2);margin-bottom:6px">INCENTIVO A REGISTRAR</div>
-            <div style="font-size:1.4rem;font-weight:900;color:var(--green)" id="incResumenAmt">Q0</div>
-            <div style="font-size:.78rem;color:var(--text2);margin-top:4px" id="incResumenNote"></div>
+          <div id="incRes" style="display:none;margin-bottom:13px;padding:13px;background:rgba(0,200,83,.08);border:1px solid rgba(0,200,83,.2);border-radius:9px">
+            <div style="font-size:.73rem;color:var(--dim);margin-bottom:4px">INCENTIVO A REGISTRAR</div>
+            <div style="font-size:1.35rem;font-weight:900;color:var(--green)" id="incResAmt">Q0</div>
+            <div style="font-size:.74rem;color:var(--dim);margin-top:3px" id="incResNote"></div>
           </div>
-
-          <button class="submit-btn" id="submitBtn" onclick="submitIncentive()" disabled>
-            Registrar incentivo
-          </button>
-          <div id="submitSuccess" style="display:none" class="alert alert-success" style="margin-top:10px">
-            ✅ <div>Incentivo registrado correctamente. Aparecerá en "Mis Incentivos" como pendiente de aprobación.</div>
-          </div>
+          <button class="btn-submit" id="btnSub" onclick="enviar()" disabled>Registrar incentivo</button>
+          <div id="okMsg" class="al al-ok" style="display:none;margin-top:10px">✅ <span>Incentivo registrado. Aparece en "Mis Incentivos" como pendiente.</span></div>
         </div>
       </div>
     </div>
 
-    <!-- ── PANEL: MIS INCENTIVOS ─────────────────────────── -->
-    <div id="pMisInc" class="panel2">
+    <!-- ── MIS INCENTIVOS ──────────────────────────────────── -->
+    <div id="pMis" class="pnl">
       <div class="card">
-        <div class="card-hdr">📋 Incentivos registrados
-          <span id="misIncPeriodo">período actual</span>
+        <div class="chdr">📋 Incentivos del período <span class="csub" id="miPer">—</span></div>
+        <div class="krow" style="margin-bottom:14px">
+          <div class="kpi"><div class="v" id="miBruto" style="color:var(--gold)">Q0</div><div class="l">Total bruto</div></div>
+          <div class="kpi"><div class="v" id="miPct"   style="color:var(--accent)">50%</div><div class="l">% aplicado</div></div>
+          <div class="kpi"><div class="v" id="miNeto"  style="color:var(--green)">Q0</div><div class="l">Incentivo neto</div></div>
         </div>
-        <div id="misIncResumen" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">
-          <div class="kpi2"><div class="v" id="miTotalBruto" style="color:var(--gold)">Q0</div><div class="l">Total bruto</div></div>
-          <div class="kpi2"><div class="v" id="miPctInc" style="color:var(--accent)">50%</div><div class="l">% aplicado</div></div>
-          <div class="kpi2"><div class="v" id="miTotalNeto" style="color:var(--green)">Q0</div><div class="l">Incentivo neto</div></div>
-        </div>
-        <div class="tbl-wrap">
-          <table id="misIncTable">
+        <div class="twrap">
+          <table>
             <thead><tr>
               <th>Orden</th><th>Cliente</th><th>Placa</th>
-              <th>Total orden</th><th>Tipo</th><th>Tramo</th>
-              <th>Incentivo Q</th><th>Estado</th><th>Fecha reg.</th>
+              <th>Total ord.</th><th>Tipo</th><th>Incentivo</th>
+              <th>Estado</th><th>Fecha</th>
             </tr></thead>
-            <tbody id="misIncBody">
-              <tr><td colspan="9" class="loading">Sin registros aún</td></tr>
-            </tbody>
+            <tbody id="misTbody"><tr><td colspan="8" class="ld">Sin registros</td></tr></tbody>
           </table>
         </div>
         <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
-          <button onclick="exportarIncentivos()" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:none;color:var(--text2);font-family:'Inter',sans-serif;font-size:.78rem;cursor:pointer">📤 Exportar CSV</button>
-          <button onclick="clearPeriod()" style="padding:8px 16px;border:1px solid rgba(239,83,80,.3);border-radius:8px;background:none;color:var(--red);font-family:'Inter',sans-serif;font-size:.78rem;cursor:pointer">🗑 Limpiar período</button>
+          <button class="btn-sm" onclick="exportCSV()">📤 Exportar CSV</button>
+          <button class="btn-sm" style="color:var(--red);border-color:rgba(239,83,80,.3)" onclick="limpiarPeriodo()">🗑 Limpiar período</button>
         </div>
       </div>
-
-      <div class="alert alert-info">
-        ℹ️ <div>Los registros con estado <strong>Pendiente</strong> están esperando revisión del administrador. Los datos se guardan localmente en este dispositivo. Para respaldo permanente, exporta el CSV y compártelo.</div>
-      </div>
+      <div class="al al-info">ℹ️ <div>Estado "Pendiente" = esperando aprobación. Los datos se guardan localmente en este dispositivo y también se envían al servidor cuando hay internet.</div></div>
     </div>
 
-    <!-- ── PANEL: CALCULADORA ────────────────────────────── -->
-    <div id="pCalc" class="panel2">
+    <!-- ── CALCULADORA ─────────────────────────────────────── -->
+    <div id="pCalc" class="pnl">
       <div class="card">
-        <div class="card-hdr">🧮 Simulador de comisión — Base Q7,000</div>
-        <div class="calc-mini">
+        <div class="chdr">🧮 Simulador — Base Q7,000</div>
+        <div class="calc-wrap">
           <div>
-            <div class="form-group">
-              <label class="form-label">Utilidad mensual</label>
-              <input type="number" class="calc-num-input" id="calcUtil" value="100000"
-                     oninput="calcBono()" placeholder="0">
+            <div class="fg"><label class="fl">Utilidad mensual</label>
+              <input class="calc-num" id="cIn" type="number" value="100000" oninput="calcBono()">
             </div>
-            <input type="range" style="width:100%;accent-color:var(--accent);margin:8px 0 4px;cursor:pointer"
-                   id="calcSlider" min="0" max="200000" value="100000" step="500" oninput="calcSliderBono()">
-            <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--text2);margin-bottom:14px">
+            <input type="range" style="width:100%;accent-color:var(--accent);margin:6px 0 4px;cursor:pointer"
+                   id="cSlider" min="0" max="200000" value="100000" step="500" oninput="sliderBono()">
+            <div style="display:flex;justify-content:space-between;font-size:.68rem;color:var(--dim);margin-bottom:13px">
               <span>Q0</span><span>Q50k</span><span>Q100k</span><span>Q150k</span><span>Q200k</span>
             </div>
-            <div id="calcEscPill" style="padding:10px 14px;border-radius:10px;background:rgba(255,255,255,.05);font-size:.83rem;font-weight:700;display:flex;justify-content:space-between;align-items:center">
-              <span id="calcEscLabel">E2</span>
-              <span id="calcEscRate" style="color:var(--accent)">1.00%</span>
+            <div id="cEscPill" style="padding:10px 13px;border-radius:9px;background:rgba(255,255,255,.05);display:flex;justify-content:space-between;font-size:.85rem;font-weight:700;margin-bottom:10px">
+              <span id="cEscL">E2</span><span id="cEscR" style="color:var(--accent)">1.00%</span>
             </div>
-            <div id="calcIncRulePill" style="margin-top:10px"></div>
+            <div id="cRulePill"></div>
           </div>
-          <div class="result-box">
-            <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:2px">BASE FIJA</div>
-            <div style="font-weight:700;margin-bottom:12px">Q7,000.00</div>
-            <div class="rb-row"><span>Utilidad</span><strong id="cUtil">Q100,000</strong></div>
-            <div class="rb-row"><span>Escalón</span><strong id="cEsc">E2</strong></div>
-            <div class="rb-row"><span>Tasa</span><strong id="cTasa">1.00%</strong></div>
-            <div class="rb-row"><span>Bono</span><strong id="cBono" style="color:var(--accent)">Q1,000.00</strong></div>
-            <div style="border-top:1px solid rgba(255,255,255,.1);margin:10px 0"></div>
-            <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:2px">TOTAL A RECIBIR</div>
-            <div class="rb-total" id="cTotal">Q8,000.00</div>
-            <div id="cBadge" style="margin-top:8px;padding:4px 12px;background:rgba(255,255,255,.1);border-radius:16px;font-size:.78rem;display:inline-block">🎯 Meta alcanzada</div>
+          <div class="rbox">
+            <div style="font-size:.7rem;color:rgba(255,255,255,.35);margin-bottom:2px">BASE FIJA</div>
+            <div style="font-weight:700;margin-bottom:10px">Q7,000.00</div>
+            <div class="rrow"><span>Utilidad</span><strong id="cUtil2">Q100,000</strong></div>
+            <div class="rrow"><span>Escalón</span><strong id="cEsc2">E2</strong></div>
+            <div class="rrow"><span>Tasa</span><strong id="cTasa2">1.00%</strong></div>
+            <div class="rrow"><span>Bono</span><strong id="cBono2" style="color:var(--accent)">Q1,000.00</strong></div>
+            <div style="border-top:1px solid rgba(255,255,255,.1);margin:9px 0"></div>
+            <div style="font-size:.7rem;color:rgba(255,255,255,.35);margin-bottom:2px">TOTAL</div>
+            <div class="rtotal" id="cTotal2">Q8,000.00</div>
+            <div id="cBadge" style="margin-top:8px;padding:4px 12px;background:rgba(255,255,255,.1);border-radius:16px;font-size:.76rem;display:inline-block">🎯 Meta alcanzada</div>
           </div>
         </div>
       </div>
-
       <div class="card">
-        <div class="card-hdr">📊 Tabla de referencia rápida</div>
-        <div class="tbl-wrap">
+        <div class="chdr">📊 Tabla de escalones y regla de incentivos</div>
+        <div class="twrap">
           <table>
-            <thead><tr><th>Escalón</th><th>Rango utilidad</th><th>Tasa</th><th>% incentivo</th></tr></thead>
+            <thead><tr><th>Escalón</th><th>Rango utilidad</th><th>Tasa</th><th>% Incentivo</th></tr></thead>
             <tbody>
-              <tr><td>E0</td><td>Hasta Q80,000</td><td style="color:rgba(255,255,255,.4)">0.00%</td><td><span style="background:rgba(249,168,37,.15);color:var(--gold);padding:2px 10px;border-radius:10px;font-size:.75rem;font-weight:700">50%</span></td></tr>
-              <tr><td>E1</td><td>Q80,001 – Q90,000</td><td>0.75%</td><td><span style="background:rgba(249,168,37,.15);color:var(--gold);padding:2px 10px;border-radius:10px;font-size:.75rem;font-weight:700">50%</span></td></tr>
-              <tr style="background:rgba(0,200,83,.06)"><td><strong>E2</strong></td><td><strong>Q90,001 – Q120,000</strong></td><td style="color:var(--accent)"><strong>1.00%</strong></td><td><span style="background:rgba(0,200,83,.15);color:#69F0AE;padding:2px 10px;border-radius:10px;font-size:.75rem;font-weight:700">100% ✓</span></td></tr>
-              <tr style="background:rgba(0,200,83,.06)"><td><strong>E3</strong></td><td><strong>Q120,001 – Q150,000</strong></td><td style="color:var(--accent)"><strong>1.50%</strong></td><td><span style="background:rgba(0,200,83,.15);color:#69F0AE;padding:2px 10px;border-radius:10px;font-size:.75rem;font-weight:700">100% ✓</span></td></tr>
-              <tr style="background:rgba(0,200,83,.06)"><td><strong>E4</strong></td><td><strong>Q150,001 en adelante</strong></td><td style="color:var(--gold)"><strong>2.00%</strong></td><td><span style="background:rgba(0,200,83,.15);color:#69F0AE;padding:2px 10px;border-radius:10px;font-size:.75rem;font-weight:700">100% ✓</span></td></tr>
+              <tr><td>E0</td><td>Hasta Q80,000</td><td style="color:rgba(255,255,255,.4)">0.00%</td><td><span class="chip c-pen">50%</span></td></tr>
+              <tr><td>E1</td><td>Q80,001 – Q90,000</td><td>0.75%</td><td><span class="chip c-pen">50%</span></td></tr>
+              <tr style="background:rgba(0,200,83,.05)"><td><strong>E2</strong></td><td><strong>Q90,001 – Q120,000</strong></td><td style="color:var(--accent)"><strong>1.00%</strong></td><td><span class="chip c-new">100% ✓</span></td></tr>
+              <tr style="background:rgba(0,200,83,.05)"><td><strong>E3</strong></td><td><strong>Q120,001 – Q150,000</strong></td><td style="color:var(--accent)"><strong>1.50%</strong></td><td><span class="chip c-new">100% ✓</span></td></tr>
+              <tr style="background:rgba(0,200,83,.05)"><td><strong>E4</strong></td><td><strong>Q150,001+</strong></td><td style="color:var(--gold)"><strong>2.00%</strong></td><td><span class="chip c-new">100% ✓</span></td></tr>
             </tbody>
           </table>
         </div>
-        <div style="margin-top:12px;padding:10px 14px;background:rgba(0,188,212,.08);border:1px solid rgba(0,188,212,.2);border-radius:9px;font-size:.8rem;color:rgba(255,255,255,.7);line-height:1.55">
-          💡 El 100% de incentivos se activa al superar <strong>Q100,001</strong> de utilidad (entre E2 y E3). Bajo esa cifra el incentivo es del 50%.
-        </div>
+        <div class="al al-info" style="margin-top:12px">💡 <div>Superar <strong>Q100,001</strong> de utilidad activa el 100% de incentivos. Por debajo aplica 50%.</div></div>
       </div>
     </div>
 
-    <!-- ── PANEL: HISTORIAL ──────────────────────────────── -->
-    <div id="pHist" class="panel2">
+    <!-- ── HISTORIAL ───────────────────────────────────────── -->
+    <div id="pHist" class="pnl">
       <div class="card">
-        <div class="card-hdr">📅 Historial de meses 2026</div>
-        <div id="histGrid" class="month-grid">
-          <div class="loading"><span class="spinner"></span>Cargando historial...</div>
-        </div>
+        <div class="chdr">📅 Historial de meses 2026</div>
+        <div id="histGrid" class="mgrid"><div class="ld"><span class="spin"></span>Cargando...</div></div>
       </div>
       <div class="card">
-        <div class="card-hdr">📊 Detalle de incentivos por período</div>
-        <div class="tbl-wrap">
-          <table id="histIncTable">
-            <thead><tr>
-              <th>Período</th><th>Incentivos brutos</th><th>% aplicado</th>
-              <th>Incentivo neto</th><th>Bono producción</th><th>Total</th>
-            </tr></thead>
-            <tbody>
-              <tr><td colspan="6" class="loading">Sin datos históricos de incentivos</td></tr>
-            </tbody>
+        <div class="chdr">💰 Incentivos históricos</div>
+        <div class="twrap">
+          <table id="histTbl">
+            <thead><tr><th>Período</th><th>Inc. bruto</th><th>%</th><th>Inc. neto</th><th>Bono prod.</th><th>Total</th></tr></thead>
+            <tbody id="histBody"><tr><td colspan="6" class="ld">Sin datos</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -556,536 +445,412 @@ tr:hover td{background:rgba(255,255,255,.03)}
 </div><!-- /app -->
 
 <script>
-// ══ CONFIG ════════════════════════════════════════════════════
-// Google Sheets IDs (from the shared links)
-const SHEET_DATOS   = '1v3S3_z1X55kp_bArT5B7MKCwjefYmJgkp7ec4TpLcik'; // AppSheet DB
-const SHEET_VENTAS  = '1_chDpO-n0rXy_rpE79_00urPz63fv80CiUz7aUPEn7Y'; // Cuadro ventas
+// ══ CONFIGURACIÓN ══════════════════════════════════════════
+var APPS_URL   = 'https://script.google.com/macros/s/AKfycbyarW6FVlh5gizJ1BEktjSiS6inNf5giwscHLYW7FJt9uc0NMptRcE5GycsiMaef1xB/exec';
+var SHEET_DATOS = '1v3S3_z1X55kp_bArT5B7MKCwjefYmJgkp7ec4TpLcik';
+var META = 115000, INC_THR = 100001;
 
-// Google Apps Script web app URL for writing data (replace with your deployed URL)
-// To create: Tools > Script Editor > Deploy as Web App > Anyone can access
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyarW6FVlh5gizJ1BEktjSiS6inNf5giwscHLYW7FJt9uc0NMptRcE5GycsiMaef1xB/exec';
-
-const ESC = [
-  {lo:0,      hi:80001,  rate:0.000, label:'E0', color:'rgba(255,255,255,.2)', pct:0},
-  {lo:80001,  hi:90001,  rate:0.0075,label:'E1', color:'#42A5F5', pct:22},
-  {lo:90001,  hi:120001, rate:0.010, label:'E2', color:'#1E88E5', pct:47},
-  {lo:120001, hi:150001, rate:0.015, label:'E3', color:'#1565C0', pct:73},
-  {lo:150001, hi:Infinity,rate:0.020,label:'E4', color:'#0D3B6E', pct:100},
+var ESC = [
+  {lo:0,      hi:80001,  r:0.000, lbl:'E0'},
+  {lo:80001,  hi:90001,  r:0.0075,lbl:'E1'},
+  {lo:90001,  hi:120001, r:0.010, lbl:'E2'},
+  {lo:120001, hi:150001, r:0.015, lbl:'E3'},
+  {lo:150001, hi:1e9,    r:0.020, lbl:'E4'},
 ];
-const TRAMOS = [
-  {lo:800,   hi:2001,  inc:100,  label:'T1 (Q800–2,000)',    css:'tc-t1'},
-  {lo:2001,  hi:3501,  inc:175,  label:'T2 (Q2,001–3,500)',  css:'tc-t2'},
-  {lo:3501,  hi:5001,  inc:250,  label:'T3 (Q3,501–5,000)',  css:'tc-t3'},
-  {lo:5001,  hi:Infinity,inc:350,label:'T4 (Q5,001+)',       css:'tc-t4'},
+var TRAMOS = [
+  {lo:800,  hi:2001,  inc:100, lbl:'T1 (Q800–2,000)',   css:'t1'},
+  {lo:2001, hi:3501,  inc:175, lbl:'T2 (Q2,001–3,500)', css:'t2'},
+  {lo:3501, hi:5001,  inc:250, lbl:'T3 (Q3,501–5,000)', css:'t3'},
+  {lo:5001, hi:1e9,   inc:350, lbl:'T4 (Q5,001+)',      css:'t4'},
 ];
-const META = 115000;
-const INC_THRESHOLD = 100001;
 
-// ── STATE ──────────────────────────────────────────────────────
-let asesorActual = null;
-let currentOrderData = null;
-let ordenesDatos = [];    // all orders from DATOS sheet
-let currentPeriod = getPeriodLabel();
+var asesor = null, ordenes = [], curOrder = null;
 
-function getPeriodLabel(){
-  const now = new Date();
-  return now.toLocaleString('es-GT',{month:'long',year:'numeric'});
+function periodo() {
+  var n = new Date();
+  return n.toLocaleString('es-GT',{month:'long',year:'numeric'});
 }
-function fmt(n,d=2){return 'Q'+parseFloat(n).toLocaleString('es-GT',{minimumFractionDigits:d,maximumFractionDigits:d})}
-function fmtN(n){return 'Q'+Math.round(n).toLocaleString('es-GT')}
-function getEsc(u){return ESC.find(e=>u>=e.lo&&u<e.hi)||ESC[4]}
-function getTramo(t){
-  if(t < 800) return {inc:0, label:'No aplica (<Q800)', css:'tc-na'};
-  return TRAMOS.find(tr=>t>=tr.lo&&t<tr.hi)||{inc:0,label:'—',css:'tc-na'};
+function fmt(n,d) {
+  d = d===undefined ? 2 : d;
+  return 'Q' + parseFloat(n).toLocaleString('es-GT',{minimumFractionDigits:d,maximumFractionDigits:d});
 }
-function incPct(util){return util >= INC_THRESHOLD ? 1.0 : 0.5}
-function storageKey(key){return `enauto_${asesorActual}_${key}`}
+function fmtN(n) { return 'Q' + Math.round(n).toLocaleString('es-GT'); }
+function getEsc(u) { return ESC.find(function(e){return u>=e.lo&&u<e.hi;})||ESC[4]; }
+function getTramo(t) {
+  if(t<800) return {inc:0,lbl:'No aplica (<Q800)',css:'tna'};
+  return TRAMOS.find(function(tr){return t>=tr.lo&&t<tr.hi;})||{inc:0,lbl:'—',css:'tna'};
+}
+function incPct(u) { return u>=INC_THR ? 1.0 : 0.5; }
+function sk(k) { return 'en_'+asesor+'_'+k; }
 
-// ── LOGIN ──────────────────────────────────────────────────────
-function selectAsesor(name){
-  asesorActual = name;
-  document.querySelectorAll('.asesor-btn').forEach(function(b){ b.classList.remove('sel'); });
-  document.querySelector('.btn-' + name.toLowerCase()).classList.add('sel');
-  var btn = document.getElementById('enterBtn');
-  btn.removeAttribute('disabled');
-  btn.classList.add('ready');
-}
-function enterApp(){
-  if(!asesorActual){ alert('Selecciona Marco o Daniel primero'); return; }
-  document.getElementById('loginScreen').style.display='none';
-  document.getElementById('app').style.display='flex';
-  document.getElementById('topAsesor').textContent = asesorActual;
-  document.getElementById('topAsesor').className = 'topbar-asesor ta-' + asesorActual.toLowerCase();
-  document.getElementById('topMes').textContent = currentPeriod;
-  initApp();
-}
-function logout(){
-  document.getElementById('loginScreen').style.display='flex';
-  document.getElementById('app').style.display='none';
-  document.querySelectorAll('.asesor-btn').forEach(b=>b.classList.remove('sel'));
-  var btn = document.getElementById('enterBtn');
-  btn.setAttribute('disabled', '');
-  btn.classList.remove('ready');
-  asesorActual = null; currentOrderData = null;
+// ══ LOGIN ══════════════════════════════════════════════════
+function doLogin(name) {
+  asesor = name;
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('app').style.display   = 'flex';
+  document.getElementById('tbadge').textContent  = name;
+  document.getElementById('tbadge').className    = 'tbadge tbadge-' + name.toLowerCase();
+  document.getElementById('tbmes').textContent   = periodo();
+  init();
 }
 
-// ── TAB NAVIGATION ─────────────────────────────────────────────
-function showPanel(id, btn){
-  document.querySelectorAll('.panel2').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn2').forEach(b=>b.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  btn.classList.add('active');
-  if(id==='pMisInc') renderMisIncentivos();
-  if(id==='pHist') loadHistorial();
+function doLogout() {
+  asesor = null; curOrder = null;
+  document.getElementById('login').style.display = 'flex';
+  document.getElementById('app').style.display   = 'none';
+  // reset tab
+  document.querySelectorAll('.tab').forEach(function(t,i){
+    t.classList.toggle('on', i===0);
+  });
+  document.querySelectorAll('.pnl').forEach(function(p,i){
+    p.classList.toggle('on', i===0);
+  });
 }
 
-// ── INIT ───────────────────────────────────────────────────────
-async function initApp(){
-  loadDashboard();
-  loadOrdenesDatos();
+// ══ NAVIGATION ══════════════════════════════════════════════
+function showP(id, btn) {
+  document.querySelectorAll('.pnl').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
+  document.getElementById(id).classList.add('on');
+  btn.classList.add('on');
+  if(id==='pMis')  renderMis();
+  if(id==='pHist') loadHist();
+}
+
+// ══ INIT ════════════════════════════════════════════════════
+function init() {
+  loadDash();
+  loadOrdenes();
   calcBono();
-  renderMisIncentivos();
+  renderMis();
 }
 
-// ── DASHBOARD ──────────────────────────────────────────────────
-async function loadDashboard(){
-  // Try to load from Google Sheets (gviz public read)
-  const util = getStoredUtil();
-  updateDashboard(util);
+// ══ DASHBOARD ═══════════════════════════════════════════════
+var HIST = {
+  MARCO:  {util:101903, bono:1019.03},
+  DANIEL: {util:66845,  bono:0},
+};
 
-  // Try real data fetch
-  try {
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_VENTAS}/gviz/tq?tq=${encodeURIComponent(`SELECT * WHERE C='${asesorActual}' LIMIT 1`)}&headers=1`;
-    // Note: This requires the sheet to be published. Fallback to stored value.
-  } catch(e){ console.log('Dashboard data: using stored values'); }
-}
+function loadDash() {
+  var d = HIST[asesor] || {util:0, bono:0};
+  var e = getEsc(d.util);
+  var bono = d.util * e.r;
+  var pct  = d.util / META * 100;
+  var myInc = getMisTotal() * incPct(d.util);
 
-function getStoredUtil(){
-  // Real data from May/June images — hardcoded as reference, update each month
-  const HISTORIC = {
-    MARCO:  {util:101903, bono:1019.03, esc:'E2'},
-    DANIEL: {util:66845,  bono:0,       esc:'E0'},
-  };
-  return HISTORIC[asesorActual] || {util:0, bono:0, esc:'E0'};
-}
-
-function updateDashboard(data){
-  const util = data.util || 0;
-  const esc  = getEsc(util);
-  const bono = util * esc.rate;
-  const pct  = util / META * 100;
-  const pctInc = incPct(util);
-  const myIncentivos = getMisIncentivosTotal() * pctInc;
-
-  document.getElementById('kUtil').textContent = fmtN(util);
+  document.getElementById('kUtil').textContent = fmtN(d.util);
   document.getElementById('kPct').textContent  = pct.toFixed(1)+'%';
   document.getElementById('kBono').textContent = fmt(bono);
-  document.getElementById('kTotal').textContent= fmt(7000+bono);
+  document.getElementById('kTot').textContent  = fmt(7000+bono);
+  document.getElementById('dBono').textContent = fmt(bono);
+  document.getElementById('dComision').textContent = fmt(7000+bono);
+  document.getElementById('dInc').textContent  = fmt(myInc);
+  document.getElementById('dGrand').textContent= fmt(7000+bono+myInc);
+  document.getElementById('dashMes').textContent = periodo();
 
-  const fill = document.getElementById('progFill');
-  fill.style.width = Math.min(pct,100)+'%';
-  fill.style.background = pct>=87?'#00C853':pct>=60?'#F9A825':'#1E88E5';
+  var f = document.getElementById('pFill');
+  f.style.width = Math.min(pct,100)+'%';
+  f.style.background = pct>=87?'#00C853':pct>=60?'#F9A825':'#1E88E5';
 
-  document.getElementById('dashMesLabel').textContent = currentPeriod;
-  document.getElementById('dashBonoDetail').textContent = fmt(bono);
-  document.getElementById('dashTotalComision').textContent = fmt(7000+bono);
-  document.getElementById('dashIncAmt').textContent = fmt(myIncentivos);
-  document.getElementById('dashGrandTotal').textContent = fmt(7000+bono+myIncentivos);
+  var escColors = {E0:'rgba(255,255,255,.15)',E1:'#BBDEFB',E2:'#1E88E5',E3:'#1565C0',E4:'#0D3B6E'};
+  document.getElementById('dashEsc').innerHTML =
+    '<span style="display:inline-block;padding:5px 13px;border-radius:20px;font-size:.82rem;font-weight:700;background:'+
+    (escColors[e.lbl]||'#1565C0')+';color:#fff">'+e.lbl+' — '+(e.r*100).toFixed(2)+'%</span>';
 
-  // Escalon badge
-  const escColors = {E0:'rgba(255,255,255,.15)',E1:'#BBDEFB',E2:'#1E88E5',E3:'#1565C0',E4:'#0D3B6E'};
-  document.getElementById('dashEsc').innerHTML = `
-    <span class="esc-badge2" style="background:${escColors[esc.label]||'#1565C0'};color:#fff">
-      ${esc.label} — ${(esc.rate*100).toFixed(2)}%
-    </span>`;
-
-  // Incentive rule pill
-  const rule = pctInc === 1.0
-    ? `<div class="inc-rule-pill irp-100">✅ Incentivos al 100% — Superaste Q100,001 de utilidad</div>`
-    : `<div class="inc-rule-pill irp-50">⚡ Incentivos al 50% — Necesitas Q${(INC_THRESHOLD-util).toLocaleString('es-GT')} más para activar el 100%</div>`;
-  document.getElementById('dashIncRule').innerHTML = rule;
+  document.getElementById('dashRule').innerHTML = incPct(d.util)===1
+    ? '<div class="irp irp-100">✅ Incentivos al 100% — superaste Q100,001 de utilidad</div>'
+    : '<div class="irp irp-50">⚡ Incentivos al 50% — necesitas Q'+(INC_THR-d.util).toLocaleString('es-GT')+' más para activar el 100%</div>';
 }
 
-function getMisIncentivosTotal(){
-  const stored = localStorage.getItem(storageKey('incentivos'));
-  if(!stored) return 0;
-  const list = JSON.parse(stored);
-  return list.filter(i=>i.estado!=='RECHAZADO').reduce((a,b)=>a+(b.incentivo||0),0);
+function getMisTotal() {
+  var st = localStorage.getItem(sk('inc'));
+  if(!st) return 0;
+  return JSON.parse(st)
+    .filter(function(i){return i.estado!=='RECHAZADO';} )
+    .reduce(function(a,b){return a+(b.incentivo||0);},0);
 }
 
-// ── LOAD ORDENES (DATOS SHEET) ─────────────────────────────────
-async function loadOrdenesDatos(){
-  try {
-    const q = encodeURIComponent('SELECT A,B,C,D,E,F,G,H ORDER BY A DESC LIMIT 5000');
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_DATOS}/gviz/tq?tq=${q}&sheet=DATOS&headers=1`;
-    const res = await fetch(url);
-    const text = await res.text();
-    const json = JSON.parse(text.replace(/^.*?{/,'{').replace(/\);\s*$/,''));
-    ordenesDatos = json.table.rows.map(r=>{
-      const v = r.c;
-      return {
-        orden:    v[0]?.v||'', cliente: v[1]?.v||'', placa: v[2]?.v||'',
-        total:    v[3]?.v||0,  asesor:  v[4]?.v||'', fecha_ingreso: v[5]?.v||'',
-        fecha_pago: v[6]?.v||'', estado: v[7]?.v||''
-      };
+// ══ CARGAR ÓRDENES ══════════════════════════════════════════
+function loadOrdenes() {
+  var q = encodeURIComponent('SELECT A,B,C,D,E,F,G,H ORDER BY A DESC LIMIT 5000');
+  var url = 'https://docs.google.com/spreadsheets/d/'+SHEET_DATOS+'/gviz/tq?tq='+q+'&sheet=DATOS&headers=1';
+  fetch(url)
+    .then(function(r){return r.text();})
+    .then(function(txt){
+      var json = JSON.parse(txt.replace(/^[\s\S]*?{/,'{').replace(/\);\s*$/,''));
+      ordenes = (json.table.rows||[]).map(function(r){
+        var v=r.c;
+        return {
+          orden:parseInt(v[0]&&v[0].v)||0, cliente:v[1]&&v[1].v||'',
+          placa:v[2]&&v[2].v||'', total:parseFloat(v[3]&&v[3].v)||0,
+          asesor:v[4]&&v[4].v||'', fecha_ingreso:v[5]&&v[5].v||'',
+          fecha_pago:v[6]&&v[6].v||'', estado:v[7]&&v[7].v||''
+        };
+      });
+      console.log('Órdenes cargadas:', ordenes.length);
+    })
+    .catch(function(e){
+      console.log('Sheet DATOS requiere ser publicado. Modo demo activo.');
+      // Demo data
+      ordenes = [
+        {orden:18590,cliente:'ROSARIO GUERRA',placa:'P599KXF',total:25381,asesor:'MARCO',fecha_ingreso:'2026-05-01',fecha_pago:'2026-06-26',estado:''},
+        {orden:18625,cliente:'FLETES CARGO',placa:'P063DHB',total:3620,asesor:'MARCO',fecha_ingreso:'2026-06-01',fecha_pago:'2026-06-05',estado:''},
+        {orden:16321,cliente:'ROSARIO GUERRA',placa:'P599KXF',total:5341,asesor:'MARCO',fecha_ingreso:'2024-12-15',fecha_pago:null,estado:''},
+        {orden:18600,cliente:'JOSE GARCIA',placa:'M123ABC',total:1850,asesor:'DANIEL',fecha_ingreso:'2026-06-10',fecha_pago:'2026-06-12',estado:''},
+      ];
     });
-    console.log(`Loaded ${ordenesDatos.length} orders from DATOS sheet`);
-  } catch(e){
-    console.log('Could not load DATOS sheet (needs to be public). Using demo mode.');
-    // Demo data for testing
-    ordenesDatos = [
-      {orden:18590,cliente:'ROSARIO GUERRA',placa:'P599KXF',total:25381,asesor:'MARCO',fecha_ingreso:'2026-05-01',fecha_pago:'2026-06-26',estado:''},
-      {orden:18625,cliente:'INVENTAS',placa:'P063DHB',total:3620,asesor:'MARCO',fecha_ingreso:'2026-06-01',fecha_pago:'2026-06-01',estado:''},
-      {orden:16321,cliente:'ROSARIO GUERRA',placa:'P599KXF',total:5341,asesor:'MARCO',fecha_ingreso:'2024-12-01',fecha_pago:null,estado:''},
-    ];
-  }
 }
 
-// ── LOOKUP ORDER ───────────────────────────────────────────────
-async function lookupOrden(){
-  const num = parseInt(document.getElementById('ordenInput').value);
-  if(!num){ alert('Ingresa un número de orden válido'); return; }
+// ══ BUSCAR ORDEN ════════════════════════════════════════════
+function buscar() {
+  var num = parseInt(document.getElementById('nOrden').value);
+  if(!num) { alert('Ingresa un número de orden'); return; }
 
-  document.getElementById('lookupLoading').style.display='block';
-  document.getElementById('lookupResult').style.display='none';
-  document.getElementById('lookupError').style.display='none';
-  document.getElementById('registerForm').style.display='none';
-  currentOrderData = null;
+  document.getElementById('ldBuscar').style.display='block';
+  document.getElementById('lkRes').style.display='none';
+  document.getElementById('lkErr').style.display='none';
+  document.getElementById('regForm').style.display='none';
+  curOrder = null;
 
-  await new Promise(r=>setTimeout(r,600)); // simulate loading
+  setTimeout(function() {
+    document.getElementById('ldBuscar').style.display='none';
 
-  const orden = ordenesDatos.find(o=>parseInt(o.orden)===num);
-  document.getElementById('lookupLoading').style.display='none';
+    var ord = ordenes.find(function(o){return o.orden===num;});
+    if(!ord) {
+      document.getElementById('lkErrMsg').textContent = 'No se encontró la orden #'+num+'. Verifica el número.';
+      document.getElementById('lkErr').style.display='flex';
+      return;
+    }
+    if(ord.asesor && ord.asesor!==asesor) {
+      document.getElementById('lkErrMsg').textContent = 'La orden #'+num+' pertenece a '+ord.asesor+', no a '+asesor+'.';
+      document.getElementById('lkErr').style.display='flex';
+      return;
+    }
 
-  if(!orden){
-    document.getElementById('lookupError').style.display='flex';
-    document.getElementById('lookupErrorMsg').textContent =
-      `No se encontró la orden #${num} en la base de datos. Verifica el número o espera a que se actualice el sistema.`;
-    return;
-  }
+    // Check previous visits
+    var prev = ordenes.filter(function(o){
+      return o.orden!==num && (o.cliente===ord.cliente||o.placa===ord.placa) && o.placa;
+    }).sort(function(a,b){return b.orden-a.orden;});
 
-  // Check asesor
-  if(orden.asesor && orden.asesor !== asesorActual){
-    document.getElementById('lookupError').style.display='flex';
-    document.getElementById('lookupErrorMsg').textContent =
-      `La orden #${num} pertenece a ${orden.asesor}, no a ${asesorActual}.`;
-    return;
-  }
+    var status='NUEVO', stLbl='Cliente Nuevo', stCss='c-new';
+    var ultVisita=null, meses=null;
 
-  // Find previous visits for this client/placa
-  const prevOrders = ordenesDatos.filter(o=>
-    parseInt(o.orden) !== num &&
-    (o.cliente === orden.cliente || o.placa === orden.placa) &&
-    o.placa
-  ).sort((a,b)=>b.orden-a.orden);
-
-  let status = 'NUEVO', statusLabel = 'Cliente Nuevo', statusCss = 'sc-new';
-  let ultimaVisita = null, mesesSinVenir = null;
-
-  if(prevOrders.length > 0){
-    const lastDate = prevOrders[0].fecha_ingreso || prevOrders[0].fecha_pago;
-    if(lastDate){
-      const last = new Date(lastDate);
-      const now  = new Date();
-      const months = (now.getFullYear()-last.getFullYear())*12 + (now.getMonth()-last.getMonth());
-      mesesSinVenir = months;
-      ultimaVisita = last.toLocaleDateString('es-GT');
-      if(months > 10){
-        status='RECUPERADO'; statusLabel=`Cliente Recuperado (${months} meses)`; statusCss='sc-recovered';
-      } else {
-        status='REGULAR'; statusLabel=`Cliente frecuente (${months} meses)`; statusCss='sc-regular';
+    if(prev.length>0) {
+      var lastDate = prev[0].fecha_ingreso || prev[0].fecha_pago;
+      if(lastDate) {
+        var last = new Date(lastDate), now = new Date();
+        meses = (now.getFullYear()-last.getFullYear())*12+(now.getMonth()-last.getMonth());
+        ultVisita = last.toLocaleDateString('es-GT');
+        if(meses>10) { status='RECUPERADO'; stLbl='Recuperado ('+meses+' meses)'; stCss='c-rec'; }
+        else { status='REGULAR'; stLbl='Frecuente ('+meses+' meses)'; stCss='c-reg'; }
       }
     }
-  }
 
-  // Check if already registered this period
-  const stored = JSON.parse(localStorage.getItem(storageKey('incentivos'))||'[]');
-  const alreadyReg = stored.find(i=>parseInt(i.orden)===num);
-  if(alreadyReg){
-    status='YA_REGISTRADO'; statusLabel='Ya registrado este período'; statusCss='sc-pending';
-  }
-
-  const tramo = getTramo(orden.total);
-  const fechaPago = orden.fecha_pago ? new Date(orden.fecha_pago).toLocaleDateString('es-GT') : '—';
-
-  currentOrderData = {orden:num, ...orden, status, statusLabel, statusCss, tramo, mesesSinVenir, ultimaVisita};
-
-  // Populate result card
-  document.getElementById('lr_cliente').textContent  = orden.cliente || '—';
-  document.getElementById('lr_placa').textContent    = orden.placa   || '—';
-  document.getElementById('lr_vehiculo').textContent = '—'; // vehicle model not in sheet
-  document.getElementById('lr_fecha').textContent    = fechaPago;
-  document.getElementById('lr_total').textContent    = fmt(orden.total);
-  document.getElementById('lr_asesor').textContent   = orden.asesor  || '—';
-  document.getElementById('lr_ultima').textContent   = ultimaVisita  || 'Primera visita';
-  document.getElementById('lr_meses').textContent    = mesesSinVenir != null ? `${mesesSinVenir} meses` : '—';
-  document.getElementById('lr_tramo').className      = `tramo-chip ${tramo.css}`;
-  document.getElementById('lr_tramo').textContent    = tramo.label;
-  document.getElementById('lr_incentivo').textContent = tramo.inc > 0 ? fmt(tramo.inc,0) : 'No aplica';
-
-  const statusEl = document.getElementById('lr_status');
-  statusEl.className = `status-chip ${statusCss}`;
-  statusEl.textContent = statusLabel;
-
-  document.getElementById('lookupResult').style.display='block';
-
-  // Pre-fill tipo cliente
-  if(status==='NUEVO') document.getElementById('tipoCliente').value='NUEVO';
-  else if(status==='RECUPERADO') document.getElementById('tipoCliente').value='RECUPERADO';
-  else document.getElementById('tipoCliente').value='';
-
-  onTipoChange();
-  document.getElementById('registerForm').style.display = (status==='YA_REGISTRADO'||status==='REGULAR') ? 'none' : 'block';
-
-  if(status==='REGULAR'){
-    document.getElementById('lookupError').style.display='flex';
-    document.getElementById('lookupErrorMsg').textContent =
-      `Este cliente visitó el taller hace ${mesesSinVenir} meses, por lo que no aplica como recuperado (se requieren más de 10 meses).`;
-  }
-  if(status==='YA_REGISTRADO'){
-    document.getElementById('lookupError').style.display='flex';
-    document.getElementById('lookupErrorMsg').textContent = `La orden #${num} ya fue registrada en este período (${alreadyReg.estado}).`;
-  }
-  if(status==='NUEVO'||status==='RECUPERADO'){
-    if(tramo.inc < 1){
-      document.getElementById('comentarioSection').style.display='block';
-      document.getElementById('comentarioOptional').style.display='none';
+    var stored = JSON.parse(localStorage.getItem(sk('inc'))||'[]');
+    if(stored.find(function(i){return i.orden===num;})) {
+      status='YA_REG'; stLbl='Ya registrada'; stCss='c-pen';
     }
-  }
+
+    var tramo = getTramo(ord.total);
+    var fPago = ord.fecha_pago ? new Date(ord.fecha_pago).toLocaleDateString('es-GT') : '—';
+
+    curOrder = Object.assign({},ord,{status:status,stLbl:stLbl,tramo:tramo,meses:meses,ultVisita:ultVisita});
+
+    document.getElementById('lk_cli').textContent = ord.cliente||'—';
+    document.getElementById('lk_st').className = 'chip '+stCss;
+    document.getElementById('lk_st').textContent = stLbl;
+    document.getElementById('lk_pla').textContent = ord.placa||'—';
+    document.getElementById('lk_fec').textContent = fPago;
+    document.getElementById('lk_tot').textContent = fmt(ord.total);
+    document.getElementById('lk_ase').textContent = ord.asesor||'—';
+    document.getElementById('lk_ult').textContent = ultVisita||'Primera visita';
+    document.getElementById('lk_mes').textContent = meses!=null ? meses+' meses' : '—';
+    document.getElementById('lk_tra').className   = 'chip '+tramo.css;
+    document.getElementById('lk_tra').textContent = tramo.lbl;
+    document.getElementById('lk_inc').textContent = tramo.inc>0 ? fmt(tramo.inc,0) : 'No aplica';
+    document.getElementById('lkRes').style.display='block';
+
+    if(status==='REGULAR') {
+      document.getElementById('lkErrMsg').textContent = 'Este cliente vino hace '+meses+' meses. Se requieren más de 10 para ser recuperado.';
+      document.getElementById('lkErr').style.display='flex';
+    } else if(status==='YA_REG') {
+      document.getElementById('lkErrMsg').textContent = 'La orden #'+num+' ya fue registrada este período.';
+      document.getElementById('lkErr').style.display='flex';
+    } else {
+      if(status==='NUEVO') document.getElementById('tipoC').value='NUEVO';
+      else if(status==='RECUPERADO') document.getElementById('tipoC').value='RECUPERADO';
+      else document.getElementById('tipoC').value='';
+      onTipo();
+      document.getElementById('regForm').style.display='block';
+    }
+  }, 700);
 }
 
-function onTipoChange(){
-  const tipo = document.getElementById('tipoCliente').value;
-  const isFlotilla = tipo.startsWith('FLOTILLA');
-  document.getElementById('flotillaInfo').style.display = isFlotilla ? 'block' : 'none';
-  document.getElementById('comentarioSection').style.display = 'none';
-  document.getElementById('comentarioOptional').style.display = !isFlotilla ? 'block' : 'none';
+function onTipo() {
+  var tipo = document.getElementById('tipoC').value;
+  var isFlot = tipo.indexOf('FLOTILLA')>=0;
+  document.getElementById('flotInfo').style.display   = isFlot ? 'block':'none';
+  document.getElementById('comentReq').style.display  = 'none';
+  document.getElementById('comentOpt').style.display  = !isFlot ? 'block':'none';
 
-  let incAmt = 0, incNote = '';
-  if(currentOrderData && !isFlotilla){
-    incAmt = currentOrderData.tramo.inc;
-    incNote = currentOrderData.tramo.label;
-    if(!tipo){ incAmt=0; }
-    if(tipo==='NO_APLICA') incAmt=0;
+  var incAmt=0, incNote='';
+  if(curOrder && !isFlot) {
+    incAmt = curOrder.tramo.inc;
+    incNote = curOrder.tramo.lbl;
   }
-  if(isFlotilla){ incAmt=500; incNote='Flotilla — Q500 fijo por flotilla'; }
+  if(isFlot) { incAmt=500; incNote='Flotilla — Q500 fijo'; }
+  if(!tipo||tipo==='NO_APLICA') incAmt=0;
 
-  const needsComment = !tipo || (incAmt===0 && tipo!=='NO_APLICA') ||
-    (currentOrderData && currentOrderData.status==='REGULAR');
-  document.getElementById('comentarioSection').style.display = needsComment ? 'block':'none';
-  document.getElementById('comentarioOptional').style.display = !needsComment&&!isFlotilla ? 'block':'none';
+  var needsComent = (!tipo||incAmt===0) && tipo && tipo!=='NO_APLICA';
+  document.getElementById('comentReq').style.display = needsComent?'block':'none';
+  document.getElementById('comentOpt').style.display  = (!needsComent&&!isFlot)?'block':'none';
 
-  if(incAmt > 0){
-    document.getElementById('incResumen').style.display='block';
-    document.getElementById('incResumenAmt').textContent = fmt(incAmt,0);
-    document.getElementById('incResumenNote').textContent = incNote;
+  if(incAmt>0) {
+    document.getElementById('incRes').style.display='block';
+    document.getElementById('incResAmt').textContent=fmt(incAmt,0);
+    document.getElementById('incResNote').textContent=incNote;
+  } else document.getElementById('incRes').style.display='none';
+
+  var btn=document.getElementById('btnSub');
+  btn.disabled = !tipo||tipo==='NO_APLICA';
+  if(needsComent&&tipo&&tipo!=='NO_APLICA') {
+    btn.className='btn-submit btn-pend'; btn.textContent='📤 Enviar para aprobación';
   } else {
-    document.getElementById('incResumen').style.display='none';
+    btn.className='btn-submit'; btn.textContent='✅ Registrar incentivo';
   }
-
-  const submitBtn = document.getElementById('submitBtn');
-  submitBtn.disabled = !tipo || tipo==='NO_APLICA';
-  submitBtn.className = needsComment && tipo && tipo!=='NO_APLICA'
-    ? 'submit-btn submit-btn-pending'
-    : 'submit-btn';
-  submitBtn.textContent = needsComment && tipo && tipo!=='NO_APLICA'
-    ? '📤 Enviar para aprobación'
-    : '✅ Registrar incentivo';
 }
 
-// ── SUBMIT INCENTIVE ───────────────────────────────────────────
-function submitIncentive(){
-  if(!currentOrderData) return;
-  const tipo = document.getElementById('tipoCliente').value;
-  if(!tipo || tipo==='NO_APLICA') return;
+// ══ ENVIAR ══════════════════════════════════════════════════
+function enviar() {
+  if(!curOrder) return;
+  var tipo=document.getElementById('tipoC').value;
+  if(!tipo||tipo==='NO_APLICA') return;
+  var isFlot=tipo.indexOf('FLOTILLA')>=0;
+  var comt = document.getElementById('comentR').value || document.getElementById('comentO').value || '';
+  var needsAp = !!document.getElementById('comentR').value;
+  var incAmt = isFlot?500:curOrder.tramo.inc;
+  var estado = needsAp?'PENDIENTE_APROBACIÓN':'PENDIENTE';
 
-  const isFlotilla = tipo.startsWith('FLOTILLA');
-  const comentario = document.getElementById('comentario').value ||
-                     document.getElementById('comentarioOpt').value || '';
-  const needsApproval = !!(document.getElementById('comentario').value) ||
-    (currentOrderData.status === 'REGULAR');
-
-  let incAmt = isFlotilla ? 500 : currentOrderData.tramo.inc;
-  const estado = needsApproval ? 'PENDIENTE_APROBACIÓN' : 'PENDIENTE';
-
-  const registro = {
-    id: Date.now(),
-    orden:     currentOrderData.orden,
-    cliente:   currentOrderData.cliente,
-    placa:     currentOrderData.placa,
-    total:     currentOrderData.total,
-    tipo,
-    tramo:     isFlotilla ? 'Flotilla' : currentOrderData.tramo.label,
-    incentivo: incAmt,
-    estado,
-    comentario,
-    fecha_reg: new Date().toLocaleDateString('es-GT'),
-    asesor:    asesorActual,
-    periodo:   currentPeriod,
+  var reg = {
+    id:Date.now(), orden:curOrder.orden, cliente:curOrder.cliente,
+    placa:curOrder.placa, total:curOrder.total, tipo:tipo,
+    tramo:isFlot?'Flotilla':curOrder.tramo.lbl, incentivo:incAmt,
+    estado:estado, comentario:comt,
+    fecha_reg:new Date().toLocaleDateString('es-GT'),
+    asesor:asesor, periodo:periodo()
   };
 
-  // Save locally
-  const stored = JSON.parse(localStorage.getItem(storageKey('incentivos'))||'[]');
-  stored.push(registro);
-  localStorage.setItem(storageKey('incentivos'), JSON.stringify(stored));
+  var stored=JSON.parse(localStorage.getItem(sk('inc'))||'[]');
+  stored.push(reg);
+  localStorage.setItem(sk('inc'),JSON.stringify(stored));
 
-  // Try to send to Apps Script (if configured)
-  if(APPS_SCRIPT_URL !== 'https://script.google.com/macros/s/AKfycbyarW6FVlh5gizJ1BEktjSiS6inNf5giwscHLYW7FJt9uc0NMptRcE5GycsiMaef1xB/exec'){
-    fetch(APPS_SCRIPT_URL, {method:'POST', body:JSON.stringify(registro)})
-      .then(()=>console.log('Sent to Google Sheets'))
-      .catch(e=>console.log('Apps Script not available:', e));
+  // Send to Apps Script
+  if(APPS_URL && APPS_URL.indexOf('YOUR_')===0===false && APPS_URL.length>50) {
+    fetch(APPS_URL,{method:'POST',body:JSON.stringify(reg)})
+      .then(function(){console.log('Enviado a Google Sheets');})
+      .catch(function(e){console.log('Guardado localmente. Apps Script:', e.message);});
   }
 
-  document.getElementById('submitSuccess').style.display='flex';
-  document.getElementById('submitBtn').disabled=true;
-  updateDashboard(getStoredUtil());
-  setTimeout(()=>{ document.getElementById('submitSuccess').style.display='none'; },4000);
+  document.getElementById('okMsg').style.display='flex';
+  document.getElementById('btnSub').disabled=true;
+  loadDash();
+  setTimeout(function(){document.getElementById('okMsg').style.display='none';},4000);
 }
 
-// ── MIS INCENTIVOS ─────────────────────────────────────────────
-function renderMisIncentivos(){
-  const stored = JSON.parse(localStorage.getItem(storageKey('incentivos'))||'[]');
-  const periodData = stored.filter(i=>i.periodo===currentPeriod);
+// ══ MIS INCENTIVOS ══════════════════════════════════════════
+function renderMis() {
+  if(!asesor) return;
+  var stored=JSON.parse(localStorage.getItem(sk('inc'))||'[]');
+  var per=stored.filter(function(i){return i.periodo===periodo();});
+  var d=HIST[asesor]||{util:0};
+  var pct=incPct(d.util);
+  var bruto=per.reduce(function(a,b){return a+(b.incentivo||0);},0);
+  var neto=bruto*pct;
 
-  const totalBruto = periodData.reduce((a,b)=>a+(b.incentivo||0),0);
-  const util = getStoredUtil().util;
-  const pct  = incPct(util);
-  const totalNeto = totalBruto * pct;
+  document.getElementById('miBruto').textContent=fmt(bruto,0);
+  document.getElementById('miPct').textContent=(pct*100).toFixed(0)+'%';
+  document.getElementById('miNeto').textContent=fmt(neto,0);
+  document.getElementById('miPer').textContent=periodo();
 
-  document.getElementById('miTotalBruto').textContent = fmt(totalBruto,0);
-  document.getElementById('miPctInc').textContent = (pct*100).toFixed(0)+'%';
-  document.getElementById('miTotalNeto').textContent = fmt(totalNeto,0);
-  document.getElementById('misIncPeriodo').textContent = currentPeriod;
-
-  const tbody = document.getElementById('misIncBody');
-  if(periodData.length===0){
-    tbody.innerHTML='<tr><td colspan="9" class="loading" style="text-align:center">Sin incentivos registrados este período</td></tr>';
-    return;
-  }
-
-  const estadoColors = {
-    'PENDIENTE':'rgba(0,188,212,.15)',
-    'PENDIENTE_APROBACIÓN':'rgba(249,168,37,.15)',
-    'APROBADO':'rgba(0,200,83,.15)',
-    'RECHAZADO':'rgba(239,83,80,.15)',
-  };
-  tbody.innerHTML = periodData.map(i=>`
-    <tr>
-      <td><strong>#${i.orden}</strong></td>
-      <td>${i.cliente}</td>
-      <td>${i.placa}</td>
-      <td>${fmt(i.total,0)}</td>
-      <td>${i.tipo}</td>
-      <td>${i.tramo}</td>
-      <td style="font-weight:700;color:var(--gold)">${fmt(i.incentivo,0)}</td>
-      <td><span style="padding:3px 10px;border-radius:10px;font-size:.73rem;font-weight:700;
-          background:${estadoColors[i.estado]||'rgba(255,255,255,.08)'}">${i.estado}</span></td>
-      <td style="color:var(--text2)">${i.fecha_reg}</td>
-    </tr>
-  `).join('');
+  var tbody=document.getElementById('misTbody');
+  if(!per.length){tbody.innerHTML='<tr><td colspan="8" class="ld">Sin incentivos registrados este período</td></tr>';return;}
+  var ec={'PENDIENTE':'rgba(0,188,212,.15)','PENDIENTE_APROBACIÓN':'rgba(249,168,37,.15)','APROBADO':'rgba(0,200,83,.15)','RECHAZADO':'rgba(239,83,80,.15)'};
+  tbody.innerHTML=per.map(function(i){return '<tr><td><strong>#'+i.orden+'</strong></td><td>'+i.cliente+'</td><td>'+i.placa+'</td><td>'+fmt(i.total,0)+'</td><td style="font-size:.77rem">'+i.tipo+'</td><td style="font-weight:700;color:var(--gold)">'+fmt(i.incentivo,0)+'</td><td><span style="padding:2px 9px;border-radius:8px;font-size:.71rem;font-weight:700;background:'+(ec[i.estado]||'rgba(255,255,255,.08)')+'">'+i.estado+'</span></td><td style="color:var(--dim)">'+i.fecha_reg+'</td></tr>';}).join('');
 }
 
-function exportarIncentivos(){
-  const stored = JSON.parse(localStorage.getItem(storageKey('incentivos'))||'[]');
-  const headers = ['ID','Orden','Cliente','Placa','Total Orden','Tipo','Tramo','Incentivo Q','Estado','Comentario','Fecha Reg','Período'];
-  const rows = stored.map(i=>[i.id,i.orden,i.cliente,i.placa,i.total,i.tipo,i.tramo,i.incentivo,i.estado,i.comentario||'',i.fecha_reg,i.periodo]);
-  const csv = [headers,...rows].map(r=>r.join(',')).join('
-');
-  const a = document.createElement('a');
-  a.href = 'data:text/csv;charset=utf-8,﻿'+encodeURIComponent(csv);
-  a.download = `Incentivos_${asesorActual}_${new Date().toISOString().slice(0,10)}.csv`;
+function exportCSV() {
+  var stored=JSON.parse(localStorage.getItem(sk('inc'))||'[]');
+  var hdrs=['ID','Orden','Cliente','Placa','Total','Tipo','Tramo','Incentivo','Estado','Comentario','Fecha','Período'];
+  var rows=stored.map(function(i){return [i.id,i.orden,i.cliente,i.placa,i.total,i.tipo,i.tramo,i.incentivo,i.estado,i.comentario||'',i.fecha_reg,i.periodo].join(',');});
+  var csv=[hdrs.join(',')].concat(rows).join('\n');
+  var a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download='Incentivos_'+asesor+'_'+new Date().toISOString().slice(0,10)+'.csv';
   a.click();
 }
 
-function clearPeriod(){
-  if(!confirm(`¿Borrar todos los registros de ${currentPeriod}? Esta acción no se puede deshacer.`)) return;
-  const stored = JSON.parse(localStorage.getItem(storageKey('incentivos'))||'[]');
-  const filtered = stored.filter(i=>i.periodo!==currentPeriod);
-  localStorage.setItem(storageKey('incentivos'), JSON.stringify(filtered));
-  renderMisIncentivos();
-  updateDashboard(getStoredUtil());
+function limpiarPeriodo() {
+  if(!confirm('¿Borrar todos los registros de '+periodo()+'?')) return;
+  var stored=JSON.parse(localStorage.getItem(sk('inc'))||'[]');
+  localStorage.setItem(sk('inc'),JSON.stringify(stored.filter(function(i){return i.periodo!==periodo();})));
+  renderMis(); loadDash();
 }
 
-// ── HISTORIAL ──────────────────────────────────────────────────
-function loadHistorial(){
-  const HIST_DATA = {
-    MARCO:[
-      {mes:'Mayo 2026',   util:51433,  bono:0,       esc:'E0', incBruto:2350, pct:0.5},
-      {mes:'Junio 2026',  util:101903, bono:1019.03, esc:'E2', incBruto:2350, pct:1.0},
+// ══ CALCULADORA ═════════════════════════════════════════════
+function calcBono() {
+  var u=parseFloat(document.getElementById('cIn').value)||0;
+  document.getElementById('cSlider').value=Math.min(u,200000);
+  doBono(u);
+}
+function sliderBono() {
+  var v=parseFloat(document.getElementById('cSlider').value);
+  document.getElementById('cIn').value=v;
+  doBono(v);
+}
+function doBono(u) {
+  var e=getEsc(u),bono=u*e.r,tot=7000+bono;
+  document.getElementById('cEscL').textContent=e.lbl;
+  document.getElementById('cEscR').textContent=(e.r*100).toFixed(2)+'%';
+  document.getElementById('cUtil2').textContent='Q'+u.toLocaleString('es-GT');
+  document.getElementById('cEsc2').textContent=e.lbl;
+  document.getElementById('cTasa2').textContent=(e.r*100).toFixed(2)+'%';
+  document.getElementById('cBono2').textContent=fmt(bono);
+  document.getElementById('cTotal2').textContent=fmt(tot);
+  document.getElementById('cRulePill').innerHTML=incPct(u)===1
+    ? '<div class="irp irp-100">✅ Incentivos al 100% con esta utilidad</div>'
+    : '<div class="irp irp-50">⚡ Incentivos al 50% — produce Q'+(INC_THR-u).toLocaleString('es-GT')+' más para el 100%</div>';
+  document.getElementById('cBadge').textContent=tot>=10000?'🏆 Mes excepcional':tot>=9000?'🚀 Mes excelente':tot>=8000?'🎯 Meta alcanzada':'📈 En camino';
+}
+
+// ══ HISTORIAL ═══════════════════════════════════════════════
+function loadHist() {
+  var HIST_DATA={
+    MARCO: [
+      {mes:'Mayo 2026',util:51433,bono:0,esc:'E0',incBruto:2350,pct:0.5},
+      {mes:'Junio 2026',util:101903,bono:1019.03,esc:'E2',incBruto:2350,pct:1.0},
     ],
-    DANIEL:[
-      {mes:'Mayo 2026',  util:63638, bono:0, esc:'E0', incBruto:1175, pct:0.5},
-      {mes:'Junio 2026', util:66845, bono:0, esc:'E0', incBruto:1175, pct:0.5},
+    DANIEL: [
+      {mes:'Mayo 2026',util:63638,bono:0,esc:'E0',incBruto:1175,pct:0.5},
+      {mes:'Junio 2026',util:66845,bono:0,esc:'E0',incBruto:1175,pct:0.5},
     ],
   };
-  const data = HIST_DATA[asesorActual]||[];
-  const grid = document.getElementById('histGrid');
-  if(!data.length){ grid.innerHTML='<div class="loading">Sin historial disponible</div>'; return; }
-
-  grid.innerHTML = data.map(d=>{
-    const pctMeta = d.util/META*100;
-    const cls = pctMeta>=87?'mc-ok':pctMeta>=60?'mc-warn':'mc-bad';
-    const total = 7000+d.bono+(d.incBruto*d.pct);
-    return `
-      <div class="month-card ${cls}">
-        <div class="mc-name">${d.mes}</div>
-        <div class="mc-util">${fmtN(d.util)}</div>
-        <div class="mc-detail">${pctMeta.toFixed(1)}% meta · ${d.esc} · Bono ${fmt(d.bono)}</div>
-        <div style="margin-top:8px;font-size:.8rem">
-          <span style="color:var(--text2)">Inc. neto: </span>
-          <span style="font-weight:700;color:var(--gold)">${fmt(d.incBruto*d.pct,0)}</span>
-          <span style="color:var(--text2);font-size:.72rem"> (${(d.pct*100).toFixed(0)}%)</span>
-        </div>
-        <div style="margin-top:4px;font-size:.85rem;font-weight:700">Total: ${fmt(total)}</div>
-      </div>`;
+  var data=HIST_DATA[asesor]||[];
+  var g=document.getElementById('histGrid');
+  g.innerHTML=data.map(function(d){
+    var p=d.util/META*100,tot=7000+d.bono+(d.incBruto*d.pct);
+    var cls=p>=87?'mc-ok':p>=60?'mc-warn':'mc-bad';
+    return '<div class="mc '+cls+'"><div style="font-size:.75rem;font-weight:700;color:var(--dim);margin-bottom:7px;text-transform:uppercase">'+d.mes+'</div><div style="font-size:1.1rem;font-weight:800">'+fmtN(d.util)+'</div><div style="font-size:.75rem;color:var(--dim);margin-top:3px">'+p.toFixed(1)+'% meta · '+d.esc+' · Bono '+fmt(d.bono)+'</div><div style="margin-top:7px;font-size:.8rem">Inc. neto: <strong style="color:var(--gold)">'+fmt(d.incBruto*d.pct,0)+'</strong> <span style="font-size:.7rem;color:var(--dim)">('+Math.round(d.pct*100)+'%)</span></div><div style="margin-top:3px;font-size:.85rem;font-weight:700">Total: '+fmt(tot)+'</div></div>';
   }).join('');
 
-  const tbody = document.getElementById('histIncTable').querySelector('tbody');
-  tbody.innerHTML = data.map(d=>`
-    <tr>
-      <td>${d.mes}</td>
-      <td>${fmt(d.incBruto,0)}</td>
-      <td><span style="padding:2px 10px;border-radius:10px;font-size:.75rem;font-weight:700;
-          background:${d.pct===1?'rgba(0,200,83,.15)':'rgba(249,168,37,.15)'};
-          color:${d.pct===1?'#69F0AE':'var(--gold)'}">
-          ${(d.pct*100).toFixed(0)}%</span></td>
-      <td style="font-weight:700;color:var(--gold)">${fmt(d.incBruto*d.pct,0)}</td>
-      <td style="color:var(--accent)">${fmt(d.bono)}</td>
-      <td style="font-weight:700">${fmt(7000+d.bono+d.incBruto*d.pct)}</td>
-    </tr>
-  `).join('');
+  var tbody=document.getElementById('histBody');
+  tbody.innerHTML=data.map(function(d){
+    var neto=d.incBruto*d.pct,tot=7000+d.bono+neto;
+    return '<tr><td>'+d.mes+'</td><td>'+fmt(d.incBruto,0)+'</td><td><span class="chip '+(d.pct===1?'c-new':'c-pen')+'">'+(Math.round(d.pct*100))+'%</span></td><td style="font-weight:700;color:var(--gold)">'+fmt(neto,0)+'</td><td style="color:var(--accent)">'+fmt(d.bono)+'</td><td style="font-weight:700">'+fmt(tot)+'</td></tr>';
+  }).join('');
 }
 
-// ── CALCULADORA ────────────────────────────────────────────────
-function calcBono(){
-  let u = parseFloat(document.getElementById('calcUtil').value)||0;
-  document.getElementById('calcSlider').value=Math.min(u,200000);
-  computeBono(u);
-}
-function calcSliderBono(){
-  const v=parseFloat(document.getElementById('calcSlider').value);
-  document.getElementById('calcUtil').value=v;
-  computeBono(v);
-}
-function computeBono(u){
-  const e=getEsc(u), bono=u*e.rate, total=7000+bono;
-  const pct=incPct(u);
-  document.getElementById('cUtil').textContent = 'Q'+u.toLocaleString('es-GT');
-  document.getElementById('cEsc').textContent  = e.label;
-  document.getElementById('cTasa').textContent = (e.rate*100).toFixed(2)+'%';
-  document.getElementById('cBono').textContent = fmt(bono);
-  document.getElementById('cTotal').textContent= fmt(total);
-  document.getElementById('calcEscLabel').textContent=e.label;
-  document.getElementById('calcEscRate').textContent=(e.rate*100).toFixed(2)+'%';
-  document.getElementById('calcIncRulePill').innerHTML = pct===1
-    ? '<div class="inc-rule-pill irp-100">✅ Incentivos al 100% con esta utilidad</div>'
-    : '<div class="inc-rule-pill irp-50">⚡ Incentivos al 50% — Produce Q'+(INC_THRESHOLD-u).toLocaleString('es-GT')+' más para el 100%</div>';
-  const badge=document.getElementById('cBadge');
-  badge.textContent=total>=10000?'🏆 Mes excepcional':total>=9000?'🚀 Mes excelente':total>=8000?'🎯 Meta alcanzada':'📈 En camino';
-}
-
-// Init calc
-window.addEventListener('DOMContentLoaded',()=>computeBono(100000));
+// Init calc on load
+doBono(100000);
 </script>
 </body>
 </html>
