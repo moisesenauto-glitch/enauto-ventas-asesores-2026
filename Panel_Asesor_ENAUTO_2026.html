@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ENAUTO — Panel de Asesor 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0B1F3A; --navy2:#0D2B4E; --blue:#1565C0; --blue-mid:#1E88E5; --blue-lt:#E3F2FD;
+  --accent:#00BCD4; --gold:#F9A825; --green:#00C853; --green-dk:#2E7D32;
+  --red:#EF5350; --orange:#FF9800;
+  --daniel:#FF6B8A; --marco:#4FC3F7;
+  --card:rgba(255,255,255,.06); --border:rgba(255,255,255,.1);
+  --text:rgba(255,255,255,.92); --text2:rgba(255,255,255,.5);
+  --input-bg:rgba(255,255,255,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:linear-gradient(160deg,#060F1E 0%,#0B1F3A 60%,#0D2B4E 100%);
+     color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ─── LOGIN ─────────────────────────────── */
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-box{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:20px;
+           padding:40px;width:100%;max-width:420px;text-align:center}
+.login-logo{font-size:2rem;font-weight:900;color:var(--accent);margin-bottom:6px;letter-spacing:-1px}
+.login-sub{color:var(--text2);font-size:.85rem;margin-bottom:32px}
+.login-title{font-size:1rem;font-weight:600;margin-bottom:16px;color:var(--text2);text-transform:uppercase;letter-spacing:1px}
+.asesor-btns{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.asesor-btn{
+  padding:18px 12px;border-radius:14px;border:2px solid transparent;
+  cursor:pointer;font-family:'Inter',sans-serif;font-size:.95rem;font-weight:700;
+  transition:all .2s;background:rgba(255,255,255,.06);color:var(--text);
+}
+.asesor-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.btn-marco{border-color:rgba(79,195,247,.4)}
+.btn-marco:hover,.btn-marco.sel{background:rgba(79,195,247,.15);border-color:var(--marco);color:var(--marco)}
+.btn-daniel{border-color:rgba(255,107,138,.4)}
+.btn-daniel:hover,.btn-daniel.sel{background:rgba(255,107,138,.15);border-color:var(--daniel);color:var(--daniel)}
+.btn-fullname{font-size:.72rem;font-weight:400;color:var(--text2);margin-top:3px}
+.enter-btn{
+  width:100%;margin-top:20px;padding:14px;border:none;border-radius:12px;
+  background:var(--blue);color:#fff;font-family:'Inter',sans-serif;
+  font-size:.95rem;font-weight:700;cursor:pointer;transition:.2s;
+  opacity:.4;pointer-events:none;
+}
+.enter-btn.ready{opacity:1;pointer-events:all}
+.enter-btn.ready:hover{background:var(--blue-mid)}
+
+/* ─── APP ────────────────────────────────── */
+#app{display:none;flex-direction:column;min-height:100vh}
+
+/* ─── TOP BAR ───────────────────────────── */
+.topbar{
+  background:rgba(11,31,58,.95);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;padding:10px 16px;
+  position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);
+}
+.topbar-logo{font-size:1.1rem;font-weight:900;color:var(--accent);letter-spacing:-.5px}
+.topbar-asesor{
+  padding:4px 14px;border-radius:20px;font-size:.8rem;font-weight:700;margin-left:2px;
+}
+.ta-marco{background:rgba(79,195,247,.15);color:var(--marco);border:1px solid rgba(79,195,247,.3)}
+.ta-daniel{background:rgba(255,107,138,.15);color:var(--daniel);border:1px solid rgba(255,107,138,.3)}
+.topbar-mes{color:var(--text2);font-size:.8rem;margin-left:auto}
+.topbar-logout{
+  background:none;border:1px solid var(--border);color:var(--text2);
+  padding:5px 12px;border-radius:8px;font-family:'Inter',sans-serif;
+  font-size:.78rem;cursor:pointer;transition:.2s;
+}
+.topbar-logout:hover{border-color:rgba(255,255,255,.3);color:#fff}
+
+/* ─── TABS ───────────────────────────────── */
+.tab-bar{
+  display:flex;overflow-x:auto;background:rgba(0,0,0,.2);
+  border-bottom:1px solid var(--border);gap:0;padding:0 8px;
+  scrollbar-width:none;
+}
+.tab-bar::-webkit-scrollbar{display:none}
+.tab-btn2{
+  padding:12px 16px;border:none;background:none;color:var(--text2);
+  font-family:'Inter',sans-serif;font-size:.82rem;font-weight:500;
+  cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;
+  transition:.2s;
+}
+.tab-btn2:hover{color:#fff}
+.tab-btn2.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
+
+/* ─── PANELS ─────────────────────────────── */
+.panels{flex:1;overflow-y:auto}
+.panel2{display:none;padding:16px;max-width:960px;margin:0 auto;padding-bottom:40px;
+        animation:fadeIn .3s ease}
+.panel2.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── CARD ───────────────────────────────── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;
+      padding:20px;margin-bottom:16px}
+.card-hdr{font-size:.85rem;font-weight:700;margin-bottom:14px;
+          display:flex;align-items:center;gap:8px;color:#fff;
+          border-bottom:1px solid var(--border);padding-bottom:10px}
+.card-hdr span{font-size:.78rem;font-weight:400;color:var(--text2);margin-left:auto}
+
+/* ─── KPI ROW ────────────────────────────── */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
+.kpi2{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:12px;
+      padding:14px;text-align:center}
+.kpi2 .v{font-size:1.5rem;font-weight:900;line-height:1}
+.kpi2 .l{font-size:.68rem;color:var(--text2);margin-top:4px;text-transform:uppercase;letter-spacing:.4px}
+
+/* Progress bar */
+.prog-wrap{margin:12px 0}
+.prog-labels{display:flex;justify-content:space-between;font-size:.75rem;color:var(--text2);margin-bottom:6px}
+.prog-bar{height:8px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;border-radius:4px;transition:width .6s ease}
+
+/* Escalon badge */
+.esc-badge2{display:inline-flex;align-items:center;gap:8px;
+            padding:6px 14px;border-radius:20px;font-size:.82rem;font-weight:700;margin-bottom:4px}
+
+/* Incentive rule pill */
+.inc-rule-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:8px 16px;border-radius:10px;font-size:.83rem;font-weight:600;
+}
+.irp-50{background:rgba(249,168,37,.12);border:1px solid rgba(249,168,37,.3);color:var(--gold)}
+.irp-100{background:rgba(0,200,83,.12);border:1px solid rgba(0,200,83,.3);color:var(--green)}
+
+/* ─── FORM ───────────────────────────────── */
+.form-group{margin-bottom:14px}
+.form-label{font-size:.75rem;font-weight:600;color:var(--text2);text-transform:uppercase;
+            letter-spacing:.5px;margin-bottom:6px;display:block}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-input,.form-select,.form-textarea{
+  width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid var(--border);
+  background:var(--input-bg);color:var(--text);font-family:'Inter',sans-serif;font-size:.88rem;
+  outline:none;transition:.2s;
+}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent);background:rgba(255,255,255,.1)}
+.form-input::placeholder{color:rgba(255,255,255,.25)}
+.form-select option{background:#0D2B4E;color:#fff}
+.form-textarea{resize:vertical;min-height:70px}
+.form-hint{font-size:.72rem;color:var(--text2);margin-top:4px}
+
+/* Lookup result card */
+.lookup-result{
+  background:rgba(0,188,212,.08);border:1px solid rgba(0,188,212,.2);
+  border-radius:12px;padding:14px 16px;margin-top:12px;display:none;
+}
+.lr-row{display:flex;justify-content:space-between;font-size:.82rem;padding:4px 0;
+        border-bottom:1px solid rgba(255,255,255,.06)}
+.lr-row:last-child{border-bottom:none}
+.lr-lbl{color:var(--text2)}
+.lr-val{font-weight:600}
+.status-chip{display:inline-block;padding:3px 12px;border-radius:12px;font-size:.75rem;font-weight:700}
+.sc-new{background:rgba(0,200,83,.2);color:#69F0AE}
+.sc-recovered{background:rgba(30,136,229,.2);color:#90CAF9}
+.sc-regular{background:rgba(239,83,80,.15);color:#EF9A9A}
+.sc-pending{background:rgba(249,168,37,.15);color:var(--gold)}
+.sc-unknown{background:rgba(255,255,255,.1);color:rgba(255,255,255,.5)}
+
+/* Tramo chip */
+.tramo-chip{display:inline-block;padding:4px 12px;border-radius:12px;font-size:.78rem;font-weight:700}
+.tc-t1{background:rgba(79,195,247,.15);color:#4FC3F7}
+.tc-t2{background:rgba(100,181,246,.2);color:#64B5F6}
+.tc-t3{background:rgba(30,136,229,.25);color:#90CAF9}
+.tc-t4{background:rgba(21,101,192,.35);color:#BBDEFB}
+.tc-na{background:rgba(255,255,255,.08);color:rgba(255,255,255,.4)}
+
+/* Submit button */
+.submit-btn{
+  width:100%;padding:13px;border:none;border-radius:10px;
+  background:var(--blue);color:#fff;font-family:'Inter',sans-serif;
+  font-size:.9rem;font-weight:700;cursor:pointer;transition:.2s;margin-top:4px;
+}
+.submit-btn:hover{background:var(--blue-mid)}
+.submit-btn:disabled{opacity:.4;cursor:not-allowed}
+.submit-btn-pending{background:rgba(249,168,37,.3);border:1px solid var(--gold);color:var(--gold)}
+.submit-btn-pending:hover{background:rgba(249,168,37,.45)}
+
+/* ─── TABLE ──────────────────────────────── */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+thead tr{background:rgba(255,255,255,.06)}
+th{padding:9px 12px;text-align:left;font-weight:600;color:var(--text2);
+   text-transform:uppercase;font-size:.72rem;letter-spacing:.5px;white-space:nowrap;
+   border-bottom:1px solid var(--border)}
+td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.05);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.03)}
+
+/* ─── BONO CALC ──────────────────────────── */
+.calc-mini{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.calc-num-input{
+  width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:10px;
+  background:rgba(255,255,255,.08);color:#fff;font-family:'Inter',sans-serif;
+  font-size:1.3rem;font-weight:800;outline:none;transition:.2s;
+}
+.calc-num-input:focus{border-color:var(--accent)}
+.result-box{background:linear-gradient(135deg,rgba(13,27,56,.9),rgba(21,65,136,.5));
+            border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:18px}
+.rb-row{display:flex;justify-content:space-between;font-size:.83rem;color:rgba(255,255,255,.6);padding:3px 0}
+.rb-row strong{color:#fff}
+.rb-total{font-size:2rem;font-weight:900;color:var(--gold);margin-top:8px}
+
+/* ─── ALERT ──────────────────────────────── */
+.alert{padding:10px 14px;border-radius:9px;font-size:.82rem;margin-bottom:12px;
+       display:flex;gap:8px;align-items:flex-start;line-height:1.5}
+.alert-info{background:rgba(0,188,212,.1);border:1px solid rgba(0,188,212,.25);color:rgba(255,255,255,.8)}
+.alert-warn{background:rgba(249,168,37,.1);border:1px solid rgba(249,168,37,.25);color:rgba(255,255,255,.8)}
+.alert-success{background:rgba(0,200,83,.1);border:1px solid rgba(0,200,83,.25);color:rgba(255,255,255,.8)}
+.alert-error{background:rgba(239,83,80,.1);border:1px solid rgba(239,83,80,.25);color:rgba(255,255,255,.8)}
+
+/* ─── MONTH HISTORY ──────────────────────── */
+.month-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.month-card{background:rgba(255,255,255,.04);border:1px solid var(--border);
+            border-radius:12px;padding:16px;border-left:4px solid}
+.mc-ok{border-left-color:var(--green)}
+.mc-warn{border-left-color:var(--gold)}
+.mc-bad{border-left-color:var(--red)}
+.mc-neutral{border-left-color:rgba(255,255,255,.2)}
+.mc-name{font-size:.78rem;font-weight:700;color:var(--text2);margin-bottom:8px;text-transform:uppercase}
+.mc-util{font-size:1.1rem;font-weight:800}
+.mc-detail{font-size:.75rem;color:var(--text2);margin-top:4px}
+
+/* ─── LOADING ────────────────────────────── */
+.loading{text-align:center;padding:32px;color:var(--text2);font-size:.85rem}
+.spinner{display:inline-block;width:24px;height:24px;border:2px solid rgba(255,255,255,.1);
+         border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;
+         margin-right:8px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ─── RESPONSIVE ─────────────────────────── */
+@media(max-width:600px){
+  .form-row{grid-template-columns:1fr}
+  .calc-mini{grid-template-columns:1fr}
+  .kpi-row{grid-template-columns:1fr 1fr}
+  .month-grid{grid-template-columns:1fr 1fr}
+  .panel2{padding:12px;padding-bottom:32px}
+  .topbar{padding:8px 12px}
+}
+@media(max-width:380px){
+  .kpi-row,.month-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══════════════════════════════════════════════════ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">ENAUTO</div>
+    <div class="login-sub">Panel de Asesor · 2026</div>
+    <div class="login-title">¿Quién eres?</div>
+    <div class="asesor-btns">
+      <button class="asesor-btn btn-marco" onclick="selectAsesor('MARCO')">
+        <div>MARCO</div>
+        <div class="btn-fullname">Marco Antonio Orozco</div>
+      </button>
+      <button class="asesor-btn btn-daniel" onclick="selectAsesor('DANIEL')">
+        <div>DANIEL</div>
+        <div class="btn-fullname">Rony Daniel López</div>
+      </button>
+    </div>
+    <button class="enter-btn" id="enterBtn" onclick="enterApp()">Ingresar</button>
+  </div>
+</div>
+
+<!-- ══ APP ═════════════════════════════════════════════════════ -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-logo">ENAUTO</div>
+    <div class="topbar-asesor" id="topAsesor">—</div>
+    <div class="topbar-mes" id="topMes"></div>
+    <button class="topbar-logout" onclick="logout()">Salir</button>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-btn2 active" onclick="showPanel('pDash',this)">📊 Mi Mes</button>
+    <button class="tab-btn2" onclick="showPanel('pInc',this)">⭐ Registrar Incentivo</button>
+    <button class="tab-btn2" onclick="showPanel('pMisInc',this)">📋 Mis Incentivos</button>
+    <button class="tab-btn2" onclick="showPanel('pCalc',this)">🧮 Calculadora</button>
+    <button class="tab-btn2" onclick="showPanel('pHist',this)">📅 Historial</button>
+  </div>
+
+  <div class="panels">
+
+    <!-- ── PANEL: MI MES ─────────────────────────────────── -->
+    <div id="pDash" class="panel2 active">
+      <div class="kpi-row" id="dashKpis">
+        <div class="kpi2"><div class="v" id="kUtil" style="color:var(--accent)">—</div><div class="l">Utilidad del mes</div></div>
+        <div class="kpi2"><div class="v" id="kPct" style="color:var(--gold)">—</div><div class="l">% de meta Q115k</div></div>
+        <div class="kpi2"><div class="v" id="kBono" style="color:var(--green)">—</div><div class="l">Bono generado</div></div>
+        <div class="kpi2"><div class="v" id="kTotal" style="color:#fff">—</div><div class="l">Total a recibir</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-hdr">📈 Progreso hacia la meta <span id="dashMesLabel">—</span></div>
+        <div id="dashEsc" style="margin-bottom:10px"></div>
+        <div class="prog-wrap">
+          <div class="prog-labels"><span>Q0</span><span id="progMeta">Meta Q115,000</span></div>
+          <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%;background:var(--blue-mid)"></div></div>
+        </div>
+        <div id="dashIncRule" style="margin-top:14px"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-hdr">💰 Detalle de comisión</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:14px">
+            <div style="font-size:.72rem;color:var(--text2);margin-bottom:4px">SUELDO BASE</div>
+            <div style="font-size:1.2rem;font-weight:800">Q7,000.00</div>
+          </div>
+          <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:14px">
+            <div style="font-size:.72rem;color:var(--text2);margin-bottom:4px">BONO UTILIDAD</div>
+            <div style="font-size:1.2rem;font-weight:800;color:var(--accent)" id="dashBonoDetail">Q0.00</div>
+          </div>
+        </div>
+        <div style="margin-top:10px;background:rgba(0,188,212,.08);border:1px solid rgba(0,188,212,.2);border-radius:10px;padding:12px;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:.82rem;color:var(--text2)">TOTAL COMISIÓN</span>
+          <span style="font-size:1.2rem;font-weight:900;color:var(--accent)" id="dashTotalComision">Q7,000.00</span>
+        </div>
+        <div id="dashIncTotal" style="margin-top:8px;padding:10px 12px;border-radius:10px;background:rgba(0,200,83,.08);border:1px solid rgba(0,200,83,.2);display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:.82rem;color:var(--text2)">INCENTIVOS EST. (pendiente aprobación)</span>
+          <span style="font-size:1rem;font-weight:700;color:var(--green)" id="dashIncAmt">Q0.00</span>
+        </div>
+        <div style="margin-top:10px;background:linear-gradient(135deg,rgba(13,71,161,.4),rgba(21,101,192,.3));
+                    border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:.9rem;font-weight:700">TOTAL ESTIMADO DEL MES</span>
+          <span style="font-size:1.4rem;font-weight:900;color:var(--gold)" id="dashGrandTotal">Q7,000.00</span>
+        </div>
+      </div>
+
+      <div class="alert alert-info">
+        ℹ️ <div>Los datos de utilidad y bono se cargan del cuadro de ventas. Los incentivos registrados en este panel están pendientes de aprobación hasta que el administrador los confirme.</div>
+      </div>
+    </div>
+
+    <!-- ── PANEL: REGISTRAR INCENTIVO ───────────────────── -->
+    <div id="pInc" class="panel2">
+      <div class="alert alert-info">
+        ℹ️ <div><strong>¿Cómo funciona?</strong> Ingresa el número de orden y el sistema buscará los datos del cliente y verificará si aplica como nuevo o recuperado (más de 10 meses sin venir). Si hay duda, puedes enviarlo con comentario para aprobación.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-hdr">🔍 Buscar orden</div>
+        <div class="form-group">
+          <label class="form-label">Número de Orden</label>
+          <div style="display:flex;gap:10px">
+            <input type="number" class="form-input" id="ordenInput" placeholder="Ej. 18590" style="font-size:1.1rem;font-weight:700">
+            <button onclick="lookupOrden()" style="padding:10px 20px;border:none;border-radius:10px;background:var(--blue);color:#fff;font-family:'Inter',sans-serif;font-weight:700;cursor:pointer;white-space:nowrap;transition:.2s" onmouseover="this.style.background='#1E88E5'" onmouseout="this.style.background='#1565C0'">Buscar</button>
+          </div>
+        </div>
+
+        <div id="lookupLoading" style="display:none" class="loading">
+          <span class="spinner"></span> Buscando orden...
+        </div>
+
+        <div id="lookupResult" class="lookup-result">
+          <div style="margin-bottom:10px;display:flex;align-items:center;gap:10px">
+            <span style="font-weight:700;font-size:.9rem" id="lr_cliente">—</span>
+            <span class="status-chip" id="lr_status">—</span>
+          </div>
+          <div class="lr-row"><span class="lr-lbl">Placa</span><span class="lr-val" id="lr_placa">—</span></div>
+          <div class="lr-row"><span class="lr-lbl">Vehículo</span><span class="lr-val" id="lr_vehiculo">—</span></div>
+          <div class="lr-row"><span class="lr-lbl">Fecha de pago</span><span class="lr-val" id="lr_fecha">—</span></div>
+          <div class="lr-row"><span class="lr-lbl">Total de orden</span><span class="lr-val" id="lr_total">—</span></div>
+          <div class="lr-row"><span class="lr-lbl">Asesor</span><span class="lr-val" id="lr_asesor">—</span></div>
+          <div class="lr-row"><span class="lr-lbl">Última visita anterior</span><span class="lr-val" id="lr_ultima">—</span></div>
+          <div class="lr-row"><span class="lr-lbl">Meses sin venir</span><span class="lr-val" id="lr_meses">—</span></div>
+          <div class="lr-row"><span class="lr-lbl">Tramo</span><span class="lr-val"><span class="tramo-chip" id="lr_tramo">—</span></span></div>
+          <div class="lr-row"><span class="lr-lbl">Incentivo calculado</span><span class="lr-val" id="lr_incentivo" style="font-size:1.1rem;font-weight:900;color:var(--gold)">—</span></div>
+        </div>
+
+        <div id="lookupError" style="display:none" class="alert alert-error" style="margin-top:12px">
+          ⚠️ <span id="lookupErrorMsg">No se encontró la orden.</span>
+        </div>
+      </div>
+
+      <div id="registerForm" style="display:none">
+        <div class="card">
+          <div class="card-hdr">📝 Registrar incentivo</div>
+
+          <div class="form-group">
+            <label class="form-label">Tipo de cliente</label>
+            <select class="form-select" id="tipoCliente" onchange="onTipoChange()">
+              <option value="">— Seleccionar —</option>
+              <option value="NUEVO">✅ Cliente Nuevo</option>
+              <option value="RECUPERADO">🔄 Cliente Recuperado (&gt;10 meses)</option>
+              <option value="FLOTILLA_NUEVO">🚛 Flotilla Nueva</option>
+              <option value="FLOTILLA_RECUPERADO">🚛 Flotilla Recuperada</option>
+              <option value="NO_APLICA">❌ No aplica</option>
+            </select>
+          </div>
+
+          <div id="flotillaInfo" style="display:none">
+            <div class="alert alert-info">🚛 <div>Para flotilla debe haber al menos <strong>3 servicios</strong> a 3 vehículos distintos de la misma empresa en el período. El incentivo es de <strong>Q500</strong> por flotilla, no por orden individual.</div></div>
+            <div class="form-group">
+              <label class="form-label">Nombre de la empresa / flotilla</label>
+              <input type="text" class="form-input" id="flotillaEmpresa" placeholder="Nombre de la empresa">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Órdenes de la flotilla (mínimo 3, separadas por coma)</label>
+              <input type="text" class="form-input" id="flotillaOrdenes" placeholder="Ej. 18590, 18624, 18646">
+            </div>
+          </div>
+
+          <div id="comentarioSection" style="display:none">
+            <div class="alert alert-warn">⚠️ <div>Esta orden tiene observaciones o no cumple todos los criterios automáticamente. Puedes enviarla con un comentario para que el administrador la revise y apruebe.</div></div>
+            <div class="form-group">
+              <label class="form-label">Comentario / justificación</label>
+              <textarea class="form-textarea" id="comentario" placeholder="Explica por qué crees que aplica este incentivo..."></textarea>
+            </div>
+          </div>
+
+          <div id="comentarioOptional">
+            <div class="form-group">
+              <label class="form-label">Comentario adicional (opcional)</label>
+              <textarea class="form-textarea" id="comentarioOpt" placeholder="Cualquier observación adicional..." style="min-height:50px"></textarea>
+            </div>
+          </div>
+
+          <div id="incResumen" style="display:none;margin-bottom:14px;padding:14px;background:rgba(0,200,83,.08);border:1px solid rgba(0,200,83,.2);border-radius:10px">
+            <div style="font-size:.78rem;color:var(--text2);margin-bottom:6px">INCENTIVO A REGISTRAR</div>
+            <div style="font-size:1.4rem;font-weight:900;color:var(--green)" id="incResumenAmt">Q0</div>
+            <div style="font-size:.78rem;color:var(--text2);margin-top:4px" id="incResumenNote"></div>
+          </div>
+
+          <button class="submit-btn" id="submitBtn" onclick="submitIncentive()" disabled>
+            Registrar incentivo
+          </button>
+          <div id="submitSuccess" style="display:none" class="alert alert-success" style="margin-top:10px">
+            ✅ <div>Incentivo registrado correctamente. Aparecerá en "Mis Incentivos" como pendiente de aprobación.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PANEL: MIS INCENTIVOS ─────────────────────────── -->
+    <div id="pMisInc" class="panel2">
+      <div class="card">
+        <div class="card-hdr">📋 Incentivos registrados
+          <span id="misIncPeriodo">período actual</span>
+        </div>
+        <div id="misIncResumen" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">
+          <div class="kpi2"><div class="v" id="miTotalBruto" style="color:var(--gold)">Q0</div><div class="l">Total bruto</div></div>
+          <div class="kpi2"><div class="v" id="miPctInc" style="color:var(--accent)">50%</div><div class="l">% aplicado</div></div>
+          <div class="kpi2"><div class="v" id="miTotalNeto" style="color:var(--green)">Q0</div><div class="l">Incentivo neto</div></div>
+        </div>
+        <div class="tbl-wrap">
+          <table id="misIncTable">
+            <thead><tr>
+              <th>Orden</th><th>Cliente</th><th>Placa</th>
+              <th>Total orden</th><th>Tipo</th><th>Tramo</th>
+              <th>Incentivo Q</th><th>Estado</th><th>Fecha reg.</th>
+            </tr></thead>
+            <tbody id="misIncBody">
+              <tr><td colspan="9" class="loading">Sin registros aún</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+          <button onclick="exportarIncentivos()" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:none;color:var(--text2);font-family:'Inter',sans-serif;font-size:.78rem;cursor:pointer">📤 Exportar CSV</button>
+          <button onclick="clearPeriod()" style="padding:8px 16px;border:1px solid rgba(239,83,80,.3);border-radius:8px;background:none;color:var(--red);font-family:'Inter',sans-serif;font-size:.78rem;cursor:pointer">🗑 Limpiar período</button>
+        </div>
+      </div>
+
+      <div class="alert alert-info">
+        ℹ️ <div>Los registros con estado <strong>Pendiente</strong> están esperando revisión del administrador. Los datos se guardan localmente en este dispositivo. Para respaldo permanente, exporta el CSV y compártelo.</div>
+      </div>
+    </div>
+
+    <!-- ── PANEL: CALCULADORA ────────────────────────────── -->
+    <div id="pCalc" class="panel2">
+      <div class="card">
+        <div class="card-hdr">🧮 Simulador de comisión — Base Q7,000</div>
+        <div class="calc-mini">
+          <div>
+            <div class="form-group">
+              <label class="form-label">Utilidad mensual</label>
+              <input type="number" class="calc-num-input" id="calcUtil" value="100000"
+                     oninput="calcBono()" placeholder="0">
+            </div>
+            <input type="range" style="width:100%;accent-color:var(--accent);margin:8px 0 4px;cursor:pointer"
+                   id="calcSlider" min="0" max="200000" value="100000" step="500" oninput="calcSliderBono()">
+            <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--text2);margin-bottom:14px">
+              <span>Q0</span><span>Q50k</span><span>Q100k</span><span>Q150k</span><span>Q200k</span>
+            </div>
+            <div id="calcEscPill" style="padding:10px 14px;border-radius:10px;background:rgba(255,255,255,.05);font-size:.83rem;font-weight:700;display:flex;justify-content:space-between;align-items:center">
+              <span id="calcEscLabel">E2</span>
+              <span id="calcEscRate" style="color:var(--accent)">1.00%</span>
+            </div>
+            <div id="calcIncRulePill" style="margin-top:10px"></div>
+          </div>
+          <div class="result-box">
+            <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:2px">BASE FIJA</div>
+            <div style="font-weight:700;margin-bottom:12px">Q7,000.00</div>
+            <div class="rb-row"><span>Utilidad</span><strong id="cUtil">Q100,000</strong></div>
+            <div class="rb-row"><span>Escalón</span><strong id="cEsc">E2</strong></div>
+            <div class="rb-row"><span>Tasa</span><strong id="cTasa">1.00%</strong></div>
+            <div class="rb-row"><span>Bono</span><strong id="cBono" style="color:var(--accent)">Q1,000.00</strong></div>
+            <div style="border-top:1px solid rgba(255,255,255,.1);margin:10px 0"></div>
+            <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:2px">TOTAL A RECIBIR</div>
+            <div class="rb-total" id="cTotal">Q8,000.00</div>
+            <div id="cBadge" style="margin-top:8px;padding:4px 12px;background:rgba(255,255,255,.1);border-radius:16px;font-size:.78rem;display:inline-block">🎯 Meta alcanzada</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hdr">📊 Tabla de referencia rápida</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Escalón</th><th>Rango utilidad</th><th>Tasa</th><th>% incentivo</th></tr></thead>
+            <tbody>
+              <tr><td>E0</td><td>Hasta Q80,000</td><td style="color:rgba(255,255,255,.4)">0.00%</td><td><span style="background:rgba(249,168,37,.15);color:var(--gold);padding:2px 10px;border-radius:10px;font-size:.75rem;font-weight:700">50%</span></td></tr>
+              <tr><td>E1</td><td>Q80,001 – Q90,000</td><td>0.75%</td><td><span style="background:rgba(249,168,37,.15);color:var(--gold);padding:2px 10px;border-radius:10px;font-size:.75rem;font-weight:700">50%</span></td></tr>
+              <tr style="background:rgba(0,200,83,.06)"><td><strong>E2</strong></td><td><strong>Q90,001 – Q120,000</strong></td><td style="color:var(--accent)"><strong>1.00%</strong></td><td><span style="background:rgba(0,200,83,.15);color:#69F0AE;padding:2px 10px;border-radius:10px;font-size:.75rem;font-weight:700">100% ✓</span></td></tr>
+              <tr style="background:rgba(0,200,83,.06)"><td><strong>E3</strong></td><td><strong>Q120,001 – Q150,000</strong></td><td style="color:var(--accent)"><strong>1.50%</strong></td><td><span style="background:rgba(0,200,83,.15);color:#69F0AE;padding:2px 10px;border-radius:10px;font-size:.75rem;font-weight:700">100% ✓</span></td></tr>
+              <tr style="background:rgba(0,200,83,.06)"><td><strong>E4</strong></td><td><strong>Q150,001 en adelante</strong></td><td style="color:var(--gold)"><strong>2.00%</strong></td><td><span style="background:rgba(0,200,83,.15);color:#69F0AE;padding:2px 10px;border-radius:10px;font-size:.75rem;font-weight:700">100% ✓</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:12px;padding:10px 14px;background:rgba(0,188,212,.08);border:1px solid rgba(0,188,212,.2);border-radius:9px;font-size:.8rem;color:rgba(255,255,255,.7);line-height:1.55">
+          💡 El 100% de incentivos se activa al superar <strong>Q100,001</strong> de utilidad (entre E2 y E3). Bajo esa cifra el incentivo es del 50%.
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PANEL: HISTORIAL ──────────────────────────────── -->
+    <div id="pHist" class="panel2">
+      <div class="card">
+        <div class="card-hdr">📅 Historial de meses 2026</div>
+        <div id="histGrid" class="month-grid">
+          <div class="loading"><span class="spinner"></span>Cargando historial...</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hdr">📊 Detalle de incentivos por período</div>
+        <div class="tbl-wrap">
+          <table id="histIncTable">
+            <thead><tr>
+              <th>Período</th><th>Incentivos brutos</th><th>% aplicado</th>
+              <th>Incentivo neto</th><th>Bono producción</th><th>Total</th>
+            </tr></thead>
+            <tbody>
+              <tr><td colspan="6" class="loading">Sin datos históricos de incentivos</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /panels -->
+</div><!-- /app -->
+
+<script>
+// ══ CONFIG ════════════════════════════════════════════════════
+// Google Sheets IDs (from the shared links)
+const SHEET_DATOS   = '1v3S3_z1X55kp_bArT5B7MKCwjefYmJgkp7ec4TpLcik'; // AppSheet DB
+const SHEET_VENTAS  = '1_chDpO-n0rXy_rpE79_00urPz63fv80CiUz7aUPEn7Y'; // Cuadro ventas
+
+// Google Apps Script web app URL for writing data (replace with your deployed URL)
+// To create: Tools > Script Editor > Deploy as Web App > Anyone can access
+const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+
+const ESC = [
+  {lo:0,      hi:80001,  rate:0.000, label:'E0', color:'rgba(255,255,255,.2)', pct:0},
+  {lo:80001,  hi:90001,  rate:0.0075,label:'E1', color:'#42A5F5', pct:22},
+  {lo:90001,  hi:120001, rate:0.010, label:'E2', color:'#1E88E5', pct:47},
+  {lo:120001, hi:150001, rate:0.015, label:'E3', color:'#1565C0', pct:73},
+  {lo:150001, hi:Infinity,rate:0.020,label:'E4', color:'#0D3B6E', pct:100},
+];
+const TRAMOS = [
+  {lo:800,   hi:2001,  inc:100,  label:'T1 (Q800–2,000)',    css:'tc-t1'},
+  {lo:2001,  hi:3501,  inc:175,  label:'T2 (Q2,001–3,500)',  css:'tc-t2'},
+  {lo:3501,  hi:5001,  inc:250,  label:'T3 (Q3,501–5,000)',  css:'tc-t3'},
+  {lo:5001,  hi:Infinity,inc:350,label:'T4 (Q5,001+)',       css:'tc-t4'},
+];
+const META = 115000;
+const INC_THRESHOLD = 100001;
+
+// ── STATE ──────────────────────────────────────────────────────
+let asesorActual = null;
+let currentOrderData = null;
+let ordenesDatos = [];    // all orders from DATOS sheet
+let currentPeriod = getPeriodLabel();
+
+function getPeriodLabel(){
+  const now = new Date();
+  return now.toLocaleString('es-GT',{month:'long',year:'numeric'});
+}
+function fmt(n,d=2){return 'Q'+parseFloat(n).toLocaleString('es-GT',{minimumFractionDigits:d,maximumFractionDigits:d})}
+function fmtN(n){return 'Q'+Math.round(n).toLocaleString('es-GT')}
+function getEsc(u){return ESC.find(e=>u>=e.lo&&u<e.hi)||ESC[4]}
+function getTramo(t){
+  if(t < 800) return {inc:0, label:'No aplica (<Q800)', css:'tc-na'};
+  return TRAMOS.find(tr=>t>=tr.lo&&t<tr.hi)||{inc:0,label:'—',css:'tc-na'};
+}
+function incPct(util){return util >= INC_THRESHOLD ? 1.0 : 0.5}
+function storageKey(key){return `enauto_${asesorActual}_${key}`}
+
+// ── LOGIN ──────────────────────────────────────────────────────
+function selectAsesor(name){
+  asesorActual = name;
+  document.querySelectorAll('.asesor-btn').forEach(b=>b.classList.remove('sel'));
+  document.querySelector(`.btn-${name.toLowerCase()}`).classList.add('sel');
+  document.getElementById('enterBtn').classList.add('ready');
+}
+function enterApp(){
+  if(!asesorActual) return;
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('topAsesor').textContent = asesorActual;
+  document.getElementById('topAsesor').className = `topbar-asesor ta-${asesorActual.toLowerCase()}`;
+  document.getElementById('topMes').textContent = currentPeriod;
+  initApp();
+}
+function logout(){
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('app').style.display='none';
+  document.querySelectorAll('.asesor-btn').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('enterBtn').classList.remove('ready');
+  asesorActual = null; currentOrderData = null;
+}
+
+// ── TAB NAVIGATION ─────────────────────────────────────────────
+function showPanel(id, btn){
+  document.querySelectorAll('.panel2').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn2').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='pMisInc') renderMisIncentivos();
+  if(id==='pHist') loadHistorial();
+}
+
+// ── INIT ───────────────────────────────────────────────────────
+async function initApp(){
+  loadDashboard();
+  loadOrdenesDatos();
+  calcBono();
+  renderMisIncentivos();
+}
+
+// ── DASHBOARD ──────────────────────────────────────────────────
+async function loadDashboard(){
+  // Try to load from Google Sheets (gviz public read)
+  const util = getStoredUtil();
+  updateDashboard(util);
+
+  // Try real data fetch
+  try {
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_VENTAS}/gviz/tq?tq=${encodeURIComponent(`SELECT * WHERE C='${asesorActual}' LIMIT 1`)}&headers=1`;
+    // Note: This requires the sheet to be published. Fallback to stored value.
+  } catch(e){ console.log('Dashboard data: using stored values'); }
+}
+
+function getStoredUtil(){
+  // Real data from May/June images — hardcoded as reference, update each month
+  const HISTORIC = {
+    MARCO:  {util:101903, bono:1019.03, esc:'E2'},
+    DANIEL: {util:66845,  bono:0,       esc:'E0'},
+  };
+  return HISTORIC[asesorActual] || {util:0, bono:0, esc:'E0'};
+}
+
+function updateDashboard(data){
+  const util = data.util || 0;
+  const esc  = getEsc(util);
+  const bono = util * esc.rate;
+  const pct  = util / META * 100;
+  const pctInc = incPct(util);
+  const myIncentivos = getMisIncentivosTotal() * pctInc;
+
+  document.getElementById('kUtil').textContent = fmtN(util);
+  document.getElementById('kPct').textContent  = pct.toFixed(1)+'%';
+  document.getElementById('kBono').textContent = fmt(bono);
+  document.getElementById('kTotal').textContent= fmt(7000+bono);
+
+  const fill = document.getElementById('progFill');
+  fill.style.width = Math.min(pct,100)+'%';
+  fill.style.background = pct>=87?'#00C853':pct>=60?'#F9A825':'#1E88E5';
+
+  document.getElementById('dashMesLabel').textContent = currentPeriod;
+  document.getElementById('dashBonoDetail').textContent = fmt(bono);
+  document.getElementById('dashTotalComision').textContent = fmt(7000+bono);
+  document.getElementById('dashIncAmt').textContent = fmt(myIncentivos);
+  document.getElementById('dashGrandTotal').textContent = fmt(7000+bono+myIncentivos);
+
+  // Escalon badge
+  const escColors = {E0:'rgba(255,255,255,.15)',E1:'#BBDEFB',E2:'#1E88E5',E3:'#1565C0',E4:'#0D3B6E'};
+  document.getElementById('dashEsc').innerHTML = `
+    <span class="esc-badge2" style="background:${escColors[esc.label]||'#1565C0'};color:#fff">
+      ${esc.label} — ${(esc.rate*100).toFixed(2)}%
+    </span>`;
+
+  // Incentive rule pill
+  const rule = pctInc === 1.0
+    ? `<div class="inc-rule-pill irp-100">✅ Incentivos al 100% — Superaste Q100,001 de utilidad</div>`
+    : `<div class="inc-rule-pill irp-50">⚡ Incentivos al 50% — Necesitas Q${(INC_THRESHOLD-util).toLocaleString('es-GT')} más para activar el 100%</div>`;
+  document.getElementById('dashIncRule').innerHTML = rule;
+}
+
+function getMisIncentivosTotal(){
+  const stored = localStorage.getItem(storageKey('incentivos'));
+  if(!stored) return 0;
+  const list = JSON.parse(stored);
+  return list.filter(i=>i.estado!=='RECHAZADO').reduce((a,b)=>a+(b.incentivo||0),0);
+}
+
+// ── LOAD ORDENES (DATOS SHEET) ─────────────────────────────────
+async function loadOrdenesDatos(){
+  try {
+    const q = encodeURIComponent('SELECT A,B,C,D,E,F,G,H ORDER BY A DESC LIMIT 5000');
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_DATOS}/gviz/tq?tq=${q}&sheet=DATOS&headers=1`;
+    const res = await fetch(url);
+    const text = await res.text();
+    const json = JSON.parse(text.replace(/^.*?{/,'{').replace(/\);\s*$/,''));
+    ordenesDatos = json.table.rows.map(r=>{
+      const v = r.c;
+      return {
+        orden:    v[0]?.v||'', cliente: v[1]?.v||'', placa: v[2]?.v||'',
+        total:    v[3]?.v||0,  asesor:  v[4]?.v||'', fecha_ingreso: v[5]?.v||'',
+        fecha_pago: v[6]?.v||'', estado: v[7]?.v||''
+      };
+    });
+    console.log(`Loaded ${ordenesDatos.length} orders from DATOS sheet`);
+  } catch(e){
+    console.log('Could not load DATOS sheet (needs to be public). Using demo mode.');
+    // Demo data for testing
+    ordenesDatos = [
+      {orden:18590,cliente:'ROSARIO GUERRA',placa:'P599KXF',total:25381,asesor:'MARCO',fecha_ingreso:'2026-05-01',fecha_pago:'2026-06-26',estado:''},
+      {orden:18625,cliente:'INVENTAS',placa:'P063DHB',total:3620,asesor:'MARCO',fecha_ingreso:'2026-06-01',fecha_pago:'2026-06-01',estado:''},
+      {orden:16321,cliente:'ROSARIO GUERRA',placa:'P599KXF',total:5341,asesor:'MARCO',fecha_ingreso:'2024-12-01',fecha_pago:null,estado:''},
+    ];
+  }
+}
+
+// ── LOOKUP ORDER ───────────────────────────────────────────────
+async function lookupOrden(){
+  const num = parseInt(document.getElementById('ordenInput').value);
+  if(!num){ alert('Ingresa un número de orden válido'); return; }
+
+  document.getElementById('lookupLoading').style.display='block';
+  document.getElementById('lookupResult').style.display='none';
+  document.getElementById('lookupError').style.display='none';
+  document.getElementById('registerForm').style.display='none';
+  currentOrderData = null;
+
+  await new Promise(r=>setTimeout(r,600)); // simulate loading
+
+  const orden = ordenesDatos.find(o=>parseInt(o.orden)===num);
+  document.getElementById('lookupLoading').style.display='none';
+
+  if(!orden){
+    document.getElementById('lookupError').style.display='flex';
+    document.getElementById('lookupErrorMsg').textContent =
+      `No se encontró la orden #${num} en la base de datos. Verifica el número o espera a que se actualice el sistema.`;
+    return;
+  }
+
+  // Check asesor
+  if(orden.asesor && orden.asesor !== asesorActual){
+    document.getElementById('lookupError').style.display='flex';
+    document.getElementById('lookupErrorMsg').textContent =
+      `La orden #${num} pertenece a ${orden.asesor}, no a ${asesorActual}.`;
+    return;
+  }
+
+  // Find previous visits for this client/placa
+  const prevOrders = ordenesDatos.filter(o=>
+    parseInt(o.orden) !== num &&
+    (o.cliente === orden.cliente || o.placa === orden.placa) &&
+    o.placa
+  ).sort((a,b)=>b.orden-a.orden);
+
+  let status = 'NUEVO', statusLabel = 'Cliente Nuevo', statusCss = 'sc-new';
+  let ultimaVisita = null, mesesSinVenir = null;
+
+  if(prevOrders.length > 0){
+    const lastDate = prevOrders[0].fecha_ingreso || prevOrders[0].fecha_pago;
+    if(lastDate){
+      const last = new Date(lastDate);
+      const now  = new Date();
+      const months = (now.getFullYear()-last.getFullYear())*12 + (now.getMonth()-last.getMonth());
+      mesesSinVenir = months;
+      ultimaVisita = last.toLocaleDateString('es-GT');
+      if(months > 10){
+        status='RECUPERADO'; statusLabel=`Cliente Recuperado (${months} meses)`; statusCss='sc-recovered';
+      } else {
+        status='REGULAR'; statusLabel=`Cliente frecuente (${months} meses)`; statusCss='sc-regular';
+      }
+    }
+  }
+
+  // Check if already registered this period
+  const stored = JSON.parse(localStorage.getItem(storageKey('incentivos'))||'[]');
+  const alreadyReg = stored.find(i=>parseInt(i.orden)===num);
+  if(alreadyReg){
+    status='YA_REGISTRADO'; statusLabel='Ya registrado este período'; statusCss='sc-pending';
+  }
+
+  const tramo = getTramo(orden.total);
+  const fechaPago = orden.fecha_pago ? new Date(orden.fecha_pago).toLocaleDateString('es-GT') : '—';
+
+  currentOrderData = {orden:num, ...orden, status, statusLabel, statusCss, tramo, mesesSinVenir, ultimaVisita};
+
+  // Populate result card
+  document.getElementById('lr_cliente').textContent  = orden.cliente || '—';
+  document.getElementById('lr_placa').textContent    = orden.placa   || '—';
+  document.getElementById('lr_vehiculo').textContent = '—'; // vehicle model not in sheet
+  document.getElementById('lr_fecha').textContent    = fechaPago;
+  document.getElementById('lr_total').textContent    = fmt(orden.total);
+  document.getElementById('lr_asesor').textContent   = orden.asesor  || '—';
+  document.getElementById('lr_ultima').textContent   = ultimaVisita  || 'Primera visita';
+  document.getElementById('lr_meses').textContent    = mesesSinVenir != null ? `${mesesSinVenir} meses` : '—';
+  document.getElementById('lr_tramo').className      = `tramo-chip ${tramo.css}`;
+  document.getElementById('lr_tramo').textContent    = tramo.label;
+  document.getElementById('lr_incentivo').textContent = tramo.inc > 0 ? fmt(tramo.inc,0) : 'No aplica';
+
+  const statusEl = document.getElementById('lr_status');
+  statusEl.className = `status-chip ${statusCss}`;
+  statusEl.textContent = statusLabel;
+
+  document.getElementById('lookupResult').style.display='block';
+
+  // Pre-fill tipo cliente
+  if(status==='NUEVO') document.getElementById('tipoCliente').value='NUEVO';
+  else if(status==='RECUPERADO') document.getElementById('tipoCliente').value='RECUPERADO';
+  else document.getElementById('tipoCliente').value='';
+
+  onTipoChange();
+  document.getElementById('registerForm').style.display = (status==='YA_REGISTRADO'||status==='REGULAR') ? 'none' : 'block';
+
+  if(status==='REGULAR'){
+    document.getElementById('lookupError').style.display='flex';
+    document.getElementById('lookupErrorMsg').textContent =
+      `Este cliente visitó el taller hace ${mesesSinVenir} meses, por lo que no aplica como recuperado (se requieren más de 10 meses).`;
+  }
+  if(status==='YA_REGISTRADO'){
+    document.getElementById('lookupError').style.display='flex';
+    document.getElementById('lookupErrorMsg').textContent = `La orden #${num} ya fue registrada en este período (${alreadyReg.estado}).`;
+  }
+  if(status==='NUEVO'||status==='RECUPERADO'){
+    if(tramo.inc < 1){
+      document.getElementById('comentarioSection').style.display='block';
+      document.getElementById('comentarioOptional').style.display='none';
+    }
+  }
+}
+
+function onTipoChange(){
+  const tipo = document.getElementById('tipoCliente').value;
+  const isFlotilla = tipo.startsWith('FLOTILLA');
+  document.getElementById('flotillaInfo').style.display = isFlotilla ? 'block' : 'none';
+  document.getElementById('comentarioSection').style.display = 'none';
+  document.getElementById('comentarioOptional').style.display = !isFlotilla ? 'block' : 'none';
+
+  let incAmt = 0, incNote = '';
+  if(currentOrderData && !isFlotilla){
+    incAmt = currentOrderData.tramo.inc;
+    incNote = currentOrderData.tramo.label;
+    if(!tipo){ incAmt=0; }
+    if(tipo==='NO_APLICA') incAmt=0;
+  }
+  if(isFlotilla){ incAmt=500; incNote='Flotilla — Q500 fijo por flotilla'; }
+
+  const needsComment = !tipo || (incAmt===0 && tipo!=='NO_APLICA') ||
+    (currentOrderData && currentOrderData.status==='REGULAR');
+  document.getElementById('comentarioSection').style.display = needsComment ? 'block':'none';
+  document.getElementById('comentarioOptional').style.display = !needsComment&&!isFlotilla ? 'block':'none';
+
+  if(incAmt > 0){
+    document.getElementById('incResumen').style.display='block';
+    document.getElementById('incResumenAmt').textContent = fmt(incAmt,0);
+    document.getElementById('incResumenNote').textContent = incNote;
+  } else {
+    document.getElementById('incResumen').style.display='none';
+  }
+
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.disabled = !tipo || tipo==='NO_APLICA';
+  submitBtn.className = needsComment && tipo && tipo!=='NO_APLICA'
+    ? 'submit-btn submit-btn-pending'
+    : 'submit-btn';
+  submitBtn.textContent = needsComment && tipo && tipo!=='NO_APLICA'
+    ? '📤 Enviar para aprobación'
+    : '✅ Registrar incentivo';
+}
+
+// ── SUBMIT INCENTIVE ───────────────────────────────────────────
+function submitIncentive(){
+  if(!currentOrderData) return;
+  const tipo = document.getElementById('tipoCliente').value;
+  if(!tipo || tipo==='NO_APLICA') return;
+
+  const isFlotilla = tipo.startsWith('FLOTILLA');
+  const comentario = document.getElementById('comentario').value ||
+                     document.getElementById('comentarioOpt').value || '';
+  const needsApproval = !!(document.getElementById('comentario').value) ||
+    (currentOrderData.status === 'REGULAR');
+
+  let incAmt = isFlotilla ? 500 : currentOrderData.tramo.inc;
+  const estado = needsApproval ? 'PENDIENTE_APROBACIÓN' : 'PENDIENTE';
+
+  const registro = {
+    id: Date.now(),
+    orden:     currentOrderData.orden,
+    cliente:   currentOrderData.cliente,
+    placa:     currentOrderData.placa,
+    total:     currentOrderData.total,
+    tipo,
+    tramo:     isFlotilla ? 'Flotilla' : currentOrderData.tramo.label,
+    incentivo: incAmt,
+    estado,
+    comentario,
+    fecha_reg: new Date().toLocaleDateString('es-GT'),
+    asesor:    asesorActual,
+    periodo:   currentPeriod,
+  };
+
+  // Save locally
+  const stored = JSON.parse(localStorage.getItem(storageKey('incentivos'))||'[]');
+  stored.push(registro);
+  localStorage.setItem(storageKey('incentivos'), JSON.stringify(stored));
+
+  // Try to send to Apps Script (if configured)
+  if(APPS_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE'){
+    fetch(APPS_SCRIPT_URL, {method:'POST', body:JSON.stringify(registro)})
+      .then(()=>console.log('Sent to Google Sheets'))
+      .catch(e=>console.log('Apps Script not available:', e));
+  }
+
+  document.getElementById('submitSuccess').style.display='flex';
+  document.getElementById('submitBtn').disabled=true;
+  updateDashboard(getStoredUtil());
+  setTimeout(()=>{ document.getElementById('submitSuccess').style.display='none'; },4000);
+}
+
+// ── MIS INCENTIVOS ─────────────────────────────────────────────
+function renderMisIncentivos(){
+  const stored = JSON.parse(localStorage.getItem(storageKey('incentivos'))||'[]');
+  const periodData = stored.filter(i=>i.periodo===currentPeriod);
+
+  const totalBruto = periodData.reduce((a,b)=>a+(b.incentivo||0),0);
+  const util = getStoredUtil().util;
+  const pct  = incPct(util);
+  const totalNeto = totalBruto * pct;
+
+  document.getElementById('miTotalBruto').textContent = fmt(totalBruto,0);
+  document.getElementById('miPctInc').textContent = (pct*100).toFixed(0)+'%';
+  document.getElementById('miTotalNeto').textContent = fmt(totalNeto,0);
+  document.getElementById('misIncPeriodo').textContent = currentPeriod;
+
+  const tbody = document.getElementById('misIncBody');
+  if(periodData.length===0){
+    tbody.innerHTML='<tr><td colspan="9" class="loading" style="text-align:center">Sin incentivos registrados este período</td></tr>';
+    return;
+  }
+
+  const estadoColors = {
+    'PENDIENTE':'rgba(0,188,212,.15)',
+    'PENDIENTE_APROBACIÓN':'rgba(249,168,37,.15)',
+    'APROBADO':'rgba(0,200,83,.15)',
+    'RECHAZADO':'rgba(239,83,80,.15)',
+  };
+  tbody.innerHTML = periodData.map(i=>`
+    <tr>
+      <td><strong>#${i.orden}</strong></td>
+      <td>${i.cliente}</td>
+      <td>${i.placa}</td>
+      <td>${fmt(i.total,0)}</td>
+      <td>${i.tipo}</td>
+      <td>${i.tramo}</td>
+      <td style="font-weight:700;color:var(--gold)">${fmt(i.incentivo,0)}</td>
+      <td><span style="padding:3px 10px;border-radius:10px;font-size:.73rem;font-weight:700;
+          background:${estadoColors[i.estado]||'rgba(255,255,255,.08)'}">${i.estado}</span></td>
+      <td style="color:var(--text2)">${i.fecha_reg}</td>
+    </tr>
+  `).join('');
+}
+
+function exportarIncentivos(){
+  const stored = JSON.parse(localStorage.getItem(storageKey('incentivos'))||'[]');
+  const headers = ['ID','Orden','Cliente','Placa','Total Orden','Tipo','Tramo','Incentivo Q','Estado','Comentario','Fecha Reg','Período'];
+  const rows = stored.map(i=>[i.id,i.orden,i.cliente,i.placa,i.total,i.tipo,i.tramo,i.incentivo,i.estado,i.comentario||'',i.fecha_reg,i.periodo]);
+  const csv = [headers,...rows].map(r=>r.join(',')).join('
+');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,﻿'+encodeURIComponent(csv);
+  a.download = `Incentivos_${asesorActual}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+function clearPeriod(){
+  if(!confirm(`¿Borrar todos los registros de ${currentPeriod}? Esta acción no se puede deshacer.`)) return;
+  const stored = JSON.parse(localStorage.getItem(storageKey('incentivos'))||'[]');
+  const filtered = stored.filter(i=>i.periodo!==currentPeriod);
+  localStorage.setItem(storageKey('incentivos'), JSON.stringify(filtered));
+  renderMisIncentivos();
+  updateDashboard(getStoredUtil());
+}
+
+// ── HISTORIAL ──────────────────────────────────────────────────
+function loadHistorial(){
+  const HIST_DATA = {
+    MARCO:[
+      {mes:'Mayo 2026',   util:51433,  bono:0,       esc:'E0', incBruto:2350, pct:0.5},
+      {mes:'Junio 2026',  util:101903, bono:1019.03, esc:'E2', incBruto:2350, pct:1.0},
+    ],
+    DANIEL:[
+      {mes:'Mayo 2026',  util:63638, bono:0, esc:'E0', incBruto:1175, pct:0.5},
+      {mes:'Junio 2026', util:66845, bono:0, esc:'E0', incBruto:1175, pct:0.5},
+    ],
+  };
+  const data = HIST_DATA[asesorActual]||[];
+  const grid = document.getElementById('histGrid');
+  if(!data.length){ grid.innerHTML='<div class="loading">Sin historial disponible</div>'; return; }
+
+  grid.innerHTML = data.map(d=>{
+    const pctMeta = d.util/META*100;
+    const cls = pctMeta>=87?'mc-ok':pctMeta>=60?'mc-warn':'mc-bad';
+    const total = 7000+d.bono+(d.incBruto*d.pct);
+    return `
+      <div class="month-card ${cls}">
+        <div class="mc-name">${d.mes}</div>
+        <div class="mc-util">${fmtN(d.util)}</div>
+        <div class="mc-detail">${pctMeta.toFixed(1)}% meta · ${d.esc} · Bono ${fmt(d.bono)}</div>
+        <div style="margin-top:8px;font-size:.8rem">
+          <span style="color:var(--text2)">Inc. neto: </span>
+          <span style="font-weight:700;color:var(--gold)">${fmt(d.incBruto*d.pct,0)}</span>
+          <span style="color:var(--text2);font-size:.72rem"> (${(d.pct*100).toFixed(0)}%)</span>
+        </div>
+        <div style="margin-top:4px;font-size:.85rem;font-weight:700">Total: ${fmt(total)}</div>
+      </div>`;
+  }).join('');
+
+  const tbody = document.getElementById('histIncTable').querySelector('tbody');
+  tbody.innerHTML = data.map(d=>`
+    <tr>
+      <td>${d.mes}</td>
+      <td>${fmt(d.incBruto,0)}</td>
+      <td><span style="padding:2px 10px;border-radius:10px;font-size:.75rem;font-weight:700;
+          background:${d.pct===1?'rgba(0,200,83,.15)':'rgba(249,168,37,.15)'};
+          color:${d.pct===1?'#69F0AE':'var(--gold)'}">
+          ${(d.pct*100).toFixed(0)}%</span></td>
+      <td style="font-weight:700;color:var(--gold)">${fmt(d.incBruto*d.pct,0)}</td>
+      <td style="color:var(--accent)">${fmt(d.bono)}</td>
+      <td style="font-weight:700">${fmt(7000+d.bono+d.incBruto*d.pct)}</td>
+    </tr>
+  `).join('');
+}
+
+// ── CALCULADORA ────────────────────────────────────────────────
+function calcBono(){
+  let u = parseFloat(document.getElementById('calcUtil').value)||0;
+  document.getElementById('calcSlider').value=Math.min(u,200000);
+  computeBono(u);
+}
+function calcSliderBono(){
+  const v=parseFloat(document.getElementById('calcSlider').value);
+  document.getElementById('calcUtil').value=v;
+  computeBono(v);
+}
+function computeBono(u){
+  const e=getEsc(u), bono=u*e.rate, total=7000+bono;
+  const pct=incPct(u);
+  document.getElementById('cUtil').textContent = 'Q'+u.toLocaleString('es-GT');
+  document.getElementById('cEsc').textContent  = e.label;
+  document.getElementById('cTasa').textContent = (e.rate*100).toFixed(2)+'%';
+  document.getElementById('cBono').textContent = fmt(bono);
+  document.getElementById('cTotal').textContent= fmt(total);
+  document.getElementById('calcEscLabel').textContent=e.label;
+  document.getElementById('calcEscRate').textContent=(e.rate*100).toFixed(2)+'%';
+  document.getElementById('calcIncRulePill').innerHTML = pct===1
+    ? '<div class="inc-rule-pill irp-100">✅ Incentivos al 100% con esta utilidad</div>'
+    : '<div class="inc-rule-pill irp-50">⚡ Incentivos al 50% — Produce Q'+(INC_THRESHOLD-u).toLocaleString('es-GT')+' más para el 100%</div>';
+  const badge=document.getElementById('cBadge');
+  badge.textContent=total>=10000?'🏆 Mes excepcional':total>=9000?'🚀 Mes excelente':total>=8000?'🎯 Meta alcanzada':'📈 En camino';
+}
+
+// Init calc
+window.addEventListener('DOMContentLoaded',()=>computeBono(100000));
+</script>
+</body>
+</html>
