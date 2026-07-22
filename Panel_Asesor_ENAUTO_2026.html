@@ -428,13 +428,14 @@ tr:hover td{background:rgba(255,255,255,.03)}
     <div id="pHist" class="pnl">
       <div class="card">
         <div class="chdr">📅 Historial de meses 2026</div>
-        <div id="histGrid" class="mgrid"><div class="ld"><span class="spin"></span>Cargando...</div></div>
+        <div class="al al-info" style="margin-bottom:14px">📅 <div><strong>Ciclo de pagos:</strong> El bono de producción se paga <strong>mes vencido</strong> (Junio se paga a fin de Julio). Los incentivos por clientes nuevos/recuperados se calculan del <strong>25 al 25</strong> (para cobro de Julio cuentan los clientes que pagaron del 25 de Junio al 25 de Julio).</div></div>
+      <div id="histGrid" class="mgrid"><div class="ld"><span class="spin"></span>Cargando...</div></div>
       </div>
       <div class="card">
         <div class="chdr">💰 Incentivos históricos</div>
         <div class="twrap">
           <table id="histTbl">
-            <thead><tr><th>Período</th><th>Inc. bruto</th><th>%</th><th>Inc. neto</th><th>Bono prod.</th><th>Total</th></tr></thead>
+            <thead><tr><th>Período</th><th>Utilidad</th><th>Escalón</th><th>Bono</th><th>Inc. bruto</th><th>Inc. pagado</th><th>Total</th></tr></thead>
             <tbody id="histBody"><tr><td colspan="6" class="ld">Sin datos</td></tr></tbody>
           </table>
         </div>
@@ -526,9 +527,12 @@ function init() {
 }
 
 // ══ DASHBOARD ═══════════════════════════════════════════════
+// Datos del mes ACTUAL (actualizar cada mes)
+// BONO = mes vencido: se paga a fin del mes siguiente
+// INCENTIVOS = periodo del 25 al 25 del mes en curso
 var HIST = {
-  MARCO:  {util:101903, bono:1019.03},
-  DANIEL: {util:66845,  bono:0},
+  MARCO:  {util:101903, bono:1019.03},  // Junio 2026 (bono se paga fin Jul)
+  DANIEL: {util:66845,  bono:0},         // Junio 2026 (bono se paga fin Jul)
 };
 
 function loadDash() {
@@ -824,28 +828,61 @@ function doBono(u) {
 
 // ══ HISTORIAL ═══════════════════════════════════════════════
 function loadHist() {
+  // incBruto = incentivos brutos de clientes nuevos/recuperados
+  // incPagado = lo que realmente se pagó ese mes (puede diferir por la regla 50/100%)
+  // pct = porcentaje aplicado (1.0=100%, 0.5=50%)
+  // NOTA: En meses anteriores a la nueva regla se pagó al 100% siempre
   var HIST_DATA={
     MARCO: [
-      {mes:'Mayo 2026',util:51433,bono:0,esc:'E0',incBruto:2350,pct:0.5},
-      {mes:'Junio 2026',util:101903,bono:1019.03,esc:'E2',incBruto:2350,pct:1.0},
+      {mes:'Jul 2025',util:116600,bono:0,esc:'E4',incBruto:0,incPagado:0,pct:1.0,nota:'Sin sistema de incentivos'},
+      {mes:'Ago 2025',util:97977, bono:0,esc:'E2',incBruto:0,incPagado:0,pct:1.0,nota:'Sin sistema de incentivos'},
+      {mes:'Sep 2025',util:85557, bono:0,esc:'E1',incBruto:0,incPagado:0,pct:1.0,nota:'Sin sistema de incentivos'},
+      {mes:'Oct 2025',util:161231,bono:0,esc:'E4',incBruto:0,incPagado:0,pct:1.0,nota:'Sin sistema de incentivos'},
+      {mes:'Nov 2025',util:60454, bono:0,esc:'E0',incBruto:0,incPagado:0,pct:1.0,nota:'Sin sistema de incentivos'},
+      {mes:'Dic 2025',util:131449,bono:0,esc:'E3',incBruto:0,incPagado:0,pct:1.0,nota:'Sin sistema de incentivos'},
+      {mes:'May 2026',util:51433, bono:0,     esc:'E0',incBruto:2350,incPagado:2350,pct:1.0,nota:'Pagado al 100% — regla nueva no vigente'},
+      {mes:'Jun 2026',util:101903,bono:1019.03,esc:'E2',incBruto:2350,incPagado:0,   pct:1.0,nota:'Bono se paga fin Jul. Incentivos: periodo 25 Jun - 25 Jul'},
     ],
     DANIEL: [
-      {mes:'Mayo 2026',util:63638,bono:0,esc:'E0',incBruto:1175,pct:0.5},
-      {mes:'Junio 2026',util:66845,bono:0,esc:'E0',incBruto:1175,pct:0.5},
+      {mes:'Jul 2025',util:111072,bono:0,esc:'E3',incBruto:0,incPagado:0,pct:1.0,nota:'Sin sistema de incentivos'},
+      {mes:'Ago 2025',util:68749, bono:0,esc:'E0',incBruto:0,incPagado:0,pct:1.0,nota:'Sin sistema de incentivos'},
+      {mes:'Sep 2025',util:56309, bono:0,esc:'E0',incBruto:0,incPagado:0,pct:1.0,nota:'Sin sistema de incentivos'},
+      {mes:'Oct 2025',util:82929, bono:0,esc:'E1',incBruto:0,incPagado:0,pct:1.0,nota:'Sin sistema de incentivos'},
+      {mes:'Nov 2025',util:60219, bono:0,esc:'E0',incBruto:0,incPagado:0,pct:1.0,nota:'Sin sistema de incentivos'},
+      {mes:'Dic 2025',util:87043, bono:0,esc:'E1',incBruto:0,incPagado:0,pct:1.0,nota:'Sin sistema de incentivos'},
+      {mes:'May 2026',util:63638, bono:0,    esc:'E0',incBruto:1175,incPagado:1175,pct:1.0,nota:'Pagado al 100% — regla nueva no vigente'},
+      {mes:'Jun 2026',util:66845, bono:0,    esc:'E0',incBruto:1175,incPagado:0,   pct:0.5,nota:'Bono se paga fin Jul. Incentivos: periodo 25 Jun - 25 Jul'},
     ],
   };
   var data=HIST_DATA[asesor]||[];
   var g=document.getElementById('histGrid');
   g.innerHTML=data.map(function(d){
-    var p=d.util/META*100,tot=7000+d.bono+(d.incBruto*d.pct);
+    var p=d.util/META*100;
+    var incNeto=d.incPagado>0 ? d.incPagado : (d.incBruto*d.pct);
+    var tot=7000+d.bono+incNeto;
     var cls=p>=87?'mc-ok':p>=60?'mc-warn':'mc-bad';
-    return '<div class="mc '+cls+'"><div style="font-size:.75rem;font-weight:700;color:var(--dim);margin-bottom:7px;text-transform:uppercase">'+d.mes+'</div><div style="font-size:1.1rem;font-weight:800">'+fmtN(d.util)+'</div><div style="font-size:.75rem;color:var(--dim);margin-top:3px">'+p.toFixed(1)+'% meta · '+d.esc+' · Bono '+fmt(d.bono)+'</div><div style="margin-top:7px;font-size:.8rem">Inc. neto: <strong style="color:var(--gold)">'+fmt(d.incBruto*d.pct,0)+'</strong> <span style="font-size:.7rem;color:var(--dim)">('+Math.round(d.pct*100)+'%)</span></div><div style="margin-top:3px;font-size:.85rem;font-weight:700">Total: '+fmt(tot)+'</div></div>';
+    var notaHtml=d.nota?'<div style="margin-top:5px;font-size:.7rem;color:var(--gold);font-style:italic">'+d.nota+'</div>':'';
+    var pendiente=d.incBruto>0&&d.incPagado===0;
+    return '<div class="mc '+cls+'">'+
+      '<div style="font-size:.75rem;font-weight:700;color:var(--dim);margin-bottom:6px;text-transform:uppercase">'+d.mes+'</div>'+
+      '<div style="font-size:1.05rem;font-weight:800">'+fmtN(d.util)+'</div>'+
+      '<div style="font-size:.73rem;color:var(--dim);margin-top:2px">'+p.toFixed(1)+'% meta · '+d.esc+(d.bono>0?' · Bono '+fmt(d.bono):'')+'</div>'+
+      (d.incBruto>0?'<div style="margin-top:6px;font-size:.78rem">Inc. brutos: <strong>'+fmt(d.incBruto,0)+'</strong>'+
+        (pendiente?' <span style="color:var(--gold)">(pendiente)</span>':'<span style="color:var(--green)"> pagado</span>')+'</div>':'')+ 
+      '<div style="margin-top:3px;font-size:.83rem;font-weight:700">Total: '+fmt(tot)+'</div>'+
+      notaHtml+'</div>';
   }).join('');
 
   var tbody=document.getElementById('histBody');
   tbody.innerHTML=data.map(function(d){
-    var neto=d.incBruto*d.pct,tot=7000+d.bono+neto;
-    return '<tr><td>'+d.mes+'</td><td>'+fmt(d.incBruto,0)+'</td><td><span class="chip '+(d.pct===1?'c-new':'c-pen')+'">'+(Math.round(d.pct*100))+'%</span></td><td style="font-weight:700;color:var(--gold)">'+fmt(neto,0)+'</td><td style="color:var(--accent)">'+fmt(d.bono)+'</td><td style="font-weight:700">'+fmt(tot)+'</td></tr>';
+    var neto=d.incPagado>0?d.incPagado:(d.incBruto*d.pct);
+    var tot=7000+d.bono+neto;
+    var pend=d.incBruto>0&&d.incPagado===0;
+    var incDisp=d.incBruto>0?(pend?'Pendiente':fmt(neto,0)):'—';
+    return '<tr><td>'+d.mes+'</td><td>'+fmt(d.util,0)+'</td><td>'+d.esc+'</td><td style="color:var(--accent)">'+fmt(d.bono)+'</td>'+
+      '<td>'+(d.incBruto>0?fmt(d.incBruto,0):'—')+'</td>'+
+      '<td style="font-weight:700;color:'+(pend?'var(--gold)':'var(--green)')+'">'+incDisp+'</td>'+
+      '<td style="font-weight:700">'+fmt(tot)+'</td></tr>';
   }).join('');
 }
 
