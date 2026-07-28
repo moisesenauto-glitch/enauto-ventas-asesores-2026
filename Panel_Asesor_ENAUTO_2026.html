@@ -595,6 +595,10 @@ function parseGviz(txt) {
 function gvizRow(row) {
   var v = row.c;
   function val(i) { return (v[i] && v[i].v != null) ? v[i].v : null; }
+  // Log all columns for debugging (visible in browser console F12)
+  var allCols = {};
+  v.forEach(function(c, i) { allCols[String.fromCharCode(65+i)] = c ? c.v : null; });
+  console.log('Columnas RECEPCIONES:', allCols);
   return {
     orden:         parseInt(val(0)) || 0,
     cliente:       String(val(1) || ''),
@@ -641,12 +645,6 @@ function buscar() {
 
       if (!ord.orden) {
         mostrarErrBusq('No se encontró la orden #' + num + '.');
-        return;
-      }
-
-      // Verificar que pertenece a este asesor
-      if (ord.asesor && ord.asesor.toUpperCase().indexOf(asesor) < 0 && asesor.indexOf(ord.asesor.toUpperCase()) < 0) {
-        mostrarErrBusq('La orden #' + num + ' pertenece a ' + ord.asesor + ', no a ' + asesor + '.');
         return;
       }
 
