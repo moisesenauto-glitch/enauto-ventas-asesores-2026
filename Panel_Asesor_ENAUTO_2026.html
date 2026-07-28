@@ -279,7 +279,8 @@ tr:hover td{background:rgba(255,255,255,.03)}
 
     <!-- ── REGISTRAR INCENTIVO ─────────────────────────────── -->
     <div id="pReg" class="pnl">
-      <div class="al al-info">ℹ️ <div>Ingresa el número de orden. El sistema busca los datos del cliente y verifica si aplica como nuevo o recuperado (más de 10 meses sin venir).</div></div>
+      <div class="al al-info">ℹ️ <div>Ingresa el número de orden. El sistema busca en tu Google Sheets y verifica si el cliente es nuevo o recuperado (más de 10 meses sin venir).</div></div>
+      <div id="conexionStatus" style="display:none" class="al al-info">Conectando...</div>
       <div class="card">
         <div class="chdr">🔍 Buscar orden</div>
         <div class="fg">
@@ -447,7 +448,7 @@ tr:hover td{background:rgba(255,255,255,.03)}
 
 <script>
 // ══ CONFIGURACIÓN ══════════════════════════════════════════
-var APPS_URL   = 'https://script.google.com/macros/s/AKfycbyarW6FVlh5gizJ1BEktjSiS6inNf5giwscHLYW7FJt9uc0NMptRcE5GycsiMaef1xB/exec';
+var APPS_URL   = 'https://script.google.com/macros/s/AKfycbw1jjRjAHZ8iDhM1deqsogrO1H_WhyVOI394x41YfKVq8yJ8xT_4rqF-WWtLEoIRt_h/exec';
 var SHEET_DATOS = '1v3S3_z1X55kp_bArT5B7MKCwjefYmJgkp7ec4TpLcik';
 var META = 115000, INC_THR = 100001;
 
@@ -575,40 +576,97 @@ function getMisTotal() {
 }
 
 // ══ CARGAR ÓRDENES ══════════════════════════════════════════
+// Status indicator for connection
+var datosConectado = false;
+
 function loadOrdenes() {
-  var q = encodeURIComponent('SELECT A,B,C,D,E,F,G,H ORDER BY A DESC LIMIT 5000');
-  var url = 'https://docs.google.com/spreadsheets/d/'+SHEET_DATOS+'/gviz/tq?tq='+q+'&sheet=DATOS&headers=1';
-  fetch(url)
-    .then(function(r){return r.text();})
-    .then(function(txt){
-      var json = JSON.parse(txt.replace(/^[\s\S]*?{/,'{').replace(/\);\s*$/,''));
-      ordenes = (json.table.rows||[]).map(function(r){
-        var v=r.c;
+  mostrarEstadoCarga('Conectando con el sistema...');
+  if (!APPS_URL || APPS_URL.indexOf('YOUR_') >= 0) {
+    mostrarEstadoCarga('Sin Apps Script configurado — usando datos de demostración', true);
+    usarDemoData(); return;
+  }
+  // Try Apps Script first (most reliable — no need to publish sheet)
+  fetch(APPS_URL + '?action=orders', {method:'GET'})
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if (!data.ok || !data.ordenes) throw new Error(data.error || 'Sin datos');
+      ordenes = data.ordenes.map(function(o){
         return {
-          orden:parseInt(v[0]&&v[0].v)||0, cliente:v[1]&&v[1].v||'',
-          placa:v[2]&&v[2].v||'', total:parseFloat(v[3]&&v[3].v)||0,
-          asesor:v[4]&&v[4].v||'', fecha_ingreso:v[5]&&v[5].v||'',
-          fecha_pago:v[6]&&v[6].v||'', estado:v[7]&&v[7].v||''
+          orden:        parseInt(o.orden)||0,
+          cliente:      o.cliente||'',
+          placa:        o.placa||'',
+          total:        parseFloat(o.total)||0,
+          asesor:       o.asesor||'',
+          fecha_ingreso:o.fecha_ingreso||'',
+          fecha_pago:   o.fecha_pago||'',
+          estado:       o.estado||'',
         };
       });
-      console.log('Órdenes cargadas:', ordenes.length);
+      datosConectado = true;
+      mostrarEstadoCarga('Conectado — ' + ordenes.length + ' órdenes cargadas ✓', false, true);
+      console.log('Órdenes cargadas via Apps Script:', ordenes.length);
     })
     .catch(function(e){
-      console.log('Sheet DATOS requiere ser publicado. Modo demo activo.');
-      // Demo data
-      ordenes = [
-        {orden:18590,cliente:'ROSARIO GUERRA',placa:'P599KXF',total:25381,asesor:'MARCO',fecha_ingreso:'2026-05-01',fecha_pago:'2026-06-26',estado:''},
-        {orden:18625,cliente:'FLETES CARGO',placa:'P063DHB',total:3620,asesor:'MARCO',fecha_ingreso:'2026-06-01',fecha_pago:'2026-06-05',estado:''},
-        {orden:16321,cliente:'ROSARIO GUERRA',placa:'P599KXF',total:5341,asesor:'MARCO',fecha_ingreso:'2024-12-15',fecha_pago:null,estado:''},
-        {orden:18600,cliente:'JOSE GARCIA',placa:'M123ABC',total:1850,asesor:'DANIEL',fecha_ingreso:'2026-06-10',fecha_pago:'2026-06-12',estado:''},
-      ];
+      console.log('Apps Script no disponible, intentando gviz...', e.message);
+      // Fallback: try gviz (requires sheet to be published)
+      loadOrdenesFallback();
     });
+}
+
+function loadOrdenesFallback() {
+  var url = 'https://docs.google.com/spreadsheets/d/'+SHEET_DATOS+'/gviz/tq?tqx=out:json&sheet=DATOS&headers=1';
+  fetch(url)
+    .then(function(r){ return r.text(); })
+    .then(function(txt){
+      // Correctly extract JSON from gviz wrapped response
+      var match = txt.match(/google\.visualization\.Query\.setResponse\(([\s\S]+)\);?\s*$/);
+      if (!match) throw new Error('Formato de respuesta inesperado');
+      var json = JSON.parse(match[1]);
+      if (!json.table || !json.table.rows) throw new Error('Sin datos en la tabla');
+      ordenes = json.table.rows.map(function(r){
+        var v = r.c;
+        function val(i){ return v[i] && v[i].v != null ? v[i].v : null; }
+        return {
+          orden:         parseInt(val(0))||0,
+          cliente:       String(val(1)||''),
+          placa:         String(val(2)||''),
+          total:         parseFloat(val(3))||0,
+          asesor:        String(val(4)||''),
+          fecha_ingreso: val(5) ? String(val(5)).slice(0,10) : '',
+          fecha_pago:    val(6) ? String(val(6)).slice(0,10) : '',
+          estado:        String(val(7)||''),
+        };
+      }).filter(function(o){ return o.orden > 0; });
+      datosConectado = true;
+      mostrarEstadoCarga('Conectado (sheet público) — '+ordenes.length+' órdenes ✓', false, true);
+    })
+    .catch(function(e){
+      mostrarEstadoCarga('Sin conexión — publica el sheet o actualiza el Apps Script', true);
+      usarDemoData();
+    });
+}
+
+function usarDemoData() {
+  ordenes = [
+    {orden:18590,cliente:'ROSARIO GUERRA',placa:'P599KXF',total:25381,asesor:'MARCO',fecha_ingreso:'2026-05-01',fecha_pago:'2026-06-26',estado:''},
+    {orden:18544,cliente:'DEMO CLIENTE',placa:'DEMO-001',total:3500,asesor:'MARCO',fecha_ingreso:'2026-06-15',fecha_pago:'2026-06-20',estado:''},
+    {orden:18625,cliente:'FLETES CARGO',placa:'P063DHB',total:3620,asesor:'MARCO',fecha_ingreso:'2026-06-01',fecha_pago:'2026-06-05',estado:''},
+  ];
+}
+
+function mostrarEstadoCarga(msg, isError, isOk) {
+  var el = document.getElementById('conexionStatus');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.className = 'al ' + (isError ? 'al-err' : isOk ? 'al-ok' : 'al-info');
+  if (isOk) setTimeout(function(){ el.style.display='none'; }, 4000);
 }
 
 // ══ BUSCAR ORDEN ════════════════════════════════════════════
 function buscar() {
   var num = parseInt(document.getElementById('nOrden').value);
-  if(!num) { alert('Ingresa un número de orden'); return; }
+  if(!num) { alert('Ingresa un número de orden válido'); return; }
 
   document.getElementById('ldBuscar').style.display='block';
   document.getElementById('lkRes').style.display='none';
@@ -616,78 +674,124 @@ function buscar() {
   document.getElementById('regForm').style.display='none';
   curOrder = null;
 
-  setTimeout(function() {
+  // Try Apps Script search endpoint first (most accurate — searches full history server-side)
+  if (APPS_URL && APPS_URL.indexOf('YOUR_') < 0) {
+    fetch(APPS_URL + '?action=search&orden=' + num, {method:'GET'})
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        document.getElementById('ldBuscar').style.display='none';
+        if (!data.ok) {
+          mostrarErrorBusqueda(data.error || 'No se encontró la orden #'+num);
+          return;
+        }
+        procesarResultadoBusqueda(data.orden, data.status, data.mesesSinVenir, data.ultimaFecha, data.totalVisitas, num);
+      })
+      .catch(function(e){
+        // Fallback to local ordenes array
+        buscarEnLocal(num);
+      });
+  } else {
+    buscarEnLocal(num);
+  }
+}
+
+function buscarEnLocal(num) {
+  setTimeout(function(){
     document.getElementById('ldBuscar').style.display='none';
-
-    var ord = ordenes.find(function(o){return o.orden===num;});
-    if(!ord) {
-      document.getElementById('lkErrMsg').textContent = 'No se encontró la orden #'+num+'. Verifica el número.';
-      document.getElementById('lkErr').style.display='flex';
+    var ord = ordenes.find(function(o){ return o.orden===num; });
+    if (!ord) {
+      mostrarErrorBusqueda('No se encontró la orden #'+num+'. Verifica el número. (Si la orden es reciente, actualiza el Apps Script para conectar en tiempo real)');
       return;
     }
-    if(ord.asesor && ord.asesor!==asesor) {
-      document.getElementById('lkErrMsg').textContent = 'La orden #'+num+' pertenece a '+ord.asesor+', no a '+asesor+'.';
-      document.getElementById('lkErr').style.display='flex';
+    if (ord.asesor && ord.asesor.toUpperCase() !== asesor.toUpperCase()) {
+      mostrarErrorBusqueda('La orden #'+num+' pertenece a '+ord.asesor+', no a '+asesor+'.');
       return;
     }
 
-    // Check previous visits
     var prev = ordenes.filter(function(o){
-      return o.orden!==num && (o.cliente===ord.cliente||o.placa===ord.placa) && o.placa;
-    }).sort(function(a,b){return b.orden-a.orden;});
+      return o.orden!==num && (
+        (ord.cliente && o.cliente && o.cliente.toUpperCase()===ord.cliente.toUpperCase()) ||
+        (ord.placa   && o.placa   && o.placa.toUpperCase()===ord.placa.toUpperCase())
+      );
+    }).sort(function(a,b){return (b.fecha_ingreso||b.fecha_pago||'').localeCompare(a.fecha_ingreso||a.fecha_pago||'');});
 
-    var status='NUEVO', stLbl='Cliente Nuevo', stCss='c-new';
-    var ultVisita=null, meses=null;
-
-    if(prev.length>0) {
+    var status='NUEVO', meses=null, ultVisita=null;
+    if (prev.length>0) {
       var lastDate = prev[0].fecha_ingreso || prev[0].fecha_pago;
-      if(lastDate) {
+      if (lastDate && lastDate !== 'null') {
         var last = new Date(lastDate), now = new Date();
         meses = (now.getFullYear()-last.getFullYear())*12+(now.getMonth()-last.getMonth());
-        ultVisita = last.toLocaleDateString('es-GT');
-        if(meses>10) { status='RECUPERADO'; stLbl='Recuperado ('+meses+' meses)'; stCss='c-rec'; }
-        else { status='REGULAR'; stLbl='Frecuente ('+meses+' meses)'; stCss='c-reg'; }
+        ultVisita = lastDate;
+        status = meses>10 ? 'RECUPERADO' : 'REGULAR';
       }
     }
+    procesarResultadoBusqueda(ord, status, meses, ultVisita, prev.length, num);
+  }, 600);
+}
 
-    var stored = JSON.parse(localStorage.getItem(sk('inc'))||'[]');
-    if(stored.find(function(i){return i.orden===num;})) {
-      status='YA_REG'; stLbl='Ya registrada'; stCss='c-pen';
-    }
+function mostrarErrorBusqueda(msg) {
+  document.getElementById('lkErrMsg').textContent = msg;
+  document.getElementById('lkErr').style.display='flex';
+}
 
-    var tramo = getTramo(ord.total);
-    var fPago = ord.fecha_pago ? new Date(ord.fecha_pago).toLocaleDateString('es-GT') : '—';
+function procesarResultadoBusqueda(ord, status, meses, ultVisita, totalVisitas, num) {
+  // Check if already registered this period
+  var stored = JSON.parse(localStorage.getItem(sk('inc'))||'[]');
+  if (stored.find(function(i){ return parseInt(i.orden)===num; })) {
+    status='YA_REG';
+  }
 
-    curOrder = Object.assign({},ord,{status:status,stLbl:stLbl,tramo:tramo,meses:meses,ultVisita:ultVisita});
+  // Classify labels and CSS
+  var stLbl, stCss;
+  if      (status==='NUEVO')      { stLbl='Cliente Nuevo';                    stCss='c-new'; }
+  else if (status==='RECUPERADO') { stLbl='Recuperado ('+(meses||'?')+' meses)'; stCss='c-rec'; }
+  else if (status==='REGULAR')    { stLbl='Frecuente ('+(meses||'?')+' meses)';  stCss='c-reg'; }
+  else if (status==='YA_REG')     { stLbl='Ya registrada este período';        stCss='c-pen'; }
+  else                            { stLbl='Sin datos anteriores';              stCss='c-unk'; }
 
-    document.getElementById('lk_cli').textContent = ord.cliente||'—';
-    document.getElementById('lk_st').className = 'chip '+stCss;
-    document.getElementById('lk_st').textContent = stLbl;
-    document.getElementById('lk_pla').textContent = ord.placa||'—';
-    document.getElementById('lk_fec').textContent = fPago;
-    document.getElementById('lk_tot').textContent = fmt(ord.total);
-    document.getElementById('lk_ase').textContent = ord.asesor||'—';
-    document.getElementById('lk_ult').textContent = ultVisita||'Primera visita';
-    document.getElementById('lk_mes').textContent = meses!=null ? meses+' meses' : '—';
-    document.getElementById('lk_tra').className   = 'chip '+tramo.css;
-    document.getElementById('lk_tra').textContent = tramo.lbl;
-    document.getElementById('lk_inc').textContent = tramo.inc>0 ? fmt(tramo.inc,0) : 'No aplica';
-    document.getElementById('lkRes').style.display='block';
+  var tramo  = getTramo(ord.total||0);
+  var fPago  = ord.fecha_pago ? formatFecha(ord.fecha_pago) : '—';
+  var fUlt   = ultVisita      ? formatFecha(ultVisita)      : 'Primera visita';
 
-    if(status==='REGULAR') {
-      document.getElementById('lkErrMsg').textContent = 'Este cliente vino hace '+meses+' meses. Se requieren más de 10 para ser recuperado.';
-      document.getElementById('lkErr').style.display='flex';
-    } else if(status==='YA_REG') {
-      document.getElementById('lkErrMsg').textContent = 'La orden #'+num+' ya fue registrada este período.';
-      document.getElementById('lkErr').style.display='flex';
-    } else {
-      if(status==='NUEVO') document.getElementById('tipoC').value='NUEVO';
-      else if(status==='RECUPERADO') document.getElementById('tipoC').value='RECUPERADO';
-      else document.getElementById('tipoC').value='';
-      onTipo();
-      document.getElementById('regForm').style.display='block';
-    }
-  }, 700);
+  curOrder = {
+    orden:ord.orden||num, cliente:ord.cliente||'', placa:ord.placa||'',
+    total:ord.total||0, asesor:ord.asesor||'', fecha_pago:ord.fecha_pago||'',
+    status:status, stLbl:stLbl, tramo:tramo, meses:meses, ultVisita:fUlt,
+    totalVisitas:totalVisitas||0
+  };
+
+  document.getElementById('lk_cli').textContent = ord.cliente||'—';
+  document.getElementById('lk_st').className    = 'chip '+stCss;
+  document.getElementById('lk_st').textContent  = stLbl;
+  document.getElementById('lk_pla').textContent = ord.placa||'—';
+  document.getElementById('lk_fec').textContent = fPago;
+  document.getElementById('lk_tot').textContent = fmt(ord.total||0);
+  document.getElementById('lk_ase').textContent = ord.asesor||'—';
+  document.getElementById('lk_ult').textContent = fUlt;
+  document.getElementById('lk_mes').textContent = meses!=null ? meses+' meses' : (totalVisitas===0?'Primera visita':'—');
+  document.getElementById('lk_tra').className   = 'chip '+tramo.css;
+  document.getElementById('lk_tra').textContent = tramo.lbl;
+  document.getElementById('lk_inc').textContent = tramo.inc>0 ? fmt(tramo.inc,0) : 'No aplica (<Q800)';
+  document.getElementById('lkRes').style.display = 'block';
+
+  if (status==='REGULAR') {
+    mostrarErrorBusqueda('Este cliente visitó el taller hace '+meses+' meses. Se necesitan más de 10 para clasificar como recuperado.');
+  } else if (status==='YA_REG') {
+    mostrarErrorBusqueda('La orden #'+num+' ya fue registrada en este período.');
+  } else {
+    if (status==='NUEVO')      document.getElementById('tipoC').value='NUEVO';
+    if (status==='RECUPERADO') document.getElementById('tipoC').value='RECUPERADO';
+    onTipo();
+    document.getElementById('regForm').style.display='block';
+  }
+}
+
+function formatFecha(str) {
+  if (!str || str==='null') return '—';
+  try {
+    var d = new Date(str.slice(0,10));
+    return d.toLocaleDateString('es-GT');
+  } catch(e){ return str; }
 }
 
 function onTipo() {
