@@ -307,6 +307,9 @@ tr:hover td{background:rgba(255,255,255,.03)}
           <div class="lkrow"><span class="lk-l">Meses sin venir</span><span class="lk-v" id="lk_mes">—</span></div>
           <div class="lkrow"><span class="lk-l">Tramo</span><span class="lk-v"><span class="chip" id="lk_tra">—</span></span></div>
           <div class="lkrow"><span class="lk-l">Incentivo calculado</span><span class="lk-v" id="lk_inc" style="font-size:1.05rem;font-weight:900;color:var(--gold)">—</span></div>
+          <div style="border-top:1px solid rgba(0,188,212,.2);margin:8px 0;padding-top:8px" id="lk_pago">
+            <div class="lkrow"><span class="lk-l">Estado de pago</span><span class="lk-v" style="color:var(--dim)">Buscando...</span></div>
+          </div>
         </div>
       </div>
 
@@ -592,23 +595,84 @@ function parseGviz(txt) {
   try { return JSON.parse(txt.slice(start+1, end)); } catch(e) { return null; }
 }
 
-function gvizRow(row) {
+function gvizRow(row, cols) {
+  // Map by column LABEL (not fixed position) — works regardless of column order
   var v = row.c;
-  function val(i) { return (v[i] && v[i].v != null) ? v[i].v : null; }
-  // Log all columns for debugging (visible in browser console F12)
-  var allCols = {};
-  v.forEach(function(c, i) { allCols[String.fromCharCode(65+i)] = c ? c.v : null; });
-  console.log('Columnas RECEPCIONES:', allCols);
+  var byLabel = {};
+  var byLetter = {};
+  (cols || []).forEach(function(col, i) {
+    var lbl = (col.label || '').toUpperCase().replace(/[^A-Z0-9 ]/g,'').trim();
+    var raw = (v[i] && v[i].v != null) ? v[i].v : null;
+    byLabel[lbl] = raw;
+    byLetter[String.fromCharCode(65+i)] = raw;
+  });
+  console.log('Columnas por label:', byLabel);
+  console.log('Columnas por letra:', byLetter);
+
+  function getCol() {
+    // Try each alias in order until one returns a value
+    for (var a = 0; a < arguments.length; a++) {
+      var k = arguments[a].toUpperCase().replace(/[^A-Z0-9 ]/g,'').trim();
+      if (byLabel[k] != null && byLabel[k] !== '') return byLabel[k];
+    }
+    return null;
+  }
+
+  var ordenVal = getCol('ORDEN','NO ORDEN','NUMERO ORDEN','ORDER') || getCol('_COL_A');
+  var cli      = getCol('CLIENTE','NOMBRE','NOMBRE CLIENTE','CLIENT','IDCLIENTE');
+  var pla      = getCol('PLACA','PLATE','NO PLACA','NUMERO PLACA');
+  var tot      = getCol('TOTAL GENERAL','TOTAL','MONTO','COBRADO','VENTA');
+  var ase      = getCol('ASESOR','IDASESOR','NOMBRE ASESOR','ADVISOR');
+  var fi       = getCol('FECHA INGRESO','FECHA ENTRADA','FECHA INICIO','INGRESO','FECHA CREACION','FECHA');
+  var fp       = getCol('FECHA PAGO','FECHA ULTIMO PAGO','ULTIMO PAGO','FECHA COBRO');
+  var est      = getCol('ESTADO','STATUS','ESTATUS');
+
+  function toDate(v) {
+    if (!v) return '';
+    if (v instanceof Date) return v.toISOString().slice(0,10);
+    var s = String(v);
+    if (s.length >= 10) return s.slice(0,10);
+    return s;
+  }
+
   return {
-    orden:         parseInt(val(0)) || 0,
-    cliente:       String(val(1) || ''),
-    placa:         String(val(2) || '').toUpperCase().trim(),
-    total:         parseFloat(val(3)) || 0,
-    asesor:        String(val(4) || ''),
-    fecha_ingreso: val(5) ? String(val(5)).slice(0,10) : '',
-    fecha_pago:    val(6) ? String(val(6)).slice(0,10) : '',
-    estado:        String(val(7) || ''),
+    orden:         parseInt(ordenVal) || 0,
+    cliente:       String(cli || ''),
+    placa:         String(pla || '').toUpperCase().trim(),
+    total:         parseFloat(tot) || 0,
+    asesor:        String(ase || ''),
+    fecha_ingreso: toDate(fi),
+    fecha_pago:    toDate(fp),
+    estado:        String(est || ''),
+    _raw:          byLabel,   // keep raw for debugging
   };
+}
+
+// Also fix gviz historial row mapping (uses different columns)
+function gvizHistRow(row, cols) {
+  var v = row.c;
+  var byLabel = {};
+  (cols || []).forEach(function(col, i) {
+    var lbl = (col.label || '').toUpperCase().replace(/[^A-Z0-9 ]/g,'').trim();
+    var raw = (v[i] && v[i].v != null) ? v[i].v : null;
+    byLabel[lbl] = raw;
+  });
+  function get() {
+    for (var a=0;a<arguments.length;a++){
+      var k=arguments[a].toUpperCase().replace(/[^A-Z0-9 ]/g,'').trim();
+      if(byLabel[k]!=null&&byLabel[k]!=='')return byLabel[k];
+    }
+    return null;
+  }
+  function toDate(vv) {
+    if(!vv)return '';
+    if(vv instanceof Date)return vv.toISOString().slice(0,10);
+    return String(vv).slice(0,10);
+  }
+  var ordenH = parseInt(get('ORDEN','NO ORDEN','ORDER'))||0;
+  var fi = get('FECHA INGRESO','FECHA ENTRADA','INGRESO','FECHA');
+  var fp = get('FECHA PAGO','FECHA ULTIMO PAGO','ULTIMO PAGO');
+  return { orden:ordenH, fecha_ingreso:toDate(fi), fecha_pago:toDate(fp) };
 }
 
 function gvizURL(query) {
@@ -641,7 +705,7 @@ function buscar() {
         return;
       }
 
-      var ord = gvizRow(json.table.rows[0]);
+      var ord = gvizRow(json.table.rows[0], json.table.cols);
 
       if (!ord.orden) {
         mostrarErrBusq('No se encontró la orden #' + num + '.');
@@ -666,32 +730,35 @@ function buscar() {
 
       if (q2Parts.length === 0) {
         // Sin cliente ni placa, tratar como nuevo
-        procesarHistorial(ord, [], num);
+        buscarPago(ord, num, function(pagoInfo) {
+          ord._pago = pagoInfo;
+          procesarHistorial(ord, [], num);
+        });
         return;
       }
 
-      var q2 = 'SELECT A,F,G WHERE (' + q2Parts.join(' OR ') + ') AND A!=' + num + ' ORDER BY F DESC LIMIT 50';
+      var q2 = 'SELECT * WHERE (' + q2Parts.join(' OR ') + ') AND A!=' + num + ' ORDER BY A DESC LIMIT 50';
       fetch(gvizURL(q2))
         .then(function(r2) { return r2.text(); })
         .then(function(txt2) {
           var json2 = parseGviz(txt2);
           var historial = [];
           if (json2 && json2.table && json2.table.rows) {
+            var hcols = json2.table.cols || [];
             historial = json2.table.rows.map(function(row) {
-              var v = row.c;
-              function val(i) { return (v[i] && v[i].v != null) ? v[i].v : null; }
-              return {
-                orden:         parseInt(val(0)) || 0,
-                fecha_ingreso: val(1) ? String(val(1)).slice(0,10) : '',
-                fecha_pago:    val(2) ? String(val(2)).slice(0,10) : '',
-              };
+              return gvizHistRow(row, hcols);
             }).filter(function(r) { return r.orden > 0; });
           }
-          procesarHistorial(ord, historial, num);
+          buscarPago(ord, num, function(pagoInfo) {
+            ord._pago = pagoInfo;
+            procesarHistorial(ord, historial, num);
+          });
         })
         .catch(function() {
-          // Si falla el historial, tratar como nuevo (conservador)
-          procesarHistorial(ord, [], num);
+          buscarPago(ord, num, function(pagoInfo) {
+            ord._pago = pagoInfo;
+            procesarHistorial(ord, [], num);
+          });
         });
     })
     .catch(function(e) {
@@ -699,6 +766,73 @@ function buscar() {
       mostrarErrBusq('Error de conexión. Asegúrate de publicar el Sheet DATOS en la web (Archivo → Publicar en la web → DATOS). Detalle: ' + e.message);
     });
 }
+
+// ── BUSCAR ESTADO DE PAGO EN CUADRO DE VENTAS ────────────────────────────────
+var SHEET_VENTAS = '1_chDpO-n0rXy_rpE79_00urPz63fv80CiUz7aUPEn7Y';
+
+function gvizURLVentas(query) {
+  return 'https://docs.google.com/spreadsheets/d/' + SHEET_VENTAS +
+    '/gviz/tq?tqx=out:json&headers=1&tq=' + encodeURIComponent(query);
+}
+
+function buscarPago(ord, num, callback) {
+  // Query cuadro de ventas by order number
+  var q = 'SELECT * WHERE A=' + num + ' LIMIT 1';
+  fetch(gvizURLVentas(q))
+    .then(function(r){ return r.text(); })
+    .then(function(txt){
+      var json = parseGviz(txt);
+      if (!json || !json.table || !json.table.rows || !json.table.rows.length) {
+        callback(null); return;
+      }
+      var cols = json.table.cols || [];
+      var v    = json.table.rows[0].c;
+      var byLabel = {};
+      cols.forEach(function(col,i){
+        var lbl = (col.label||'').toUpperCase().replace(/[^A-Z0-9 ]/g,'').trim();
+        var raw = (v[i] && v[i].v != null) ? v[i].v : null;
+        byLabel[lbl] = raw;
+      });
+      console.log('Cuadro ventas columnas:', byLabel);
+
+      function get() {
+        for(var a=0;a<arguments.length;a++){
+          var k=arguments[a].toUpperCase().replace(/[^A-Z0-9 ]/g,'').trim();
+          if(byLabel[k]!=null&&byLabel[k]!=='')return byLabel[k];
+        }
+        return null;
+      }
+      function toDate(vv){
+        if(!vv)return null;
+        if(vv instanceof Date)return vv.toISOString().slice(0,10);
+        var s=String(vv); return s.length>=10?s.slice(0,10):s;
+      }
+
+      var pendiente   = get('PENDIENTE','SALDO','SALDO PENDIENTE');
+      var fechaUltPago= toDate(get('FECHA ULTIMO PAGO','FECHA PAGO','ULTIMO PAGO','FECHA COBRO'));
+      var bancos      = get('BANCOS','BANCO','VALIDADO','VALIDADO BANCO');
+      var pagReporte  = get('PAGADO REPORTE','REPORTE PAGO','REPORTE','PAGO REPORTE');
+      var fechaReporte= toDate(get('FECHA REPORTE DE PAGO','FECHA REPORTE','REPORTE FECHA'));
+
+      var pagadoBancos  = (pendiente == 0 || pendiente === '0') && !!fechaUltPago;
+      var tieneReporte  = !!pagReporte && (pagReporte !== '0' && pagReporte !== false);
+
+      callback({
+        pendiente:     pendiente,
+        fechaUltPago:  fechaUltPago,
+        bancos:        bancos,
+        pagReporte:    pagReporte,
+        fechaReporte:  fechaReporte,
+        pagadoBancos:  pagadoBancos,
+        tieneReporte:  tieneReporte,
+      });
+    })
+    .catch(function(e){
+      console.log('Cuadro ventas no accesible:', e.message);
+      callback(null);
+    });
+}
+
 
 function procesarHistorial(ord, historial, num) {
   var status = 'NUEVO', meses = null, ultVisita = null;
@@ -752,6 +886,33 @@ function mostrarResultado(ord, status, meses, ultVisita, totalVisitas) {
   document.getElementById('lk_tra').className   = 'chip ' + tramo.css;
   document.getElementById('lk_tra').textContent = tramo.lbl;
   document.getElementById('lk_inc').textContent = tramo.inc > 0 ? fmt(tramo.inc, 0) : 'No aplica (<Q800)';
+
+  // Show payment status
+  var pagoDiv = document.getElementById('lk_pago');
+  if (pagoDiv) {
+    var pago = ord._pago;
+    if (!pago) {
+      pagoDiv.innerHTML = '<div class="lkrow"><span class="lk-l">Estado de pago</span><span class="lk-v" style="color:var(--dim)">Cuadro de ventas no disponible</span></div>';
+    } else {
+      var html = '';
+      // Bank validated payment
+      if (pago.pagadoBancos) {
+        html += '<div class="lkrow"><span class="lk-l">✅ Pagado y validado</span><span class="lk-v" style="color:var(--green)">Fecha: ' + (pago.fechaUltPago||'—') + (pago.bancos?' · '+pago.bancos:'') + '</span></div>';
+      } else if (pago.fechaUltPago) {
+        html += '<div class="lkrow"><span class="lk-l">⚠️ Fecha último pago</span><span class="lk-v" style="color:var(--gold)">' + pago.fechaUltPago + (pago.pendiente!=null?' · Pendiente: Q'+pago.pendiente:'') + '</span></div>';
+      } else {
+        html += '<div class="lkrow"><span class="lk-l">❌ Sin pago validado</span><span class="lk-v" style="color:var(--red)">' + (pago.pendiente!=null?'Pendiente: Q'+pago.pendiente:'Sin datos') + '</span></div>';
+      }
+      // Report payment (not yet validated)
+      if (pago.tieneReporte) {
+        html += '<div class="lkrow"><span class="lk-l">📋 Reporte de pago</span><span class="lk-v" style="color:var(--accent)">Reportado el ' + (pago.fechaReporte||'—') + ' · Pendiente validar bancos</span></div>';
+      } else {
+        html += '<div class="lkrow"><span class="lk-l">📋 Reporte de pago</span><span class="lk-v" style="color:var(--dim)">Sin reporte</span></div>';
+      }
+      pagoDiv.innerHTML = html;
+    }
+  }
+
   document.getElementById('lkRes').style.display = 'block';
 
   if (status === 'REGULAR') {
