@@ -614,7 +614,7 @@ function gvizURLVentas(query) {
 function rowToObj(row, cols) {
   var obj = {};
   (cols||[]).forEach(function(col, i) {
-    var lbl = (col.label||'').toUpperCase().replace(/\s+/g,' ').trim();
+    var lbl = String(col.label||col.id||'').toUpperCase().replace(/\s+/g,' ').trim(); if(!lbl) return;
     var raw = (row.c[i] && row.c[i].v != null) ? row.c[i].v : null;
     obj[lbl] = raw;
   });
@@ -624,17 +624,18 @@ function rowToObj(row, cols) {
 
 // Flexible getter — tries multiple possible column names
 function getField(obj) {
-  for (var a = 0; a < arguments.length; a++) {
-    var k = arguments[a].toUpperCase().replace(/\s+/g,' ').trim();
+  for (var a = 1; a < arguments.length; a++) {
+    var k = String(arguments[a]).toUpperCase().replace(/\s+/g,' ').trim();
     if (obj[k] != null && obj[k] !== '') return obj[k];
   }
   return null;
 }
 
 function toDateStr(v) {
-  if (!v) return null;
-  if (v instanceof Date) return v.toISOString().slice(0,10);
+  if (v == null || v === '') return null;
+  if (typeof v === 'object' && v instanceof Date) return v.toISOString().slice(0,10);
   var s = String(v).trim();
+  if (!s || s === 'null') return null;
   return s.length >= 10 ? s.slice(0,10) : s;
 }
 
@@ -772,7 +773,7 @@ function buscar() {
     })
     .catch(function(e){
       document.getElementById('ldBuscar').style.display = 'none';
-      mostrarErrBusq('Error de conexión: ' + e.message + '. Verifica que el sheet RECEPCIONES esté compartido (Compartir → Cualquier persona con el enlace → Lector).');
+      mostrarErrBusq('Error de conexión: ' + e.message + '. Verifica que los sheets RECEPCIONES, CLIENTES y VEHICULOS estén compartidos públicamente (Compartir → Cualquier persona con el enlace → Lector).');
     });
 }
 
