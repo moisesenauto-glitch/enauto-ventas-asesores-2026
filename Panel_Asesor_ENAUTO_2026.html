@@ -727,36 +727,46 @@ function buscar() {
             var j4 = parseGviz(txt4);
             if (j4 && j4.table && j4.table.rows && j4.table.rows.length) {
               var veh = rowToObj(j4.table.rows[0], j4.table.cols);
-              ordData.marca  = String(getField(veh,'MARCA','MAKE','FABRICANTE') || '');
-              ordData.linea  = String(getField(veh,'LINEA','LINE','MODELO','MODEL','DESCRIPCION') || '');
-              ordData.modelo = String(getField(veh,'MODELO','MODEL','AÑO','YEAR','ANIO') || '');
-              ordData.color  = String(getField(veh,'COLOR','COLOUR') || '');
+              // VEHICULOS columns (AppSheet): MARCA=brand, LINEA=model name, MODELO/AÑO=year, COLOR
+              ordData.marca  = String(getField(veh,'MARCA','MAKE','FABRICANTE','BRAND') || '');
+              ordData.linea  = String(getField(veh,'LINEA','LINEA VEHICULO','LINE','DESCRIPCION','NOMBRE') || '');
+              ordData.modelo = String(getField(veh,'AÑO','ANIO','YEAR','MODELO','MODEL') || '');
+              ordData.color  = String(getField(veh,'COLOR','COLOUR','COLOR VEHICULO') || '');
             }
           })
           .catch(function(){});
       }
 
       // PASO 4: Buscar total y estado pago en cuadro de ventas (si no se obtuvo de RECEPCIONES)
-      var p4 = fetch(gvizURLVentas('SELECT * WHERE A=' + num + ' LIMIT 1'))
+      var p4 = fetch(gvizURLVentas('SELECT * WHERE D=' + num + ' LIMIT 1'))
         .then(function(r){ return r.text(); })
         .then(function(txt5){
           var j5 = parseGviz(txt5);
           if (j5 && j5.table && j5.table.rows && j5.table.rows.length) {
             var ven = rowToObj(j5.table.rows[0], j5.table.cols);
             // Override total if RECEPCIONES didn't have it
-            var totalVen = parseFloat(getField(ven,'TOTAL GENERAL','TOTAL','VENTA','MONTO','COBRADO') || 0);
+            // Real column names from cuadro de ventas (images confirmed):
+            // GENERAL=total, BANCOS=bank amount, FECHA ULTIMO=last payment date,
+            // PENDIENTE=balance due, pagado reporte=reported amount, FECHA REPORTE DE PAGO=report date
+            // Vehicle: IDMARCALINEA = "Honda City"
+            var totalVen = parseFloat(getField(ven,
+              'GENERAL','TOTAL GENERAL','TOTAL','VENTA','MONTO','COBRADO','UTILIDAD GENERAL') || 0);
             if (totalVen > 0 && ordData.total === 0) ordData.total = totalVen;
-            // Payment info
+            // Get vehicle name from cuadro de ventas (more reliable than VEHICULOS sheet columns)
+            var marcaLinea = getField(ven,'IDMARCALINEA','MARCA LINEA','VEHICULO','DESCRIPCION VEHICULO');
+            if (marcaLinea) ordData._marcaLinea = String(marcaLinea);
+            // Payment info — real column names
             var pendiente    = getField(ven,'PENDIENTE','SALDO','SALDO PENDIENTE');
-            var fechaUltPago = toDateStr(getField(ven,'FECHA ULTIMO PAGO','FECHA PAGO','ULTIMO PAGO'));
-            var bancos       = getField(ven,'BANCOS','BANCO','VALIDADO BANCO');
-            var pagReporte   = getField(ven,'PAGADO REPORTE','REPORTE PAGO','REPORTE','PAGO REPORTE');
-            var fechaReporte = toDateStr(getField(ven,'FECHA REPORTE DE PAGO','FECHA REPORTE'));
+            var fechaUltPago = toDateStr(getField(ven,'FECHA ULTIMO','FECHA ULTIMO PAGO','ULTIMO PAGO','FECHA PAGO'));
+            var bancos       = getField(ven,'BANCOS','BANCO','VALIDADO BANCO','MONTO BANCOS');
+            var pagReporte   = getField(ven,'PAGADO REPORTE','REPORTE PAGO','PAGO REPORTE','MONTO REPORTE');
+            var fechaReporte = toDateStr(getField(ven,'FECHA REPORTE DE PAGO','FECHA REPORTE','FECHA REPOR'));
             if (fechaUltPago && !ordData.fecha_pago) ordData.fecha_pago = fechaUltPago;
             ordData._pago = {
               pendiente, fechaUltPago, bancos, pagReporte, fechaReporte,
-              pagadoBancos: (pendiente==0||pendiente==='0') && !!fechaUltPago,
-              tieneReporte: !!pagReporte && pagReporte!=='0' && pagReporte!==false && pagReporte!=='NO',
+              // Paid if PENDIENTE=0 AND either BANCOS>0 or fechaUltPago exists
+              pagadoBancos: (pendiente==0||pendiente==='0') && (parseFloat(bancos||0)>0 || !!fechaUltPago),
+              tieneReporte: !!pagReporte && pagReporte!=='0' && pagReporte!==false && pagReporte!=='NO' && parseFloat(pagReporte||0)>0,
             };
           }
         })
@@ -867,9 +877,13 @@ function mostrarResultado(ord, status, meses, ultVisita, totalVisitas) {
   document.getElementById('lk_cli').textContent = ord.cliente || '—';
   document.getElementById('lk_st').className    = 'chip ' + stCss;
   document.getElementById('lk_st').textContent  = stLbl;
-  // Vehicle info
+  // Vehicle info — prefer combined marcaLinea from cuadro de ventas, fallback to VEHICULOS parts
   document.getElementById('lk_pla').textContent = ord.placa || '—';
-  var vehicInfo = [ord.marca, ord.linea, ord.modelo].filter(Boolean).join(' ');
+  var vehicInfo = ord._marcaLinea || [ord.marca, ord.linea].filter(function(v){ return v && v !== '0'; }).join(' ');
+  // Add year if available and not duplicate
+  if (ord.modelo && ord.modelo !== '0' && vehicInfo.indexOf(ord.modelo) < 0) {
+    vehicInfo = ord.modelo + ' ' + vehicInfo;
+  }
   var vehicEl = document.getElementById('lk_vehiculo');
   if (vehicEl) vehicEl.textContent = vehicInfo || '—';
   var colorEl = document.getElementById('lk_color');
@@ -892,18 +906,21 @@ function mostrarResultado(ord, status, meses, ultVisita, totalVisitas) {
     } else {
       var html = '';
       // Bank validated payment
+      // Format amount helper
+      function fmtQ(v) { return v ? 'Q' + parseFloat(v).toLocaleString('es-GT', {minimumFractionDigits:2}) : '—'; }
       if (pago.pagadoBancos) {
-        html += '<div class="lkrow"><span class="lk-l">✅ Pagado y validado</span><span class="lk-v" style="color:var(--green)">Fecha: ' + (pago.fechaUltPago||'—') + (pago.bancos?' · '+pago.bancos:'') + '</span></div>';
+        html += '<div class="lkrow"><span class="lk-l">✅ Validado en Bancos</span><span class="lk-v" style="color:var(--green);font-weight:700">' + fmtQ(pago.bancos) + (pago.fechaUltPago ? ' · ' + pago.fechaUltPago : '') + '</span></div>';
+        html += '<div class="lkrow"><span class="lk-l">💰 Pendiente</span><span class="lk-v" style="color:var(--green)">Q0.00 — Pagado completo</span></div>';
       } else if (pago.fechaUltPago) {
-        html += '<div class="lkrow"><span class="lk-l">⚠️ Fecha último pago</span><span class="lk-v" style="color:var(--gold)">' + pago.fechaUltPago + (pago.pendiente!=null?' · Pendiente: Q'+pago.pendiente:'') + '</span></div>';
+        html += '<div class="lkrow"><span class="lk-l">⚠️ Último pago</span><span class="lk-v" style="color:var(--gold)">' + pago.fechaUltPago + '</span></div>';
+        if (pago.pendiente != null) html += '<div class="lkrow"><span class="lk-l">💰 Pendiente</span><span class="lk-v" style="color:var(--red)">' + fmtQ(pago.pendiente) + '</span></div>';
       } else {
-        html += '<div class="lkrow"><span class="lk-l">❌ Sin pago validado</span><span class="lk-v" style="color:var(--red)">' + (pago.pendiente!=null?'Pendiente: Q'+pago.pendiente:'Sin datos') + '</span></div>';
+        html += '<div class="lkrow"><span class="lk-l">❌ Sin validación en bancos</span><span class="lk-v" style="color:var(--dim)">' + (pago.pendiente!=null ? 'Pendiente: ' + fmtQ(pago.pendiente) : 'Sin datos') + '</span></div>';
       }
-      // Report payment (not yet validated)
       if (pago.tieneReporte) {
-        html += '<div class="lkrow"><span class="lk-l">📋 Reporte de pago</span><span class="lk-v" style="color:var(--accent)">Reportado el ' + (pago.fechaReporte||'—') + ' · Pendiente validar bancos</span></div>';
+        html += '<div class="lkrow"><span class="lk-l">📋 Reporte de pago</span><span class="lk-v" style="color:var(--accent)">' + fmtQ(pago.pagReporte) + (pago.fechaReporte ? ' · Fecha: ' + pago.fechaReporte : '') + ' · Pendiente validar bancos</span></div>';
       } else {
-        html += '<div class="lkrow"><span class="lk-l">📋 Reporte de pago</span><span class="lk-v" style="color:var(--dim)">Sin reporte</span></div>';
+        html += '<div class="lkrow"><span class="lk-l">📋 Reporte de pago</span><span class="lk-v" style="color:var(--dim)">Sin reporte registrado</span></div>';
       }
       pagoDiv.innerHTML = html;
     }
