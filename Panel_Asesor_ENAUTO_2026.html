@@ -381,7 +381,7 @@ tr:hover td{background:rgba(255,255,255,.03)}
 
     <!-- ── CALCULADORA ─────────────────────────────────────── -->
     <div id="pCalc" class="pnl">
-      <div class="card">
+      <div class="card" style="border-radius:14px 14px 0 0;margin-bottom:0;padding-bottom:8px">
         <div class="chdr">🧮 Simulador — Base Q7,000</div>
         <div class="calc-wrap">
           <div>
@@ -418,25 +418,9 @@ tr:hover td{background:rgba(255,255,255,.03)}
           </div>
         </div>
       </div>
-      <div class="card">
-        <div class="chdr">📊 Tabla de escalones y regla de incentivos</div>
-        <div class="twrap">
-          <table>
-            <thead><tr><th>Escalón</th><th>Rango utilidad</th><th>Tasa</th><th>% Incentivo</th></tr></thead>
-            <tbody>
-              <tr><td>E0</td><td>Hasta Q80,000</td><td style="color:rgba(255,255,255,.4)">0.00%</td><td><span class="chip c-pen">50%</span></td></tr>
-              <tr><td>E1</td><td>Q80,001 – Q90,000</td><td>0.75%</td><td><span class="chip c-pen">50%</span></td></tr>
-              <tr style="background:rgba(0,200,83,.05)"><td><strong>E2</strong></td><td><strong>Q90,001 – Q120,000</strong></td><td style="color:var(--accent)"><strong>1.00%</strong></td><td><span class="chip c-new">100% ✓</span></td></tr>
-              <tr style="background:rgba(0,200,83,.05)"><td><strong>E3</strong></td><td><strong>Q120,001 – Q150,000</strong></td><td style="color:var(--accent)"><strong>1.50%</strong></td><td><span class="chip c-new">100% ✓</span></td></tr>
-              <tr style="background:rgba(0,200,83,.05)"><td><strong>E4</strong></td><td><strong>Q150,001+</strong></td><td style="color:var(--gold)"><strong>2.00%</strong></td><td><span class="chip c-new">100% ✓</span></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="al al-info" style="margin-top:12px">💡 <div>Superar <strong>Q80,001</strong> de utilidad activa el 100% de incentivos. Por debajo aplica 50%.</div></div>
-      </div>
-
-      <!-- ── ESTIMADOR DE INCENTIVOS ──────────────────────── -->
-      <div class="card" style="margin-top:0">
+      
+<!-- ── ESTIMADOR DE INCENTIVOS ──────────────────────── -->
+      <div class="card" style="margin-top:0;border-top:2px dashed rgba(0,188,212,.25);border-radius:0 0 14px 14px;padding-top:0">
         <div class="chdr">⭐ Estimador de incentivos del mes</div>
         <div style="font-size:.78rem;color:var(--dim);margin-bottom:14px">Ingresa cuántos clientes estimas por tramo para ver tu ingreso total estimado.</div>
 
@@ -509,6 +493,24 @@ tr:hover td{background:rgba(255,255,255,.03)}
       </div>
 
     </div>
+<div class="card">
+        <div class="chdr">📊 Tabla de escalones y regla de incentivos</div>
+        <div class="twrap">
+          <table>
+            <thead><tr><th>Escalón</th><th>Rango utilidad</th><th>Tasa</th><th>% Incentivo</th></tr></thead>
+            <tbody>
+              <tr><td>E0</td><td>Hasta Q80,000</td><td style="color:rgba(255,255,255,.4)">0.00%</td><td><span class="chip c-pen">50%</span></td></tr>
+              <tr><td>E1</td><td>Q80,001 – Q90,000</td><td>0.75%</td><td><span class="chip c-pen">50%</span></td></tr>
+              <tr style="background:rgba(0,200,83,.05)"><td><strong>E2</strong></td><td><strong>Q90,001 – Q120,000</strong></td><td style="color:var(--accent)"><strong>1.00%</strong></td><td><span class="chip c-new">100% ✓</span></td></tr>
+              <tr style="background:rgba(0,200,83,.05)"><td><strong>E3</strong></td><td><strong>Q120,001 – Q150,000</strong></td><td style="color:var(--accent)"><strong>1.50%</strong></td><td><span class="chip c-new">100% ✓</span></td></tr>
+              <tr style="background:rgba(0,200,83,.05)"><td><strong>E4</strong></td><td><strong>Q150,001+</strong></td><td style="color:var(--gold)"><strong>2.00%</strong></td><td><span class="chip c-new">100% ✓</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="al al-info" style="margin-top:12px">💡 <div>Superar <strong>Q80,001</strong> de utilidad activa el 100% de incentivos. Por debajo aplica 50%.</div></div>
+      </div>
+
+      
 
     <!-- ── HISTORIAL ───────────────────────────────────────── -->
     <div id="pHist" class="pnl">
