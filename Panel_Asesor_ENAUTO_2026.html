@@ -293,9 +293,12 @@ tr:hover td{background:rgba(255,255,255,.03)}
           <span style="font-size:.8rem;color:var(--dim)">TOTAL COMISIÓN</span>
           <span style="font-size:1.1rem;font-weight:900;color:var(--accent)" id="dComision">Q7,000.00</span>
         </div>
-        <div style="background:rgba(249,168,37,.07);border:1px solid rgba(249,168,37,.2);border-radius:9px;padding:11px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="background:rgba(249,168,37,.07);border:1px solid rgba(249,168,37,.2);border-radius:9px;padding:11px;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
           <span style="font-size:.8rem;color:var(--dim)">INCENTIVOS REGISTRADOS</span>
           <span style="font-size:1rem;font-weight:700;color:var(--gold)" id="dInc">Q0.00</span>
+        </div>
+        <div id="dExcepcion" style="display:none;margin-bottom:8px;padding:9px 12px;background:rgba(239,83,80,.08);border:1px solid rgba(239,83,80,.3);border-radius:9px;font-size:.78rem;line-height:1.5;color:rgba(255,255,255,.85)">
+          ⚠️ <strong>Excepción para este período:</strong> Se otorgará el <strong style="color:#FF8A65">100%</strong> del incentivo (Q<span id="dExcepcionNeto">—</span>) por <strong>única vez</strong>. Normalmente con utilidad menor a Q80,001 aplicaría el 50% (Q<span id="dExcepcion50">—</span>).
         </div>
         <div style="background:linear-gradient(135deg,rgba(13,71,161,.4),rgba(21,101,192,.3));border-radius:9px;padding:13px;display:flex;justify-content:space-between;align-items:center">
           <span style="font-size:.88rem;font-weight:700">TOTAL ESTIMADO DEL MES</span>
@@ -653,7 +656,9 @@ var HIST = {
   DANIEL: {
     util:59177, bono:0,                  // Junio 2026 — sin bono (E0)
     cobrado:96302, mecanica:51274, pintura:7903,
-    pct_util:61.4, ordenes:30, mes:'Junio 2026'
+    pct_util:61.4, ordenes:30, mes:'Junio 2026',
+    incBruto:1100, incNeto:1100,          // Q1,100 bruto → excepción 100% este período
+    excepcion100:true                     // Normalmente sería 50% = Q550
   },
 };
 
