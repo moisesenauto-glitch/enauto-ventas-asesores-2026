@@ -330,7 +330,7 @@ tr:hover td{background:rgba(255,255,255,.03)}
             </select>
           </div>
           <div id="flotInfo" style="display:none">
-            <div class="al al-info">🚛 <div>Mínimo 3 servicios a 3 vehículos distintos de la misma empresa. Incentivo: <strong>Q500</strong> por flotilla.</div></div>
+            <div class="al al-info">🚛 <div>Mínimo 3 servicios a 3 vehículos distintos de la misma empresa. Incentivo: <strong>Q300</strong> por flotilla.</div></div>
             <div class="fg"><label class="fl">Empresa / flotilla</label><input class="fi" id="flotEmp" placeholder="Nombre de la empresa"></div>
             <div class="fg"><label class="fl">Órdenes de la flotilla (separadas por coma)</label><input class="fi" id="flotOrds" placeholder="18590, 18624, 18646"></div>
           </div>
@@ -466,10 +466,9 @@ var ESC = [
   {lo:150001, hi:1e9,    r:0.020, lbl:'E4'},
 ];
 var TRAMOS = [
-  {lo:800,  hi:2001,  inc:50, lbl:'T1 (Q800–2,000)',   css:'t1'},
-  {lo:2001, hi:3501,  inc:87.5, lbl:'T2 (Q2,001–3,500)', css:'t2'},
-  {lo:3501, hi:5001,  inc:125, lbl:'T3 (Q3,501–5,000)', css:'t3'},
-  {lo:5001, hi:1e9,   inc:175, lbl:'T4 (Q5,001+)',      css:'t4'},
+  {lo:800,  hi:3501, inc:75,  lbl:'T1 (Q800–Q3,500)',  css:'t1'},
+  {lo:3501, hi:5001, inc:125, lbl:'T2 (Q3,501–Q5,000)', css:'t2'},
+  {lo:5001, hi:1e9,  inc:175, lbl:'T3 (Q5,001+)',       css:'t3'},
 ];
 
 var asesor = null, ordenes = [], curOrder = null;
@@ -963,7 +962,7 @@ function onTipo() {
     incAmt = curOrder.tramo.inc;
     incNote = curOrder.tramo.lbl;
   }
-  if(isFlot) { incAmt=500; incNote='Flotilla — Q500 fijo'; }
+  if(isFlot) { incAmt=300; incNote='Flotilla — Q300 fijo'; }
   if(!tipo||tipo==='NO_APLICA') incAmt=0;
 
   var needsComent = (!tipo||incAmt===0) && tipo && tipo!=='NO_APLICA';
@@ -993,7 +992,7 @@ function enviar() {
   var isFlot=tipo.indexOf('FLOTILLA')>=0;
   var comt = document.getElementById('comentR').value || document.getElementById('comentO').value || '';
   var needsAp = !!document.getElementById('comentR').value;
-  var incAmt = isFlot?500:curOrder.tramo.inc;
+  var incAmt = isFlot?300:curOrder.tramo.inc;
   var estado = needsAp?'PENDIENTE_APROBACIÓN':'PENDIENTE';
 
   var reg = {
