@@ -428,6 +428,80 @@ tr:hover td{background:rgba(255,255,255,.03)}
         </div>
         <div class="al al-info" style="margin-top:12px">💡 <div>Superar <strong>Q80,001</strong> de utilidad activa el 100% de incentivos. Por debajo aplica 50%.</div></div>
       </div>
+
+      <!-- ── ESTIMADOR DE INCENTIVOS ──────────────────────── -->
+      <div class="card" style="margin-top:0">
+        <div class="chdr">⭐ Estimador de incentivos del mes</div>
+        <div style="font-size:.78rem;color:var(--dim);margin-bottom:14px">Ingresa cuántos clientes estimas por tramo para ver tu ingreso total estimado.</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+          <!-- T1 -->
+          <div>
+            <label class="fl">Clientes T1 (Q800–Q3,500) → Q75 c/u</label>
+            <div style="display:flex;align-items:center;gap:8px">
+              <button onclick="adjInc('t1',-1)" style="width:32px;height:32px;border:1px solid var(--border);border-radius:7px;background:none;color:var(--text);cursor:pointer;font-size:1rem">−</button>
+              <input class="fi" type="number" id="iT1" value="0" min="0" max="30" oninput="calcIncEst()" style="text-align:center;font-size:1.1rem;font-weight:700;padding:6px">
+              <button onclick="adjInc('t1',1)" style="width:32px;height:32px;border:1px solid var(--border);border-radius:7px;background:none;color:var(--text);cursor:pointer;font-size:1rem">+</button>
+              <span style="color:var(--dim);font-size:.8rem;min-width:50px" id="subT1">Q0</span>
+            </div>
+          </div>
+          <!-- T2 -->
+          <div>
+            <label class="fl">Clientes T2 (Q3,501–Q5,000) → Q125 c/u</label>
+            <div style="display:flex;align-items:center;gap:8px">
+              <button onclick="adjInc('t2',-1)" style="width:32px;height:32px;border:1px solid var(--border);border-radius:7px;background:none;color:var(--text);cursor:pointer;font-size:1rem">−</button>
+              <input class="fi" type="number" id="iT2" value="0" min="0" max="30" oninput="calcIncEst()" style="text-align:center;font-size:1.1rem;font-weight:700;padding:6px">
+              <button onclick="adjInc('t2',1)" style="width:32px;height:32px;border:1px solid var(--border);border-radius:7px;background:none;color:var(--text);cursor:pointer;font-size:1rem">+</button>
+              <span style="color:var(--dim);font-size:.8rem;min-width:50px" id="subT2">Q0</span>
+            </div>
+          </div>
+          <!-- T3 -->
+          <div>
+            <label class="fl">Clientes T3 (Q5,001+) → Q175 c/u</label>
+            <div style="display:flex;align-items:center;gap:8px">
+              <button onclick="adjInc('t3',-1)" style="width:32px;height:32px;border:1px solid var(--border);border-radius:7px;background:none;color:var(--text);cursor:pointer;font-size:1rem">−</button>
+              <input class="fi" type="number" id="iT3" value="0" min="0" max="30" oninput="calcIncEst()" style="text-align:center;font-size:1.1rem;font-weight:700;padding:6px">
+              <button onclick="adjInc('t3',1)" style="width:32px;height:32px;border:1px solid var(--border);border-radius:7px;background:none;color:var(--text);cursor:pointer;font-size:1rem">+</button>
+              <span style="color:var(--dim);font-size:.8rem;min-width:50px" id="subT3">Q0</span>
+            </div>
+          </div>
+          <!-- Flotilla -->
+          <div>
+            <label class="fl">Flotillas → Q300 c/u</label>
+            <div style="display:flex;align-items:center;gap:8px">
+              <button onclick="adjInc('fl',-1)" style="width:32px;height:32px;border:1px solid var(--border);border-radius:7px;background:none;color:var(--text);cursor:pointer;font-size:1rem">−</button>
+              <input class="fi" type="number" id="iFL" value="0" min="0" max="10" oninput="calcIncEst()" style="text-align:center;font-size:1.1rem;font-weight:700;padding:6px">
+              <button onclick="adjInc('fl',1)" style="width:32px;height:32px;border:1px solid var(--border);border-radius:7px;background:none;color:var(--text);cursor:pointer;font-size:1rem">+</button>
+              <span style="color:var(--dim);font-size:.8rem;min-width:50px" id="subFL">Q0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Results -->
+        <div style="background:rgba(0,0,0,.2);border-radius:10px;padding:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;text-align:center">
+          <div>
+            <div style="font-size:.7rem;color:var(--dim);margin-bottom:4px;text-transform:uppercase">Inc. bruto</div>
+            <div style="font-size:1.2rem;font-weight:800;color:#fff" id="estBruto">Q0</div>
+          </div>
+          <div>
+            <div style="font-size:.7rem;color:var(--dim);margin-bottom:4px;text-transform:uppercase" id="estPctLbl">% aplicado</div>
+            <div style="font-size:1.2rem;font-weight:800" id="estPct">—</div>
+          </div>
+          <div>
+            <div style="font-size:.7rem;color:var(--dim);margin-bottom:4px;text-transform:uppercase">Inc. neto</div>
+            <div style="font-size:1.2rem;font-weight:800;color:var(--green)" id="estNeto">Q0</div>
+          </div>
+        </div>
+
+        <div style="margin-top:10px;background:linear-gradient(135deg,rgba(13,71,161,.5),rgba(21,101,192,.3));border-radius:10px;padding:13px;display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:.75rem;color:var(--dim)">TOTAL ESTIMADO DEL MES</div>
+            <div style="font-size:.7rem;color:var(--dim);margin-top:2px">(comisión + incentivos netos)</div>
+          </div>
+          <div style="font-size:1.6rem;font-weight:900;color:var(--gold)" id="estGrand">Q7,000</div>
+        </div>
+      </div>
+
     </div>
 
     <!-- ── HISTORIAL ───────────────────────────────────────── -->
@@ -1071,6 +1145,45 @@ function sliderBono() {
   document.getElementById('cIn').value=v;
   doBono(v);
 }
+function adjInc(tramo, delta) {
+  var id = {t1:'iT1',t2:'iT2',t3:'iT3',fl:'iFL'}[tramo];
+  var el = document.getElementById(id);
+  el.value = Math.max(0, parseInt(el.value||0) + delta);
+  calcIncEst();
+}
+
+function calcIncEst() {
+  var t1 = parseInt(document.getElementById('iT1').value)||0;
+  var t2 = parseInt(document.getElementById('iT2').value)||0;
+  var t3 = parseInt(document.getElementById('iT3').value)||0;
+  var fl = parseInt(document.getElementById('iFL').value)||0;
+
+  var sT1 = t1*75, sT2 = t2*125, sT3 = t3*175, sFL = fl*300;
+  var bruto = sT1+sT2+sT3+sFL;
+
+  document.getElementById('subT1').textContent = t1 ? 'Q'+sT1 : 'Q0';
+  document.getElementById('subT2').textContent = t2 ? 'Q'+sT2 : 'Q0';
+  document.getElementById('subT3').textContent = t3 ? 'Q'+sT3 : 'Q0';
+  document.getElementById('subFL').textContent = fl ? 'Q'+sFL : 'Q0';
+
+  // Get current utilidad from calculator slider
+  var util = parseFloat(document.getElementById('cIn').value)||0;
+  var pct  = incPct(util);
+  var neto = bruto * pct;
+
+  // Bono from calculator
+  var e = getEsc(util);
+  var bono = util * e.r;
+  var grand = 7000 + bono + neto;
+
+  document.getElementById('estBruto').textContent = 'Q'+bruto.toLocaleString('es-GT');
+  document.getElementById('estPct').textContent = (pct*100).toFixed(0)+'%';
+  document.getElementById('estPct').style.color = pct===1 ? 'var(--green)' : 'var(--gold)';
+  document.getElementById('estPctLbl').textContent = util>=INC_THR ? '% (100% ✓)' : '% (50%)';
+  document.getElementById('estNeto').textContent = 'Q'+neto.toLocaleString('es-GT',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('estGrand').textContent = 'Q'+grand.toLocaleString('es-GT',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
 function doBono(u) {
   var e=getEsc(u),bono=u*e.r,tot=7000+bono;
   document.getElementById('cEscL').textContent=e.lbl;
@@ -1084,6 +1197,7 @@ function doBono(u) {
     ? '<div class="irp irp-100">✅ Incentivos al 100% con esta utilidad</div>'
     : '<div class="irp irp-50">⚡ Incentivos al 50% — produce Q'+(INC_THR-u).toLocaleString('es-GT')+' más para el 100%</div>';
   document.getElementById('cBadge').textContent=tot>=10000?'🏆 Mes excepcional':tot>=9000?'🚀 Mes excelente':tot>=8000?'🎯 Meta alcanzada':'📈 En camino';
+  calcIncEst();
 }
 
 // ══ HISTORIAL ═══════════════════════════════════════════════
