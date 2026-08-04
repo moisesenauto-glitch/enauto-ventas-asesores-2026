@@ -235,15 +235,26 @@ tr:hover td{background:rgba(255,255,255,.03)}
 
     <!-- ── MI MES ─────────────────────────────────────────── -->
     <div id="pMes" class="pnl on">
-      <div class="krow">
-        <div class="kpi"><div class="v" id="kUtil" style="color:var(--accent)">—</div><div class="l">Utilidad del mes</div></div>
-        <div class="kpi"><div class="v" id="kPct"  style="color:var(--gold)">—</div><div class="l">% de meta</div></div>
+      <!-- Fila 1: datos de producción -->
+      <div class="krow" style="grid-template-columns:repeat(4,1fr)">
+        <div class="kpi"><div class="v" id="kUtil" style="color:var(--accent);font-size:1.3rem">—</div><div class="l">Utilidad del mes</div></div>
+        <div class="kpi"><div class="v" id="kCobrado" style="color:#fff;font-size:1.3rem">—</div><div class="l">Total cobrado</div></div>
+        <div class="kpi"><div class="v" id="kMec" style="color:var(--accent);font-size:1.1rem">—</div><div class="l">Mecánica</div></div>
+        <div class="kpi"><div class="v" id="kPint" style="color:var(--gold);font-size:1.1rem">—</div><div class="l">Pintura</div></div>
+      </div>
+      <!-- Fila 2: rendimiento -->
+      <div class="krow" style="grid-template-columns:repeat(4,1fr);margin-top:10px">
+        <div class="kpi"><div class="v" id="kPct"  style="color:var(--gold)">—</div><div class="l">% de meta Q115k</div></div>
+        <div class="kpi"><div class="v" id="kPctUtil" style="color:var(--accent)">—</div><div class="l">% de utilidad</div></div>
+        <div class="kpi"><div class="v" id="kOrdenes" style="color:#fff">—</div><div class="l">Órdenes</div></div>
         <div class="kpi"><div class="v" id="kBono" style="color:var(--green)">—</div><div class="l">Bono generado</div></div>
-        <div class="kpi"><div class="v" id="kTot"  style="color:#fff">—</div><div class="l">Total comisión</div></div>
       </div>
       <div class="card">
         <div class="chdr">📈 Progreso hacia meta Q115,000 <span class="csub" id="dashMes">—</span></div>
-        <div id="dashEsc"></div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+          <div id="dashEsc"></div>
+          <span style="font-size:.78rem;color:var(--dim)" id="dashOrdenesLabel"></span>
+        </div>
         <div style="display:flex;justify-content:space-between;font-size:.73rem;color:var(--dim);margin:8px 0 4px">
           <span>Q0</span><span>Meta Q115,000</span>
         </div>
@@ -251,7 +262,23 @@ tr:hover td{background:rgba(255,255,255,.03)}
         <div id="dashRule" style="margin-top:12px"></div>
       </div>
       <div class="card">
-        <div class="chdr">💰 Detalle</div>
+        <div class="chdr">💰 Detalle — Junio 2026</div>
+        <!-- Production breakdown row -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+          <div style="background:rgba(255,255,255,.04);border-radius:9px;padding:11px">
+            <div style="font-size:.66rem;color:var(--dim);margin-bottom:2px">COBRADO TOTAL</div>
+            <div style="font-size:.95rem;font-weight:800;color:#fff" id="dCobrado">—</div>
+          </div>
+          <div style="background:rgba(0,188,212,.07);border-radius:9px;padding:11px">
+            <div style="font-size:.66rem;color:var(--dim);margin-bottom:2px">MECÁNICA</div>
+            <div style="font-size:.95rem;font-weight:800;color:var(--accent)" id="dMec">—</div>
+          </div>
+          <div style="background:rgba(249,168,37,.07);border-radius:9px;padding:11px">
+            <div style="font-size:.66rem;color:var(--dim);margin-bottom:2px">PINTURA</div>
+            <div style="font-size:.95rem;font-weight:800;color:var(--gold)" id="dPint">—</div>
+          </div>
+        </div>
+        <!-- Comision row -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
           <div style="background:rgba(255,255,255,.04);border-radius:9px;padding:13px">
             <div style="font-size:.7rem;color:var(--dim);margin-bottom:3px">SUELDO BASE</div>
@@ -618,8 +645,16 @@ function init() {
 // BONO = mes vencido: se paga a fin del mes siguiente
 // INCENTIVOS = periodo del 25 al 25 del mes en curso
 var HIST = {
-  MARCO:  {util:101903, bono:1019.03},  // Junio 2026 (bono se paga fin Jul)
-  DANIEL: {util:66845,  bono:0},         // Junio 2026 (bono se paga fin Jul)
+  MARCO: {
+    util:100195, bono:1001.95,           // Junio 2026 — bono se paga fin Julio
+    cobrado:171176, mecanica:101878, pintura:-1683,
+    pct_util:58.5, ordenes:33, mes:'Junio 2026'
+  },
+  DANIEL: {
+    util:59177, bono:0,                  // Junio 2026 — sin bono (E0)
+    cobrado:96302, mecanica:51274, pintura:7903,
+    pct_util:61.4, ordenes:30, mes:'Junio 2026'
+  },
 };
 
 function loadDash() {
@@ -629,12 +664,23 @@ function loadDash() {
   var pct  = d.util / META * 100;
   var myInc = getMisTotal() * incPct(d.util);
 
-  document.getElementById('kUtil').textContent = fmtN(d.util);
-  document.getElementById('kPct').textContent  = pct.toFixed(1)+'%';
-  document.getElementById('kBono').textContent = fmt(bono);
-  document.getElementById('kTot').textContent  = fmt(7000+bono);
-  document.getElementById('dBono').textContent = fmt(bono);
+  document.getElementById('kUtil').textContent    = fmtN(d.util);
+  document.getElementById('kCobrado').textContent = d.cobrado ? fmtN(d.cobrado) : '—';
+  document.getElementById('kMec').textContent     = d.mecanica ? fmtN(d.mecanica) : '—';
+  document.getElementById('kPint').textContent    = d.pintura != null ? (d.pintura < 0 ? '-'+fmtN(-d.pintura) : fmtN(d.pintura)) : '—';
+  document.getElementById('kPct').textContent     = pct.toFixed(1)+'%';
+  document.getElementById('kPctUtil').textContent = d.pct_util ? d.pct_util.toFixed(1)+'%' : '—';
+  document.getElementById('kOrdenes').textContent = d.ordenes ? d.ordenes+' órdenes' : '—';
+  document.getElementById('kBono').textContent    = fmt(bono);
+  document.getElementById('dBono').textContent    = fmt(bono);
   document.getElementById('dComision').textContent = fmt(7000+bono);
+  // Production detail
+  var dCob = document.getElementById('dCobrado');
+  var dMecEl = document.getElementById('dMec');
+  var dPintEl = document.getElementById('dPint');
+  if(dCob)   dCob.textContent   = d.cobrado  ? fmtN(d.cobrado)  : '—';
+  if(dMecEl) dMecEl.textContent = d.mecanica ? fmtN(d.mecanica) : '—';
+  if(dPintEl) dPintEl.textContent = d.pintura != null ? (d.pintura < 0 ? '-'+fmtN(-d.pintura) : fmtN(d.pintura)) : '—';
   document.getElementById('dInc').textContent  = fmt(myInc);
   document.getElementById('dGrand').textContent= fmt(7000+bono+myInc);
   document.getElementById('dashMes').textContent = periodo();
