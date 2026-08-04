@@ -406,9 +406,15 @@ tr:hover td{background:rgba(255,255,255,.03)}
             <div class="rrow"><span>Tasa</span><strong id="cTasa2">1.00%</strong></div>
             <div class="rrow"><span>Bono</span><strong id="cBono2" style="color:var(--accent)">Q1,000.00</strong></div>
             <div style="border-top:1px solid rgba(255,255,255,.1);margin:9px 0"></div>
-            <div style="font-size:.7rem;color:rgba(255,255,255,.35);margin-bottom:2px">TOTAL</div>
-            <div class="rtotal" id="cTotal2">Q8,000.00</div>
-            <div id="cBadge" style="margin-top:8px;padding:4px 12px;background:rgba(255,255,255,.1);border-radius:16px;font-size:.76rem;display:inline-block">🎯 Meta alcanzada</div>
+            <div style="font-size:.7rem;color:rgba(255,255,255,.35);margin-bottom:2px">COMISIÓN (base + bono)</div>
+            <div class="rtotal" id="cTotal2" style="font-size:1.4rem">Q8,000.00</div>
+            <div id="cBadge" style="margin-top:6px;padding:3px 10px;background:rgba(255,255,255,.1);border-radius:16px;font-size:.74rem;display:inline-block">🎯 Meta alcanzada</div>
+            <div style="border-top:1px dashed rgba(255,255,255,.12);margin:10px 0"></div>
+            <div class="rrow"><span style="color:rgba(255,255,255,.5)">Incentivos netos</span><strong id="rboxInc" style="color:var(--green)">Q0.00</strong></div>
+            <div style="background:linear-gradient(135deg,rgba(249,168,37,.2),rgba(249,168,37,.1));border-radius:10px;padding:10px 12px;margin-top:8px;border:1px solid rgba(249,168,37,.3)">
+              <div style="font-size:.68rem;color:rgba(255,255,255,.4);margin-bottom:3px">TOTAL REAL DEL MES</div>
+              <div style="font-size:2rem;font-weight:900;color:var(--gold)" id="rboxGrand">Q8,000.00</div>
+            </div>
           </div>
         </div>
       </div>
@@ -1149,7 +1155,7 @@ function adjInc(tramo, delta) {
   var id = {t1:'iT1',t2:'iT2',t3:'iT3',fl:'iFL'}[tramo];
   var el = document.getElementById(id);
   el.value = Math.max(0, parseInt(el.value||0) + delta);
-  calcIncEst();
+  calcIncEst(); // This updates rboxGrand with combined total
 }
 
 function calcIncEst() {
@@ -1182,6 +1188,9 @@ function calcIncEst() {
   document.getElementById('estPctLbl').textContent = util>=INC_THR ? '% (100% ✓)' : '% (50%)';
   document.getElementById('estNeto').textContent = 'Q'+neto.toLocaleString('es-GT',{minimumFractionDigits:2,maximumFractionDigits:2});
   document.getElementById('estGrand').textContent = 'Q'+grand.toLocaleString('es-GT',{minimumFractionDigits:2,maximumFractionDigits:2});
+  // Also update the rbox unified total
+  document.getElementById('rboxInc').textContent  = 'Q'+neto.toLocaleString('es-GT',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('rboxGrand').textContent = 'Q'+grand.toLocaleString('es-GT',{minimumFractionDigits:2,maximumFractionDigits:2});
 }
 
 function doBono(u) {
