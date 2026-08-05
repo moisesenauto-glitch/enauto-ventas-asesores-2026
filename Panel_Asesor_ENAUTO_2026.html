@@ -1324,9 +1324,9 @@ function loadHist() {
 
 // Init calc on load
 doBono(100000);
-</script>
-</body>
-</html// ── BUSCAR ESTADO DE PAGO EN CUADRO DE VENTAS (CSV) ─────────────────────────────
+
+
+// ── BUSCAR ESTADO DE PAGO EN CUADRO DE VENTAS (CSV) ─────────────────────────────
 // Usa el link de publicación CSV — no requiere compartir el sheet
 
 function gvizURLVentas(query) {
@@ -1338,8 +1338,7 @@ function gvizURLVentas(query) {
 // Simple robust CSV parser (handles quoted fields with commas)
 function parseCSV(text) {
   var rows = [];
-  var lines = text.split(/?
-/);
+  var lines = text.split(/\r?\n/);
   for (var i = 0; i < lines.length; i++) {
     var line = lines[i];
     if (!line.trim()) continue;
