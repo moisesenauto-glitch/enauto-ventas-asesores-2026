@@ -567,6 +567,7 @@ tr:hover td{background:rgba(255,255,255,.03)}
 var APPS_URL   = 'https://script.google.com/macros/s/AKfycbw1jjRjAHZ8iDhM1deqsogrO1H_WhyVOI394x41YfKVq8yJ8xT_4rqF-WWtLEoIRt_h/exec';
 var SHEET_DATOS  = '1v3S3_z1X55kp_bArT5B7MKCwjefYmJgkp7ec4TpLcik'; // AppSheet
 var SHEET_VENTAS = '1_chDpO-n0rXy_rpE79_00urPz63fv80CiUz7aUPEn7Y'; // Cuadro de ventas
+var VENTAS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSeeG6dL4hCTAEH0_9CpKN4cVemdf05oI0aFJf0OPZdOoaGCIsR7eradXmKWOwXZFCvb5ZpGcsxH5Ev/pub?gid=0&single=true&output=csv';  // CSV publicado — no requiere compartir el sheet
 var META = 115000, INC_THR = 80001;
 
 var ESC = [
@@ -918,6 +919,549 @@ function buscar() {
       mostrarErrBusq('Error de conexión: ' + e.message + '. Verifica que los sheets RECEPCIONES, CLIENTES y VEHICULOS estén compartidos públicamente (Compartir → Cualquier persona con el enlace → Lector).');
     });
 }
+
+function buscarHistorial(ordData, yaReg, num) {
+  var placa     = ordData.placa || '';
+  var idCliente = ordData.idCliente || '';
+  var q2Parts   = [];
+  if (idCliente) q2Parts.push("B='" + String(idCliente).replace(/'/g,"''") + "'");
+  if (placa)     q2Parts.push("C='" + placa.replace(/'/g,"''") + "'");
+
+  if (!q2Parts.length) {
+    procesarHistorial(ordData, [], num, yaReg);
+    return;
+  }
+
+  // Query RECEPCIONES for history by IDCLIENTE or PLACA, excluding current order
+  fetch(gvizURL('RECEPCIONES', 'SELECT A,F,G WHERE (' + q2Parts.join(' OR ') + ') AND A!=' + num + ' ORDER BY A DESC LIMIT 100'))
+    .then(function(r){ return r.text(); })
+    .then(function(txt){
+      var historial = [];
+      var json = parseGviz(txt);
+      if (json && json.table && json.table.rows) {
+        var hcols = json.table.cols || [];
+        historial = json.table.rows.map(function(row){
+          var o = rowToObj(row, hcols);
+          return {
+            orden: parseInt(getField(o,'ORDEN','A') || 0),
+            fecha_ingreso: toDateStr(getField(o,'FECHA INGRESO','FECHA','F')),
+            fecha_pago:    toDateStr(getField(o,'FECHA PAGO','G')),
+          };
+        }).filter(function(r){ return r.orden > 0; });
+      }
+      procesarHistorial(ordData, historial, num, yaReg);
+    })
+    .catch(function(){ procesarHistorial(ordData, [], num, yaReg); });
+}
+
+function mostrarErrBusq(msg) {
+  document.getElementById('lkErrMsg').textContent = msg;
+  document.getElementById('lkErr').style.display  = 'flex';
+}
+
+
+function procesarHistorial(ord, historial, num, yaReg) {
+  if (yaReg) {
+    mostrarResultado(ord, 'YA_REG', null, null, 0);
+    return;
+  }
+
+  var status = 'NUEVO', meses = null, ultVisita = null;
+
+  if (historial.length > 0) {
+    // Encontrar la visita más reciente
+    var fechas = historial.map(function(r) {
+      return r.fecha_ingreso || r.fecha_pago || '';
+    }).filter(function(f) { return f && f !== 'null' && f.length >= 10; });
+
+    if (fechas.length > 0) {
+      fechas.sort().reverse();
+      ultVisita = fechas[0];
+      var d1 = new Date(ultVisita);
+      var d2 = new Date(); // hoy
+      meses = (d2.getFullYear() - d1.getFullYear()) * 12 + (d2.getMonth() - d1.getMonth());
+      status = meses > 10 ? 'RECUPERADO' : 'REGULAR';
+    }
+  }
+
+  ord._statusMeses = meses;
+  mostrarResultado(ord, status, meses, ultVisita, historial.length);
+}
+
+function mostrarResultado(ord, status, meses, ultVisita, totalVisitas) {
+  var stLbl, stCss;
+  if      (status === 'NUEVO')      { stLbl = 'Cliente Nuevo';                        stCss = 'c-new'; }
+  else if (status === 'RECUPERADO') { stLbl = 'Recuperado (' + meses + ' meses)';     stCss = 'c-rec'; }
+  else if (status === 'REGULAR')    { stLbl = 'Cliente frecuente (' + meses + ' meses)'; stCss = 'c-reg'; }
+  else if (status === 'YA_REG')     { stLbl = 'Ya registrada este período';           stCss = 'c-pen'; }
+  else                              { stLbl = 'Sin historial';                        stCss = 'c-unk'; }
+
+  var tramo  = getTramo(ord.total || 0);
+  var fPago  = formatFecha(ord.fecha_pago);
+  var fUlt   = ultVisita ? formatFecha(ultVisita) : (totalVisitas === 0 ? 'Primera visita' : '—');
+
+  curOrder = {
+    orden: ord.orden, cliente: ord.cliente, placa: ord.placa,
+    total: ord.total, asesor: ord.asesor, fecha_pago: ord.fecha_pago,
+    status: status, stLbl: stLbl, tramo: tramo, meses: meses, ultVisita: fUlt,
+  };
+
+  document.getElementById('lk_cli').textContent = ord.cliente || '—';
+  document.getElementById('lk_st').className    = 'chip ' + stCss;
+  document.getElementById('lk_st').textContent  = stLbl;
+  // Vehicle info — prefer combined marcaLinea from cuadro de ventas, fallback to VEHICULOS parts
+  document.getElementById('lk_pla').textContent = ord.placa || '—';
+  var vehicInfo = ord._marcaLinea || [ord.marca, ord.linea].filter(function(v){ return v && v !== '0'; }).join(' ');
+  // Add year if available and not duplicate
+  if (ord.modelo && ord.modelo !== '0' && vehicInfo.indexOf(ord.modelo) < 0) {
+    vehicInfo = ord.modelo + ' ' + vehicInfo;
+  }
+  var vehicEl = document.getElementById('lk_vehiculo');
+  if (vehicEl) vehicEl.textContent = vehicInfo || '—';
+  var colorEl = document.getElementById('lk_color');
+  if (colorEl) colorEl.textContent = ord.color || '—';
+  document.getElementById('lk_fec').textContent = fPago;
+  document.getElementById('lk_tot').textContent = fmt(ord.total || 0);
+  document.getElementById('lk_ase').textContent = ord.asesor  || '—';
+  document.getElementById('lk_ult').textContent = fUlt;
+  document.getElementById('lk_mes').textContent = meses != null ? meses + ' meses' : (totalVisitas === 0 ? 'Primera visita' : '—');
+  document.getElementById('lk_tra').className   = 'chip ' + tramo.css;
+  document.getElementById('lk_tra').textContent = tramo.lbl;
+  document.getElementById('lk_inc').textContent = tramo.inc > 0 ? fmt(tramo.inc, 0) : 'No aplica (<Q800)';
+
+  // Show payment status
+  var pagoDiv = document.getElementById('lk_pago');
+  if (pagoDiv) {
+    var pago = ord._pago;
+    if (!pago) {
+      pagoDiv.innerHTML = '<div class="lkrow"><span class="lk-l">Estado de pago</span><span class="lk-v" style="color:var(--dim)">Cuadro de ventas no disponible</span></div>';
+    } else {
+      var html = '';
+      // Bank validated payment
+      // Format amount helper
+      function fmtQ(v) { return v ? 'Q' + parseFloat(v).toLocaleString('es-GT', {minimumFractionDigits:2}) : '—'; }
+      if (pago.pagadoBancos) {
+        html += '<div class="lkrow"><span class="lk-l">✅ Validado en Bancos</span><span class="lk-v" style="color:var(--green);font-weight:700">' + fmtQ(pago.bancos) + (pago.fechaUltPago ? ' · ' + pago.fechaUltPago : '') + '</span></div>';
+        html += '<div class="lkrow"><span class="lk-l">💰 Pendiente</span><span class="lk-v" style="color:var(--green)">Q0.00 — Pagado completo</span></div>';
+      } else if (pago.fechaUltPago) {
+        html += '<div class="lkrow"><span class="lk-l">⚠️ Último pago</span><span class="lk-v" style="color:var(--gold)">' + pago.fechaUltPago + '</span></div>';
+        if (pago.pendiente != null) html += '<div class="lkrow"><span class="lk-l">💰 Pendiente</span><span class="lk-v" style="color:var(--red)">' + fmtQ(pago.pendiente) + '</span></div>';
+      } else {
+        html += '<div class="lkrow"><span class="lk-l">❌ Sin validación en bancos</span><span class="lk-v" style="color:var(--dim)">' + (pago.pendiente!=null ? 'Pendiente: ' + fmtQ(pago.pendiente) : 'Sin datos') + '</span></div>';
+      }
+      if (pago.tieneReporte) {
+        html += '<div class="lkrow"><span class="lk-l">📋 Reporte de pago</span><span class="lk-v" style="color:var(--accent)">' + fmtQ(pago.pagReporte) + (pago.fechaReporte ? ' · Fecha: ' + pago.fechaReporte : '') + ' · Pendiente validar bancos</span></div>';
+      } else {
+        html += '<div class="lkrow"><span class="lk-l">📋 Reporte de pago</span><span class="lk-v" style="color:var(--dim)">Sin reporte registrado</span></div>';
+      }
+      pagoDiv.innerHTML = html;
+    }
+  }
+
+  document.getElementById('lkRes').style.display = 'block';
+
+  if (status === 'REGULAR') {
+    mostrarErrBusq('Este cliente vino hace ' + meses + ' meses. Se necesitan más de 10 para clasificar como recuperado.');
+  } else if (status !== 'YA_REG') {
+    if (status === 'NUEVO')      document.getElementById('tipoC').value = 'NUEVO';
+    if (status === 'RECUPERADO') document.getElementById('tipoC').value = 'RECUPERADO';
+    onTipo();
+    document.getElementById('regForm').style.display = 'block';
+  }
+}
+
+function mostrarErrBusq(msg) {
+  document.getElementById('lkErrMsg').textContent = msg;
+  document.getElementById('lkErr').style.display  = 'flex';
+}
+
+function formatFecha(str) {
+  if (!str || str==='null') return '—';
+  try {
+    var d = new Date(str.slice(0,10));
+    return d.toLocaleDateString('es-GT');
+  } catch(e){ return str; }
+}
+
+function onTipo() {
+  var tipo = document.getElementById('tipoC').value;
+  var isFlot = tipo.indexOf('FLOTILLA')>=0;
+  document.getElementById('flotInfo').style.display   = isFlot ? 'block':'none';
+  document.getElementById('comentReq').style.display  = 'none';
+  document.getElementById('comentOpt').style.display  = !isFlot ? 'block':'none';
+
+  var incAmt=0, incNote='';
+  if(curOrder && !isFlot) {
+    incAmt = curOrder.tramo.inc;
+    incNote = curOrder.tramo.lbl;
+  }
+  if(isFlot) { incAmt=300; incNote='Flotilla — Q300 fijo'; }
+  if(!tipo||tipo==='NO_APLICA') incAmt=0;
+
+  var needsComent = (!tipo||incAmt===0) && tipo && tipo!=='NO_APLICA';
+  document.getElementById('comentReq').style.display = needsComent?'block':'none';
+  document.getElementById('comentOpt').style.display  = (!needsComent&&!isFlot)?'block':'none';
+
+  if(incAmt>0) {
+    document.getElementById('incRes').style.display='block';
+    document.getElementById('incResAmt').textContent=fmt(incAmt,0);
+    document.getElementById('incResNote').textContent=incNote;
+  } else document.getElementById('incRes').style.display='none';
+
+  var btn=document.getElementById('btnSub');
+  btn.disabled = !tipo||tipo==='NO_APLICA';
+  if(needsComent&&tipo&&tipo!=='NO_APLICA') {
+    btn.className='btn-submit btn-pend'; btn.textContent='📤 Enviar para aprobación';
+  } else {
+    btn.className='btn-submit'; btn.textContent='✅ Registrar incentivo';
+  }
+}
+
+// ══ ENVIAR ══════════════════════════════════════════════════
+function enviar() {
+  if(!curOrder) return;
+  var tipo=document.getElementById('tipoC').value;
+  if(!tipo||tipo==='NO_APLICA') return;
+  var isFlot=tipo.indexOf('FLOTILLA')>=0;
+  var comt = document.getElementById('comentR').value || document.getElementById('comentO').value || '';
+  var needsAp = !!document.getElementById('comentR').value;
+  var incAmt = isFlot?300:curOrder.tramo.inc;
+  var estado = needsAp?'PENDIENTE_APROBACIÓN':'PENDIENTE';
+
+  var reg = {
+    id:Date.now(), orden:curOrder.orden, cliente:curOrder.cliente,
+    placa:curOrder.placa, total:curOrder.total, tipo:tipo,
+    tramo:isFlot?'Flotilla':curOrder.tramo.lbl, incentivo:incAmt,
+    estado:estado, comentario:comt,
+    fecha_reg:new Date().toLocaleDateString('es-GT'),
+    asesor:asesor, periodo:periodo()
+  };
+
+  var stored=JSON.parse(localStorage.getItem(sk('inc'))||'[]');
+  stored.push(reg);
+  localStorage.setItem(sk('inc'),JSON.stringify(stored));
+
+  // Send to Apps Script
+  if(APPS_URL && APPS_URL.indexOf('YOUR_')===0===false && APPS_URL.length>50) {
+    fetch(APPS_URL,{method:'POST',body:JSON.stringify(reg)})
+      .then(function(){console.log('Enviado a Google Sheets');})
+      .catch(function(e){console.log('Guardado localmente. Apps Script:', e.message);});
+  }
+
+  document.getElementById('okMsg').style.display='flex';
+  document.getElementById('btnSub').disabled=true;
+  loadDash();
+  setTimeout(function(){document.getElementById('okMsg').style.display='none';},4000);
+}
+
+// ══ MIS INCENTIVOS ══════════════════════════════════════════
+function renderMis() {
+  if(!asesor) return;
+  var stored=JSON.parse(localStorage.getItem(sk('inc'))||'[]');
+  var per=stored.filter(function(i){return i.periodo===periodo();});
+  var d=HIST[asesor]||{util:0};
+  var pct=incPct(d.util);
+  var bruto=per.reduce(function(a,b){return a+(b.incentivo||0);},0);
+  var neto=bruto*pct;
+
+  document.getElementById('miBruto').textContent=fmt(bruto,0);
+  document.getElementById('miPct').textContent=(pct*100).toFixed(0)+'%';
+  document.getElementById('miNeto').textContent=fmt(neto,0);
+  document.getElementById('miPer').textContent=periodo();
+
+  var tbody=document.getElementById('misTbody');
+  if(!per.length){tbody.innerHTML='<tr><td colspan="8" class="ld">Sin incentivos registrados este período</td></tr>';return;}
+  var ec={'PENDIENTE':'rgba(0,188,212,.15)','PENDIENTE_APROBACIÓN':'rgba(249,168,37,.15)','APROBADO':'rgba(0,200,83,.15)','RECHAZADO':'rgba(239,83,80,.15)'};
+  tbody.innerHTML=per.map(function(i){return '<tr><td><strong>#'+i.orden+'</strong></td><td>'+i.cliente+'</td><td>'+i.placa+'</td><td>'+fmt(i.total,0)+'</td><td style="font-size:.77rem">'+i.tipo+'</td><td style="font-weight:700;color:var(--gold)">'+fmt(i.incentivo,0)+'</td><td><span style="padding:2px 9px;border-radius:8px;font-size:.71rem;font-weight:700;background:'+(ec[i.estado]||'rgba(255,255,255,.08)')+'">'+i.estado+'</span></td><td style="color:var(--dim)">'+i.fecha_reg+'</td></tr>';}).join('');
+}
+
+function exportCSV() {
+  var stored=JSON.parse(localStorage.getItem(sk('inc'))||'[]');
+  var hdrs=['ID','Orden','Cliente','Placa','Total','Tipo','Tramo','Incentivo','Estado','Comentario','Fecha','Período'];
+  var rows=stored.map(function(i){return [i.id,i.orden,i.cliente,i.placa,i.total,i.tipo,i.tramo,i.incentivo,i.estado,i.comentario||'',i.fecha_reg,i.periodo].join(',');});
+  var csv=[hdrs.join(',')].concat(rows).join('\n');
+  var a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download='Incentivos_'+asesor+'_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+
+function limpiarPeriodo() {
+  if(!confirm('¿Borrar todos los registros de '+periodo()+'?')) return;
+  var stored=JSON.parse(localStorage.getItem(sk('inc'))||'[]');
+  localStorage.setItem(sk('inc'),JSON.stringify(stored.filter(function(i){return i.periodo!==periodo();})));
+  renderMis(); loadDash();
+}
+
+// ══ CALCULADORA ═════════════════════════════════════════════
+function calcBono() {
+  var u=parseFloat(document.getElementById('cIn').value)||0;
+  document.getElementById('cSlider').value=Math.min(u,200000);
+  doBono(u);
+}
+function sliderBono() {
+  var v=parseFloat(document.getElementById('cSlider').value);
+  document.getElementById('cIn').value=v;
+  doBono(v);
+}
+function adjInc(tramo, delta) {
+  var id = {t1:'iT1',t2:'iT2',t3:'iT3',fl:'iFL'}[tramo];
+  var el = document.getElementById(id);
+  el.value = Math.max(0, parseInt(el.value||0) + delta);
+  calcIncEst(); // This updates rboxGrand with combined total
+}
+
+function calcIncEst() {
+  var t1 = parseInt(document.getElementById('iT1').value)||0;
+  var t2 = parseInt(document.getElementById('iT2').value)||0;
+  var t3 = parseInt(document.getElementById('iT3').value)||0;
+  var fl = parseInt(document.getElementById('iFL').value)||0;
+
+  var sT1 = t1*75, sT2 = t2*125, sT3 = t3*175, sFL = fl*300;
+  var bruto = sT1+sT2+sT3+sFL;
+
+  document.getElementById('subT1').textContent = t1 ? 'Q'+sT1 : 'Q0';
+  document.getElementById('subT2').textContent = t2 ? 'Q'+sT2 : 'Q0';
+  document.getElementById('subT3').textContent = t3 ? 'Q'+sT3 : 'Q0';
+  document.getElementById('subFL').textContent = fl ? 'Q'+sFL : 'Q0';
+
+  // Get current utilidad from calculator slider
+  var util = parseFloat(document.getElementById('cIn').value)||0;
+  var pct  = incPct(util);
+  var neto = bruto * pct;
+
+  // Bono from calculator
+  var e = getEsc(util);
+  var bono = util * e.r;
+  var grand = 7000 + bono + neto;
+
+  document.getElementById('estBruto').textContent = 'Q'+bruto.toLocaleString('es-GT');
+  document.getElementById('estPct').textContent = (pct*100).toFixed(0)+'%';
+  document.getElementById('estPct').style.color = pct===1 ? 'var(--green)' : 'var(--gold)';
+  document.getElementById('estPctLbl').textContent = util>=INC_THR ? '% (100% ✓)' : '% (50%)';
+  document.getElementById('estNeto').textContent = 'Q'+neto.toLocaleString('es-GT',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('estGrand').textContent = 'Q'+grand.toLocaleString('es-GT',{minimumFractionDigits:2,maximumFractionDigits:2});
+  // Also update the rbox unified total
+  document.getElementById('rboxInc').textContent  = 'Q'+neto.toLocaleString('es-GT',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('rboxGrand').textContent = 'Q'+grand.toLocaleString('es-GT',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+function doBono(u) {
+  var e=getEsc(u),bono=u*e.r,tot=7000+bono;
+  document.getElementById('cEscL').textContent=e.lbl;
+  document.getElementById('cEscR').textContent=(e.r*100).toFixed(2)+'%';
+  document.getElementById('cUtil2').textContent='Q'+u.toLocaleString('es-GT');
+  document.getElementById('cEsc2').textContent=e.lbl;
+  document.getElementById('cTasa2').textContent=(e.r*100).toFixed(2)+'%';
+  document.getElementById('cBono2').textContent=fmt(bono);
+  document.getElementById('cTotal2').textContent=fmt(tot);
+  document.getElementById('cRulePill').innerHTML=incPct(u)===1
+    ? '<div class="irp irp-100">✅ Incentivos al 100% con esta utilidad</div>'
+    : '<div class="irp irp-50">⚡ Incentivos al 50% — produce Q'+(INC_THR-u).toLocaleString('es-GT')+' más para el 100%</div>';
+  document.getElementById('cBadge').textContent=tot>=10000?'🏆 Mes excepcional':tot>=9000?'🚀 Mes excelente':tot>=8000?'🎯 Meta alcanzada':'📈 En camino';
+  calcIncEst();
+}
+
+// ══ HISTORIAL ═══════════════════════════════════════════════
+function loadHist() {
+  // incBruto = incentivos brutos de clientes nuevos/recuperados
+  // incPagado = lo que realmente se pagó ese mes (puede diferir por la regla 50/100%)
+  // pct = porcentaje aplicado (1.0=100%, 0.5=50%)
+  // NOTA: En meses anteriores a la nueva regla se pagó al 100% siempre
+  var HIST_DATA={
+    MARCO: [
+      {mes:'Jul 2025',util:116600,bono:0,esc:'E4',incBruto:0,incPagado:0,pct:1.0,nota:'Sin sistema de incentivos'},
+      {mes:'Ago 2025',util:97977, bono:0,esc:'E2',incBruto:0,incPagado:0,pct:1.0,nota:'Sin sistema de incentivos'},
+      {mes:'Sep 2025',util:85557, bono:0,esc:'E1',incBruto:0,incPagado:0,pct:1.0,nota:'Sin sistema de incentivos'},
+      {mes:'Oct 2025',util:161231,bono:0,esc:'E4',incBruto:0,incPagado:0,pct:1.0,nota:'Sin sistema de incentivos'},
+      {mes:'Nov 2025',util:60454, bono:0,esc:'E0',incBruto:0,incPagado:0,pct:1.0,nota:'Sin sistema de incentivos'},
+      {mes:'Dic 2025',util:131449,bono:0,esc:'E3',incBruto:0,incPagado:0,pct:1.0,nota:'Sin sistema de incentivos'},
+      {mes:'May 2026',util:51433, bono:0,     esc:'E0',incBruto:2350,incPagado:2350,pct:1.0,nota:'Pagado al 100% — regla nueva no vigente'},
+      {mes:'Jun 2026',util:101903,bono:1019.03,esc:'E2',incBruto:2350,incPagado:0,   pct:1.0,nota:'Bono se paga fin Jul. Incentivos: periodo 25 Jun - 25 Jul'},
+    ],
+    DANIEL: [
+      {mes:'Jul 2025',util:111072,bono:0,esc:'E3',incBruto:0,incPagado:0,pct:1.0,nota:'Sin sistema de incentivos'},
+      {mes:'Ago 2025',util:68749, bono:0,esc:'E0',incBruto:0,incPagado:0,pct:1.0,nota:'Sin sistema de incentivos'},
+      {mes:'Sep 2025',util:56309, bono:0,esc:'E0',incBruto:0,incPagado:0,pct:1.0,nota:'Sin sistema de incentivos'},
+      {mes:'Oct 2025',util:82929, bono:0,esc:'E1',incBruto:0,incPagado:0,pct:1.0,nota:'Sin sistema de incentivos'},
+      {mes:'Nov 2025',util:60219, bono:0,esc:'E0',incBruto:0,incPagado:0,pct:1.0,nota:'Sin sistema de incentivos'},
+      {mes:'Dic 2025',util:87043, bono:0,esc:'E1',incBruto:0,incPagado:0,pct:1.0,nota:'Sin sistema de incentivos'},
+      {mes:'May 2026',util:63638, bono:0,    esc:'E0',incBruto:1175,incPagado:1175,pct:1.0,nota:'Pagado al 100% — regla nueva no vigente'},
+      {mes:'Jun 2026',util:66845, bono:0,    esc:'E0',incBruto:1175,incPagado:0,   pct:0.5,nota:'Bono se paga fin Jul. Incentivos: periodo 25 Jun - 25 Jul'},
+    ],
+  };
+  var data=HIST_DATA[asesor]||[];
+  var g=document.getElementById('histGrid');
+  g.innerHTML=data.map(function(d){
+    var p=d.util/META*100;
+    var incNeto=d.incPagado>0 ? d.incPagado : (d.incBruto*d.pct);
+    var tot=7000+d.bono+incNeto;
+    var cls=p>=87?'mc-ok':p>=60?'mc-warn':'mc-bad';
+    var notaHtml=d.nota?'<div style="margin-top:5px;font-size:.7rem;color:var(--gold);font-style:italic">'+d.nota+'</div>':'';
+    var pendiente=d.incBruto>0&&d.incPagado===0;
+    return '<div class="mc '+cls+'">'+
+      '<div style="font-size:.75rem;font-weight:700;color:var(--dim);margin-bottom:6px;text-transform:uppercase">'+d.mes+'</div>'+
+      '<div style="font-size:1.05rem;font-weight:800">'+fmtN(d.util)+'</div>'+
+      '<div style="font-size:.73rem;color:var(--dim);margin-top:2px">'+p.toFixed(1)+'% meta · '+d.esc+(d.bono>0?' · Bono '+fmt(d.bono):'')+'</div>'+
+      (d.incBruto>0?'<div style="margin-top:6px;font-size:.78rem">Inc. brutos: <strong>'+fmt(d.incBruto,0)+'</strong>'+
+        (pendiente?' <span style="color:var(--gold)">(pendiente)</span>':'<span style="color:var(--green)"> pagado</span>')+'</div>':'')+ 
+      '<div style="margin-top:3px;font-size:.83rem;font-weight:700">Total: '+fmt(tot)+'</div>'+
+      notaHtml+'</div>';
+  }).join('');
+
+  var tbody=document.getElementById('histBody');
+  tbody.innerHTML=data.map(function(d){
+    var neto=d.incPagado>0?d.incPagado:(d.incBruto*d.pct);
+    var tot=7000+d.bono+neto;
+    var pend=d.incBruto>0&&d.incPagado===0;
+    var incDisp=d.incBruto>0?(pend?'Pendiente':fmt(neto,0)):'—';
+    return '<tr><td>'+d.mes+'</td><td>'+fmt(d.util,0)+'</td><td>'+d.esc+'</td><td style="color:var(--accent)">'+fmt(d.bono)+'</td>'+
+      '<td>'+(d.incBruto>0?fmt(d.incBruto,0):'—')+'</td>'+
+      '<td style="font-weight:700;color:'+(pend?'var(--gold)':'var(--green)')+'">'+incDisp+'</td>'+
+      '<td style="font-weight:700">'+fmt(tot)+'</td></tr>';
+  }).join('');
+}
+
+// Init calc on load
+doBono(100000);
+</script>
+</body>
+</html// ── BUSCAR ESTADO DE PAGO EN CUADRO DE VENTAS (CSV) ─────────────────────────────
+// Usa el link de publicación CSV — no requiere compartir el sheet
+
+function gvizURLVentas(query) {
+  // Kept for compatibility but we now use CSV
+  return 'https://docs.google.com/spreadsheets/d/' + SHEET_VENTAS +
+    '/gviz/tq?tqx=out:json&headers=1&tq=' + encodeURIComponent(query);
+}
+
+// Simple robust CSV parser (handles quoted fields with commas)
+function parseCSV(text) {
+  var rows = [];
+  var lines = text.split(/?
+/);
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i];
+    if (!line.trim()) continue;
+    var cells = [], cur = '', inQ = false;
+    for (var j = 0; j < line.length; j++) {
+      var c = line[j];
+      if (c === '"') {
+        if (inQ && line[j+1] === '"') { cur += '"'; j++; }
+        else inQ = !inQ;
+      } else if (c === ',' && !inQ) {
+        cells.push(cur.trim()); cur = '';
+      } else {
+        cur += c;
+      }
+    }
+    cells.push(cur.trim());
+    rows.push(cells);
+  }
+  return rows;
+}
+
+// Cache the cuadro de ventas CSV so we only fetch it once per session
+var _ventasCache = null;
+var _ventasCacheTime = 0;
+
+function fetchVentasCSV(callback) {
+  var now = Date.now();
+  // Cache for 5 minutes
+  if (_ventasCache && (now - _ventasCacheTime) < 300000) {
+    callback(null, _ventasCache);
+    return;
+  }
+  fetch(VENTAS_CSV_URL)
+    .then(function(r) { return r.text(); })
+    .then(function(txt) {
+      var rows = parseCSV(txt);
+      _ventasCache = rows;
+      _ventasCacheTime = now;
+      callback(null, rows);
+    })
+    .catch(function(e) { callback(e, null); });
+}
+
+function buscarPago(ord, num, callback) {
+  fetchVentasCSV(function(err, rows) {
+    if (err || !rows || rows.length < 2) {
+      console.log('Cuadro ventas CSV no disponible:', err ? err.message : 'sin datos');
+      callback(null);
+      return;
+    }
+
+    // Row 0 = headers
+    var headers = rows[0].map(function(h) {
+      return h.toUpperCase().replace(/[^A-Z0-9 ]/g,'').trim();
+    });
+    console.log('Cuadro ventas headers:', headers);
+
+    // Find the column index for ORDEN
+    var ordenIdx = headers.indexOf('ORDEN');
+    if (ordenIdx < 0) ordenIdx = headers.indexOf('NO ORDEN');
+    if (ordenIdx < 0) ordenIdx = 3; // fallback: column D (index 3)
+
+    // Find the row for this order
+    var found = null;
+    for (var i = 1; i < rows.length; i++) {
+      if (parseInt(rows[i][ordenIdx]) === num) {
+        found = rows[i];
+        break;
+      }
+    }
+
+    if (!found) {
+      console.log('Orden #' + num + ' no encontrada en cuadro de ventas');
+      callback(null);
+      return;
+    }
+
+    // Map all columns by label
+    var byLabel = {};
+    headers.forEach(function(lbl, idx) {
+      if (lbl) byLabel[lbl] = found[idx] || '';
+    });
+    console.log('Cuadro ventas fila:', byLabel);
+
+    function get() {
+      for (var a = 1; a < arguments.length; a++) {
+        var k = String(arguments[a]).toUpperCase().replace(/[^A-Z0-9 ]/g,'').trim();
+        if (byLabel[k] && byLabel[k] !== '' && byLabel[k] !== '0') return byLabel[k];
+      }
+      return null;
+    }
+    function toDate(v) {
+      if (!v || v === '' || v === 'null') return null;
+      var s = String(v).trim();
+      return s.length >= 4 ? s : null;
+    }
+
+    var totalVen    = parseFloat(get(null,'GENERAL','TOTAL GENERAL','TOTAL','VENTA','MONTO','COBRADO') || 0);
+    var marcaLinea  = get(null,'IDMARCALINEA','MARCA LINEA','VEHICULO','DESCRIPCION VEHICULO');
+    var pendiente   = get(null,'PENDIENTE','SALDO','SALDO PENDIENTE');
+    var fechaUltPago= toDate(get(null,'FECHA ULTIMO','FECHA ULTIMO PAGO','ULTIMO PAGO','FECHA PAGO'));
+    var bancos      = get(null,'BANCOS','BANCO','VALIDADO BANCO','MONTO BANCOS');
+    var pagReporte  = get(null,'PAGADO REPORTE','REPORTE PAGO','PAGO REPORTE','MONTO REPORTE');
+    var fechaReporte= toDate(get(null,'FECHA REPORTE DE PAGO','FECHA REPORTE','FECHA REPOR'));
+
+    if (totalVen > 0 && (!ord || ord.total === 0)) {
+      if (ord) ord.total = totalVen;
+    }
+    if (marcaLinea && ord) ord._marcaLinea = String(marcaLinea);
+    if (fechaUltPago && ord && !ord.fecha_pago) ord.fecha_pago = fechaUltPago;
+
+    var pagadoBancos = (parseFloat(pendiente||1) === 0 || pendiente === '0') && !!fechaUltPago;
+    var tieneReporte = !!pagReporte && pagReporte !== '0' && parseFloat(pagReporte||0) > 0;
+
+    callback({
+      pendiente, fechaUltPago, bancos, pagReporte, fechaReporte,
+      pagadoBancos, tieneReporte,
+      totalVen: totalVen > 0 ? totalVen : null,
+    });
+  });
+}
+
 
 function buscarHistorial(ordData, yaReg, num) {
   var placa     = ordData.placa || '';
