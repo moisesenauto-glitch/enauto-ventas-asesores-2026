@@ -564,7 +564,7 @@ tr:hover td{background:rgba(255,255,255,.03)}
 
 <script>
 // ══ CONFIGURACIÓN ══════════════════════════════════════════
-var APPS_URL   = 'https://script.google.com/macros/s/AKfycbw1jjRjAHZ8iDhM1deqsogrO1H_WhyVOI394x41YfKVq8yJ8xT_4rqF-WWtLEoIRt_h/exec';
+var APPS_URL = 'https://script.google.com/macros/s/AKfycbwDRo75BIDFEEwMmsvAZ7Qq-1F1isEqBxBMo0xL83Q8hMsd6AwLbTM4XmX-GLQ4C-rx/exec';
 var SHEET_DATOS  = '1v3S3_z1X55kp_bArT5B7MKCwjefYmJgkp7ec4TpLcik'; // AppSheet
 var SHEET_VENTAS = '1_chDpO-n0rXy_rpE79_00urPz63fv80CiUz7aUPEn7Y'; // Cuadro de ventas
 var VENTAS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSeeG6dL4hCTAEH0_9CpKN4cVemdf05oI0aFJf0OPZdOoaGCIsR7eradXmKWOwXZFCvb5ZpGcsxH5Ev/pub?gid=0&single=true&output=csv';  // CSV publicado — no requiere compartir el sheet
@@ -1141,23 +1141,16 @@ function enviar() {
   stored.push(reg);
   localStorage.setItem(sk('inc'),JSON.stringify(stored));
 
-  // Send to Apps Script (Google requires no-cors for cross-origin POST)
+  // Send to Apps Script via GET with data as URL param (avoids CORS issues)
   if(APPS_URL && APPS_URL.length > 50 && APPS_URL.indexOf('YOUR_') < 0) {
-    fetch(APPS_URL, {
-      method: 'POST',
-      mode:   'no-cors',          // required for Google Apps Script
-      headers: {'Content-Type': 'application/json'},
-      body:    JSON.stringify(reg)
-    })
-    .then(function() {
-      console.log('Enviado a Apps Script OK');
-      // Show brief confirmation
-      var okEl = document.getElementById('okMsg');
-      if(okEl) { okEl.style.display='flex'; setTimeout(function(){okEl.style.display='none';},5000); }
-    })
-    .catch(function(e) {
-      console.log('Apps Script error (datos guardados localmente):', e.message);
-    });
+    var regUrl = APPS_URL + '?action=register&data=' + encodeURIComponent(JSON.stringify(reg));
+    fetch(regUrl, {method:'GET', mode:'no-cors'})
+      .then(function() {
+        console.log('Incentivo enviado a Apps Script');
+      })
+      .catch(function(e) {
+        console.log('Sin conexion, guardado localmente:', e.message);
+      });
   }
 
   document.getElementById('okMsg').style.display='flex';
@@ -1695,23 +1688,16 @@ function enviar() {
   stored.push(reg);
   localStorage.setItem(sk('inc'),JSON.stringify(stored));
 
-  // Send to Apps Script (Google requires no-cors for cross-origin POST)
+  // Send to Apps Script via GET with data as URL param (avoids CORS issues)
   if(APPS_URL && APPS_URL.length > 50 && APPS_URL.indexOf('YOUR_') < 0) {
-    fetch(APPS_URL, {
-      method: 'POST',
-      mode:   'no-cors',          // required for Google Apps Script
-      headers: {'Content-Type': 'application/json'},
-      body:    JSON.stringify(reg)
-    })
-    .then(function() {
-      console.log('Enviado a Apps Script OK');
-      // Show brief confirmation
-      var okEl = document.getElementById('okMsg');
-      if(okEl) { okEl.style.display='flex'; setTimeout(function(){okEl.style.display='none';},5000); }
-    })
-    .catch(function(e) {
-      console.log('Apps Script error (datos guardados localmente):', e.message);
-    });
+    var regUrl = APPS_URL + '?action=register&data=' + encodeURIComponent(JSON.stringify(reg));
+    fetch(regUrl, {method:'GET', mode:'no-cors'})
+      .then(function() {
+        console.log('Incentivo enviado a Apps Script');
+      })
+      .catch(function(e) {
+        console.log('Sin conexion, guardado localmente:', e.message);
+      });
   }
 
   document.getElementById('okMsg').style.display='flex';
