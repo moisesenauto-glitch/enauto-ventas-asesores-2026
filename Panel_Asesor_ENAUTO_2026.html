@@ -1141,11 +1141,23 @@ function enviar() {
   stored.push(reg);
   localStorage.setItem(sk('inc'),JSON.stringify(stored));
 
-  // Send to Apps Script
-  if(APPS_URL && APPS_URL.indexOf('YOUR_')===0===false && APPS_URL.length>50) {
-    fetch(APPS_URL,{method:'POST',body:JSON.stringify(reg)})
-      .then(function(){console.log('Enviado a Google Sheets');})
-      .catch(function(e){console.log('Guardado localmente. Apps Script:', e.message);});
+  // Send to Apps Script (Google requires no-cors for cross-origin POST)
+  if(APPS_URL && APPS_URL.length > 50 && APPS_URL.indexOf('YOUR_') < 0) {
+    fetch(APPS_URL, {
+      method: 'POST',
+      mode:   'no-cors',          // required for Google Apps Script
+      headers: {'Content-Type': 'application/json'},
+      body:    JSON.stringify(reg)
+    })
+    .then(function() {
+      console.log('Enviado a Apps Script OK');
+      // Show brief confirmation
+      var okEl = document.getElementById('okMsg');
+      if(okEl) { okEl.style.display='flex'; setTimeout(function(){okEl.style.display='none';},5000); }
+    })
+    .catch(function(e) {
+      console.log('Apps Script error (datos guardados localmente):', e.message);
+    });
   }
 
   document.getElementById('okMsg').style.display='flex';
@@ -1683,11 +1695,23 @@ function enviar() {
   stored.push(reg);
   localStorage.setItem(sk('inc'),JSON.stringify(stored));
 
-  // Send to Apps Script
-  if(APPS_URL && APPS_URL.indexOf('YOUR_')===0===false && APPS_URL.length>50) {
-    fetch(APPS_URL,{method:'POST',body:JSON.stringify(reg)})
-      .then(function(){console.log('Enviado a Google Sheets');})
-      .catch(function(e){console.log('Guardado localmente. Apps Script:', e.message);});
+  // Send to Apps Script (Google requires no-cors for cross-origin POST)
+  if(APPS_URL && APPS_URL.length > 50 && APPS_URL.indexOf('YOUR_') < 0) {
+    fetch(APPS_URL, {
+      method: 'POST',
+      mode:   'no-cors',          // required for Google Apps Script
+      headers: {'Content-Type': 'application/json'},
+      body:    JSON.stringify(reg)
+    })
+    .then(function() {
+      console.log('Enviado a Apps Script OK');
+      // Show brief confirmation
+      var okEl = document.getElementById('okMsg');
+      if(okEl) { okEl.style.display='flex'; setTimeout(function(){okEl.style.display='none';},5000); }
+    })
+    .catch(function(e) {
+      console.log('Apps Script error (datos guardados localmente):', e.message);
+    });
   }
 
   document.getElementById('okMsg').style.display='flex';
