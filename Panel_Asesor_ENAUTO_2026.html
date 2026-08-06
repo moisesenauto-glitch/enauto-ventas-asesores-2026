@@ -404,6 +404,7 @@ tr:hover td{background:rgba(255,255,255,.03)}
         </div>
         <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn-sm" onclick="exportCSV()">📤 Exportar CSV</button>
+          <button class="btn-sm" id="btnSync" onclick="syncToSheets()" style="color:var(--accent);border-color:rgba(0,188,212,.4)">☁ Enviar a Sheets</button>
           <button class="btn-sm" style="color:var(--red);border-color:rgba(239,83,80,.3)" onclick="limpiarPeriodo()">🗑 Limpiar período</button>
         </div>
       </div>
@@ -565,7 +566,7 @@ tr:hover td{background:rgba(255,255,255,.03)}
 
 <script>
 // ══ CONFIGURACIÓN ══════════════════════════════════════════
-var APPS_URL = 'https://script.google.com/macros/s/AKfycbwDRo75BIDFEEwMmsvAZ7Qq-1F1isEqBxBMo0xL83Q8hMsd6AwLbTM4XmX-GLQ4C-rx/exec';
+var APPS_URL = 'https://script.google.com/macros/s/AKfycbyJEE_FemzkxbP8ld1Pqq7D6dJRuYeI7VRindp0Lq_RVZNA2orhLXXt8QnPSJ-C-nTZ/exec';
 var SHEET_DATOS  = '1v3S3_z1X55kp_bArT5B7MKCwjefYmJgkp7ec4TpLcik'; // AppSheet
 var SHEET_VENTAS = '1_chDpO-n0rXy_rpE79_00urPz63fv80CiUz7aUPEn7Y'; // Cuadro de ventas
 var VENTAS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSeeG6dL4hCTAEH0_9CpKN4cVemdf05oI0aFJf0OPZdOoaGCIsR7eradXmKWOwXZFCvb5ZpGcsxH5Ev/pub?gid=0&single=true&output=csv';  // CSV publicado — no requiere compartir el sheet
@@ -1198,6 +1199,48 @@ function renderMis() {
   tbody.innerHTML=per.map(function(i){return '<tr><td><strong>#'+i.orden+'</strong></td><td>'+i.cliente+'</td><td>'+i.placa+'</td><td>'+fmt(i.total,0)+'</td><td style="font-size:.77rem">'+i.tipo+'</td><td style="font-weight:700;color:var(--gold)">'+fmt(i.incentivo,0)+'</td><td><span style="padding:2px 9px;border-radius:8px;font-size:.71rem;font-weight:700;background:'+(ec[i.estado]||'rgba(255,255,255,.08)')+'">'+i.estado+'</span></td><td style="color:var(--dim)">'+i.fecha_reg+'</td></tr>';}).join('');
 }
 
+function syncToSheets() {
+  var stored = JSON.parse(localStorage.getItem(sk('inc')) || '[]');
+  if (!stored.length) {
+    alert('No hay incentivos en este período para enviar.');
+    return;
+  }
+
+  if (!APPS_URL || APPS_URL.length < 50) {
+    alert('El URL de Apps Script no está configurado en el HTML.');
+    return;
+  }
+
+  var btn = document.getElementById('btnSync');
+  if (btn) { btn.textContent = '⏳ Enviando...'; btn.disabled = true; }
+
+  var ok = 0, fail = 0, total = stored.length;
+
+  function sendNext(i) {
+    if (i >= stored.length) {
+      var msg = '☁ Listo: ' + ok + '/' + total + ' enviados a Google Sheets.';
+      if (fail > 0) msg += ' (' + fail + ' con error — ya estaban registrados)';
+      if (btn) { btn.textContent = msg; btn.disabled = false; }
+      setTimeout(function() { if (btn) btn.textContent = '☁ Enviar a Google Sheets'; }, 6000);
+      return;
+    }
+    var reg = stored[i];
+    var url = APPS_URL + '?action=register&data=' + encodeURIComponent(JSON.stringify(reg));
+    fetch(url)
+      .then(function(r) { return r.json(); })
+      .then(function(resp) {
+        if (resp.ok) ok++; else fail++;
+        if (btn) btn.textContent = '⏳ Enviando ' + (i+1) + '/' + total + '...';
+        sendNext(i + 1);
+      })
+      .catch(function() {
+        fail++;
+        sendNext(i + 1);
+      });
+  }
+  sendNext(0);
+}
+
 function exportCSV() {
   var stored=JSON.parse(localStorage.getItem(sk('inc'))||'[]');
   var hdrs=['ID','Orden','Cliente','Placa','Total','Tipo','Tramo','Incentivo','Estado','Comentario','Fecha','Período'];
@@ -1760,6 +1803,48 @@ function renderMis() {
   if(!per.length){tbody.innerHTML='<tr><td colspan="8" class="ld">Sin incentivos registrados este período</td></tr>';return;}
   var ec={'PENDIENTE':'rgba(0,188,212,.15)','PENDIENTE_APROBACIÓN':'rgba(249,168,37,.15)','APROBADO':'rgba(0,200,83,.15)','RECHAZADO':'rgba(239,83,80,.15)'};
   tbody.innerHTML=per.map(function(i){return '<tr><td><strong>#'+i.orden+'</strong></td><td>'+i.cliente+'</td><td>'+i.placa+'</td><td>'+fmt(i.total,0)+'</td><td style="font-size:.77rem">'+i.tipo+'</td><td style="font-weight:700;color:var(--gold)">'+fmt(i.incentivo,0)+'</td><td><span style="padding:2px 9px;border-radius:8px;font-size:.71rem;font-weight:700;background:'+(ec[i.estado]||'rgba(255,255,255,.08)')+'">'+i.estado+'</span></td><td style="color:var(--dim)">'+i.fecha_reg+'</td></tr>';}).join('');
+}
+
+function syncToSheets() {
+  var stored = JSON.parse(localStorage.getItem(sk('inc')) || '[]');
+  if (!stored.length) {
+    alert('No hay incentivos en este período para enviar.');
+    return;
+  }
+
+  if (!APPS_URL || APPS_URL.length < 50) {
+    alert('El URL de Apps Script no está configurado en el HTML.');
+    return;
+  }
+
+  var btn = document.getElementById('btnSync');
+  if (btn) { btn.textContent = '⏳ Enviando...'; btn.disabled = true; }
+
+  var ok = 0, fail = 0, total = stored.length;
+
+  function sendNext(i) {
+    if (i >= stored.length) {
+      var msg = '☁ Listo: ' + ok + '/' + total + ' enviados a Google Sheets.';
+      if (fail > 0) msg += ' (' + fail + ' con error — ya estaban registrados)';
+      if (btn) { btn.textContent = msg; btn.disabled = false; }
+      setTimeout(function() { if (btn) btn.textContent = '☁ Enviar a Google Sheets'; }, 6000);
+      return;
+    }
+    var reg = stored[i];
+    var url = APPS_URL + '?action=register&data=' + encodeURIComponent(JSON.stringify(reg));
+    fetch(url)
+      .then(function(r) { return r.json(); })
+      .then(function(resp) {
+        if (resp.ok) ok++; else fail++;
+        if (btn) btn.textContent = '⏳ Enviando ' + (i+1) + '/' + total + '...';
+        sendNext(i + 1);
+      })
+      .catch(function() {
+        fail++;
+        sendNext(i + 1);
+      });
+  }
+  sendNext(0);
 }
 
 function exportCSV() {
