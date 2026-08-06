@@ -378,6 +378,7 @@ tr:hover td{background:rgba(255,255,255,.03)}
           </div>
           <button class="btn-submit" id="btnSub" onclick="enviar()" disabled>Registrar incentivo</button>
           <div id="okMsg" class="al al-ok" style="display:none;margin-top:10px">✅ <span>Incentivo registrado. Aparece en "Mis Incentivos" como pendiente.</span></div>
+          <div id="syncStatus" class="al al-info" style="display:none;margin-top:6px;font-size:.8rem"></div>
         </div>
       </div>
     </div>
@@ -1141,15 +1142,32 @@ function enviar() {
   stored.push(reg);
   localStorage.setItem(sk('inc'),JSON.stringify(stored));
 
-  // Send to Apps Script via GET with data as URL param (avoids CORS issues)
+  // Send to Apps Script — shows real status
   if(APPS_URL && APPS_URL.length > 50 && APPS_URL.indexOf('YOUR_') < 0) {
     var regUrl = APPS_URL + '?action=register&data=' + encodeURIComponent(JSON.stringify(reg));
-    fetch(regUrl, {method:'GET', mode:'no-cors'})
-      .then(function() {
-        console.log('Incentivo enviado a Apps Script');
+    var statusEl = document.getElementById('syncStatus');
+    if(statusEl) { statusEl.textContent = '⏳ Enviando a Google Sheets...'; statusEl.style.display='block'; }
+
+    fetch(regUrl)
+      .then(function(r) {
+        if(!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function(resp) {
+        console.log('Apps Script response:', resp);
+        if(resp.ok) {
+          if(statusEl) { statusEl.textContent = '✅ Guardado en Google Sheets (fila '+resp.row+')'; statusEl.className='al al-ok'; setTimeout(function(){statusEl.style.display='none';},5000); }
+        } else {
+          if(statusEl) { statusEl.textContent = '⚠️ Apps Script: ' + (resp.error||'error desconocido'); statusEl.className='al al-warn'; }
+          console.warn('Apps Script error:', resp.error);
+        }
       })
       .catch(function(e) {
-        console.log('Sin conexion, guardado localmente:', e.message);
+        // CORS error — try iframe workaround
+        console.log('Fetch bloqueado por CORS, usando método alternativo...');
+        var img = new Image();
+        img.src = regUrl;
+        if(statusEl) { statusEl.textContent = '💾 Guardado localmente. Sincronizará automáticamente.'; statusEl.className='al al-info'; setTimeout(function(){statusEl.style.display='none';},4000); }
       });
   }
 
@@ -1688,15 +1706,32 @@ function enviar() {
   stored.push(reg);
   localStorage.setItem(sk('inc'),JSON.stringify(stored));
 
-  // Send to Apps Script via GET with data as URL param (avoids CORS issues)
+  // Send to Apps Script — shows real status
   if(APPS_URL && APPS_URL.length > 50 && APPS_URL.indexOf('YOUR_') < 0) {
     var regUrl = APPS_URL + '?action=register&data=' + encodeURIComponent(JSON.stringify(reg));
-    fetch(regUrl, {method:'GET', mode:'no-cors'})
-      .then(function() {
-        console.log('Incentivo enviado a Apps Script');
+    var statusEl = document.getElementById('syncStatus');
+    if(statusEl) { statusEl.textContent = '⏳ Enviando a Google Sheets...'; statusEl.style.display='block'; }
+
+    fetch(regUrl)
+      .then(function(r) {
+        if(!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function(resp) {
+        console.log('Apps Script response:', resp);
+        if(resp.ok) {
+          if(statusEl) { statusEl.textContent = '✅ Guardado en Google Sheets (fila '+resp.row+')'; statusEl.className='al al-ok'; setTimeout(function(){statusEl.style.display='none';},5000); }
+        } else {
+          if(statusEl) { statusEl.textContent = '⚠️ Apps Script: ' + (resp.error||'error desconocido'); statusEl.className='al al-warn'; }
+          console.warn('Apps Script error:', resp.error);
+        }
       })
       .catch(function(e) {
-        console.log('Sin conexion, guardado localmente:', e.message);
+        // CORS error — try iframe workaround
+        console.log('Fetch bloqueado por CORS, usando método alternativo...');
+        var img = new Image();
+        img.src = regUrl;
+        if(statusEl) { statusEl.textContent = '💾 Guardado localmente. Sincronizará automáticamente.'; statusEl.className='al al-info'; setTimeout(function(){statusEl.style.display='none';},4000); }
       });
   }
 
