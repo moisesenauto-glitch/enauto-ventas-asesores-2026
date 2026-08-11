@@ -300,6 +300,10 @@ tr:hover td{background:rgba(255,255,255,.03)}
         <div id="dExcepcion" style="display:none;margin-bottom:8px;padding:9px 12px;background:rgba(239,83,80,.08);border:1px solid rgba(239,83,80,.3);border-radius:9px;font-size:.78rem;line-height:1.5;color:rgba(255,255,255,.85)">
           ⚠️ <strong>Excepción para este período:</strong> Se otorgará el <strong style="color:#FF8A65">100%</strong> del incentivo (Q<span id="dExcepcionNeto">—</span>) por <strong>única vez</strong>. Normalmente con utilidad menor a Q80,001 aplicaría el 50% (Q<span id="dExcepcion50">—</span>).
         </div>
+        <div id="dProdBonusRow" style="display:none;background:rgba(0,200,83,.07);border:1px solid rgba(0,200,83,.3);border-radius:9px;padding:11px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:.78rem;color:rgba(255,255,255,.65)">🏆 Bono producción Q115k</span>
+          <span style="font-size:.9rem;font-weight:700" id="dProdBonus">—</span>
+        </div>
         <div style="background:linear-gradient(135deg,rgba(13,71,161,.4),rgba(21,101,192,.3));border-radius:9px;padding:13px;display:flex;justify-content:space-between;align-items:center">
           <span style="font-size:.88rem;font-weight:700">TOTAL ESTIMADO DEL MES</span>
           <span style="font-size:1.35rem;font-weight:900;color:var(--gold)" id="dGrand">Q7,000.00</span>
@@ -478,12 +482,22 @@ tr:hover td{background:rgba(255,255,255,.03)}
           </div>
           <!-- T3 -->
           <div>
-            <label class="fl">Clientes T3 (Q5,001+) → Q175 c/u</label>
+            <label class="fl">Clientes T3 (Q5,001–Q15,000) → Q175 c/u</label>
             <div style="display:flex;align-items:center;gap:8px">
               <button onclick="adjInc('t3',-1)" style="width:32px;height:32px;border:1px solid var(--border);border-radius:7px;background:none;color:var(--text);cursor:pointer;font-size:1rem">−</button>
               <input class="fi" type="number" id="iT3" value="0" min="0" max="30" oninput="calcIncEst()" style="text-align:center;font-size:1.1rem;font-weight:700;padding:6px">
               <button onclick="adjInc('t3',1)" style="width:32px;height:32px;border:1px solid var(--border);border-radius:7px;background:none;color:var(--text);cursor:pointer;font-size:1rem">+</button>
               <span style="color:var(--dim);font-size:.8rem;min-width:50px" id="subT3">Q0</span>
+            </div>
+          </div>
+          <!-- T4 -->
+          <div>
+            <label class="fl">Clientes T4 (Q15,001+) → Q225 c/u</label>
+            <div style="display:flex;align-items:center;gap:8px">
+              <button onclick="adjInc('t4',-1)" style="width:32px;height:32px;border:1px solid var(--border);border-radius:7px;background:none;color:var(--text);cursor:pointer;font-size:1rem">−</button>
+              <input class="fi" type="number" id="iT4" value="0" min="0" max="30" oninput="calcIncEst()" style="text-align:center;font-size:1.1rem;font-weight:700;padding:6px">
+              <button onclick="adjInc('t4',1)" style="width:32px;height:32px;border:1px solid var(--border);border-radius:7px;background:none;color:var(--text);cursor:pointer;font-size:1rem">+</button>
+              <span style="color:var(--dim);font-size:.8rem;min-width:50px" id="subT4">Q0</span>
             </div>
           </div>
           <!-- Flotilla -->
@@ -538,7 +552,8 @@ tr:hover td{background:rgba(255,255,255,.03)}
             </tbody>
           </table>
         </div>
-        <div class="al al-info" style="margin-top:12px">💡 <div>Superar <strong>Q80,001</strong> de utilidad activa el 100% de incentivos. Por debajo aplica 50%.</div></div>
+        <div class="al al-info" style="margin-top:12px">💡 <div>Superar <strong>Q80,001</strong> de utilidad activa el 100% de incentivos. Por debajo aplica 50%.<br>
+          🏆 <strong>Bono de producción:</strong> Q115,000 util → +Q500 individual. Si AMBOS llegan a Q115,000 → +Q500 adicional de equipo.</div></div>
       </div>
 
     </div>
@@ -572,6 +587,14 @@ var SHEET_VENTAS = '1_chDpO-n0rXy_rpE79_00urPz63fv80CiUz7aUPEn7Y'; // Cuadro de 
 var VENTAS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSeeG6dL4hCTAEH0_9CpKN4cVemdf05oI0aFJf0OPZdOoaGCIsR7eradXmKWOwXZFCvb5ZpGcsxH5Ev/pub?gid=0&single=true&output=csv';  // CSV publicado — no requiere compartir el sheet
 var META = 115000, INC_THR = 80001;
 
+// ── BONO DE PRODUCCIÓN MENSUAL ──────────────────────────────────
+// Individual: Q115,000 util → Q500
+// Equipo: AMBOS llegan a Q115,000 → Q500 adicional cada uno
+// Regla: si solo uno llega, el otro NO recibe el bono de equipo
+var PROD_META   = 115000;   // meta individual de utilidad
+var PROD_BONUS  = 500;      // bono si llega solo
+var TEAM_BONUS  = 500;      // bono adicional si AMBOS llegan
+
 var ESC = [
   {lo:0,      hi:80001,  r:0.000, lbl:'E0'},
   {lo:80001,  hi:90001,  r:0.0075,lbl:'E1'},
@@ -580,9 +603,10 @@ var ESC = [
   {lo:150001, hi:1e9,    r:0.020, lbl:'E4'},
 ];
 var TRAMOS = [
-  {lo:800,  hi:3501, inc:75,  lbl:'T1 (Q800–Q3,500)',  css:'t1'},
-  {lo:3501, hi:5001, inc:125, lbl:'T2 (Q3,501–Q5,000)', css:'t2'},
-  {lo:5001, hi:1e9,  inc:175, lbl:'T3 (Q5,001+)',       css:'t3'},
+  {lo:800,   hi:3501,  inc:75,  lbl:'T1 (Q800–Q3,500)',     css:'t1'},
+  {lo:3501,  hi:5001,  inc:125, lbl:'T2 (Q3,501–Q5,000)',   css:'t2'},
+  {lo:5001,  hi:15001, inc:175, lbl:'T3 (Q5,001–Q15,000)',  css:'t3'},
+  {lo:15001, hi:1e9,   inc:225, lbl:'T4 (Q15,001+)',         css:'t4'},
 ];
 
 var asesor = null, ordenes = [], curOrder = null;
@@ -1271,7 +1295,7 @@ function sliderBono() {
   doBono(v);
 }
 function adjInc(tramo, delta) {
-  var id = {t1:'iT1',t2:'iT2',t3:'iT3',fl:'iFL'}[tramo];
+  var id = {t1:'iT1',t2:'iT2',t3:'iT3',t4:'iT4',fl:'iFL'}[tramo];
   var el = document.getElementById(id);
   el.value = Math.max(0, parseInt(el.value||0) + delta);
   calcIncEst(); // This updates rboxGrand with combined total
@@ -1289,6 +1313,7 @@ function calcIncEst() {
   document.getElementById('subT1').textContent = t1 ? 'Q'+sT1 : 'Q0';
   document.getElementById('subT2').textContent = t2 ? 'Q'+sT2 : 'Q0';
   document.getElementById('subT3').textContent = t3 ? 'Q'+sT3 : 'Q0';
+  var s4el=document.getElementById('subT4'); if(s4el) s4el.textContent = t4 ? 'Q'+sT4 : 'Q0';
   document.getElementById('subFL').textContent = fl ? 'Q'+sFL : 'Q0';
 
   // Get current utilidad from calculator slider
@@ -1877,7 +1902,7 @@ function sliderBono() {
   doBono(v);
 }
 function adjInc(tramo, delta) {
-  var id = {t1:'iT1',t2:'iT2',t3:'iT3',fl:'iFL'}[tramo];
+  var id = {t1:'iT1',t2:'iT2',t3:'iT3',t4:'iT4',fl:'iFL'}[tramo];
   var el = document.getElementById(id);
   el.value = Math.max(0, parseInt(el.value||0) + delta);
   calcIncEst(); // This updates rboxGrand with combined total
@@ -1895,6 +1920,7 @@ function calcIncEst() {
   document.getElementById('subT1').textContent = t1 ? 'Q'+sT1 : 'Q0';
   document.getElementById('subT2').textContent = t2 ? 'Q'+sT2 : 'Q0';
   document.getElementById('subT3').textContent = t3 ? 'Q'+sT3 : 'Q0';
+  var s4el=document.getElementById('subT4'); if(s4el) s4el.textContent = t4 ? 'Q'+sT4 : 'Q0';
   document.getElementById('subFL').textContent = fl ? 'Q'+sFL : 'Q0';
 
   // Get current utilidad from calculator slider
