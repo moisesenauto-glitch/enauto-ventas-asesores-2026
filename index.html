@@ -424,6 +424,21 @@ tbody tr{border-bottom:1px solid rgba(255,255,255,.03);transition:background .15
   <div class="tbl-wrap"><div class="tbl-scroll"><table>
     <thead><tr><th>#</th><th>Orden</th><th>Asesor</th><th>Cliente</th><th>Vehículo</th><th>Placa</th><th>Tipo</th><th>Total</th><th>Utilidad</th><th>% Util.</th><th>Ord.2025</th></tr></thead>
     <tbody id="tb-jul"></tbody></table></div></div>
+
+  <!-- ── Detalle de incentivos ── -->
+  <div class="sec" style="margin-top:28px">🎯 Detalle de Incentivos — Julio 2026</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px" id="jul-inc-cards"></div>
+  <div class="mtbl-filter">
+    <div class="mf-g"><label>Asesor</label>
+      <select id="jul-inc-adv" onchange="julFilterInc()">
+        <option value="">Todos</option><option>MARCO</option><option>DANIEL</option></select></div>
+  </div>
+  <div class="mtbl-info" id="jul-inc-res"></div>
+  <div class="tbl-wrap"><div class="tbl-scroll"><table>
+    <thead><tr><th>#</th><th>Orden</th><th>Asesor</th><th>Cliente</th><th>Placa</th>
+      <th>Total Orden</th><th>Tipo Cliente</th><th>Tramo</th><th>Incentivo Q</th></tr></thead>
+    <tbody id="jul-tb-inc"></tbody>
+  </table></div></div>
 </div>
 
 
@@ -779,18 +794,29 @@ function clrFilter(sfx){
   filterTbl(sfx);
 }
 const INCENTIVOS = {MARCO:{rows:[{"orden": "18590", "cliente": "ROSARIO GUERRA", "placa": "P599KXF", "tipo": "NUEVO", "tramo": "Tramo 4 (Q5001+)", "total": 25381, "incentivo": 350}, {"orden": "18625", "cliente": "INVENTAS", "placa": "P063DHB", "tipo": "RECUPERADO", "tramo": "Tramo 3 (Q3501-5000)", "total": 3620, "incentivo": 250}, {"orden": "18624", "cliente": "ALEX ALVAREZ", "placa": "P457GDB", "tipo": "NUEVO", "tramo": "Tramo 4 (Q5001+)", "total": 7020, "incentivo": 350}, {"orden": "18646", "cliente": "JOSE DOMINGUEZ", "placa": "P160JCM", "tipo": "NUEVO", "tramo": "Tramo 3 (Q3501-5000)", "total": 4390, "incentivo": 250}, {"orden": "18662", "cliente": "OSBERTO CACAO", "placa": "P576GLS", "tipo": "NUEVO", "tramo": "Tramo 4 (Q5001+)", "total": 7757, "incentivo": 350}, {"orden": "18681", "cliente": "WILLSON CUC", "placa": "P433LRF", "tipo": "NUEVO", "tramo": "Tramo 4 (Q5001+)", "total": 15455, "incentivo": 350}, {"orden": "18628", "cliente": "ALEJANDRO DE LEON", "placa": "P773JPX", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800-2000)", "total": 890, "incentivo": 100}, {"orden": "18669", "cliente": "ELVIN ORDOÑEZ BANGUAT", "placa": "P800KVK", "tipo": "NUEVO", "tramo": "Tramo 4 (Q5001+)", "total": 15163, "incentivo": 350}],total:2350},DANIEL:{rows:[{"orden": "18620", "cliente": "DANIEL ROCA", "placa": "P287HYZ", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800-2000)", "total": 1010, "incentivo": 100}, {"orden": "18606", "cliente": "ERICK MCKNIGHT", "placa": "P177FSM", "tipo": "NUEVO", "tramo": "Tramo 4 (Q5001+)", "total": 5955, "incentivo": 350}, {"orden": "18638", "cliente": "JOHAN REGALADO", "placa": "P193JVC", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800-2000)", "total": 1770, "incentivo": 100}, {"orden": "18660", "cliente": "MUSIA FRANCO GORDILLO", "placa": "P762GLT", "tipo": "NUEVO", "tramo": "Tramo 4 (Q5001+)", "total": 7475, "incentivo": 350}, {"orden": "18651", "cliente": "ANGELICA ORRELLANA", "placa": "P432LLM", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800-2000)", "total": 1470, "incentivo": 100}, {"orden": "18654", "cliente": "RONALD ENRIQUE GARCIA", "placa": "P412FCL", "tipo": "NUEVO", "tramo": "Tramo 2 (Q2001-3500)", "total": 2415, "incentivo": 175}],total:1175}};
+const INCENTIVOS_JUL = {MARCO:{rows:[{"orden": "18774", "cliente": "MILTON ESCOBAR", "placa": "P879HWF", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800–3,500)", "total": 1645, "incentivo": 75}, {"orden": "18798", "cliente": "ANDRES NUÑEZ", "placa": "P046HXT", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800–3,500)", "total": 2430, "incentivo": 75}, {"orden": "18797", "cliente": "ALEJANDRO ESCOBAR", "placa": "P869GVF", "tipo": "NUEVO", "tramo": "Tramo 3 (Q5,001–15,000)", "total": 13673, "incentivo": 175}],total:325},DANIEL:{rows:[{"orden": "18826", "cliente": "EMPAQUES Y COMPLEMENTOS SOCIEDAD ANONIMA", "placa": "P747KNM", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800–3,500)", "total": 820, "incentivo": 75}, {"orden": "18818", "cliente": "FELIX RODRIGUEZ", "placa": "P656LHV", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800–3,500)", "total": 2110, "incentivo": 75}, {"orden": "18832", "cliente": "INGRID ROJAS", "placa": "P852FPC", "tipo": "NUEVO", "tramo": "Tramo 3 (Q5,001–15,000)", "total": 6000, "incentivo": 175}, {"orden": "18854", "cliente": "EDWIN JOEL PANTEUL", "placa": "P927KNM", "tipo": "NUEVO", "tramo": "Tramo 3 (Q5,001–15,000)", "total": 8950, "incentivo": 175}, {"orden": "18836", "cliente": "COMERCIAL ALBIN", "placa": "P163FZJ", "tipo": "RECUPERADO", "tramo": "Tramo 1 (Q800–3,500)", "total": 3236, "incentivo": 75}, {"orden": "18777", "cliente": "SERVITEL", "placa": "P784FZV", "tipo": "RECUPERADO", "tramo": "Tramo 1 (Q800–3,500)", "total": 1891, "incentivo": 75}, {"orden": "18776", "cliente": "ANDREA GARCIA", "placa": "P216LFL", "tipo": "RECUPERADO", "tramo": "Tramo 4 (Q15,001+)", "total": 15149, "incentivo": 225}],total:875}};
+const INC_DATA={
+  may:{d:INCENTIVOS,    periodo:'25 May \u2013 25 Jun'},
+  jul:{d:INCENTIVOS_JUL,periodo:'26 Jul \u2013 25 Ago'}
+};
+const INC_MES={Mayo:'may',Julio:'jul'};
+const BONO_META=500,BONO_META_MIN=115000;
 function bonusCard(a,mes,util){
   const b=calcBonus(util),e=b.esc;
-  const inc=(mes==='Mayo'&&INCENTIVOS[a])?INCENTIVOS[a].total:0;
-  const grandTotal=b.total+inc;
+  const ik=INC_MES[mes];
+  const inc=(ik&&INC_DATA[ik]&&INC_DATA[ik].d[a])?INC_DATA[ik].d[a].total:0;
+  const meta500=util>=BONO_META_MIN?BONO_META:0;
+  const grandTotal=b.total+inc+meta500;
+  const extra=(inc>0||meta500>0);
   return'<div class="bonus-card"><div class="bonus-hdr">'
     +'<div class="bonus-ttl">💰 Comisión '+mes+' 2026</div>'
     +'<div class="esc-badge" style="background:'+e.clr+'33;color:'+e.clr+';border:1px solid '+e.clr+'55">'+e.label+' — '+(e.rate*100).toFixed(2)+'%</div>'
-  +'</div><div style="font-size:10px;color:var(--muted);margin-bottom:9px">'+e.desc+'</div>'
+  +'</div><div style="font-size:10px;color:var(--muted);margin-bottom:9px">'+e.desc+(meta500>0?' &nbsp;\u00b7&nbsp; <span style="color:#00e5a0;font-weight:700">\ud83c\udfc5 Super\u00f3 Q115,000 de utilidad</span>':'')+'</div>'
   +'<div class="brows"><div class="brow"><div class="bl">Sueldo Base</div><div class="bv">'+Q(BASE_SAL)+'</div></div>'
   +'<div class="brow"><div class="bl">Bono Utilidad</div><div class="bv" style="color:'+(b.bono>0?'var(--green)':'var(--muted)')+'">'+Q(b.bono)+'</div></div>'
+  +(meta500>0?'<div class="brow"><div class="bl">Bono Meta Q115,000</div><div class="bv" style="color:var(--green)">'+Q(meta500)+'</div></div>':'')
   +(inc>0?'<div class="brow"><div class="bl">Incentivo Clientes Nuevos/Recup.</div><div class="bv" style="color:#f59e0b">'+Q(inc)+'</div></div>':'')
-  +'<div class="btot"><div class="bl">'+(inc>0?'Total Final':'Total a Recibir')+'</div><div class="bv">'+Q(grandTotal)+'</div></div></div></div>';
+  +'<div class="btot"><div class="bl">'+(extra?'Total Final':'Total a Recibir')+'</div><div class="bv">'+Q(grandTotal)+'</div></div></div></div>';
 }
 function renderMonth(mes,sfx){
   const rows=D.orders26.filter(r=>r.mes===mes),agg=buildAgg26(mes);
@@ -1288,6 +1314,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   renderAgosto();
   mayRenderPend();
   mayRenderInc();
+  julRenderInc();
   renderBusq(D.orders26);
   document.getElementById('res-info').innerHTML='Todos los <strong style="color:var(--white)">'+D.orders26.length+'</strong> registros';
   document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
@@ -1535,6 +1562,7 @@ async function fetchLiveData(){
     renderAgosto();
     mayRenderPend();
     mayRenderInc();
+    julRenderInc();
     renderBusq(D.orders26);
     var ahora=new Date().toLocaleString('es-GT');
     showBar('✅ Mayo, Junio, Julio y Agosto actualizados · '+ahora, true);
@@ -1609,42 +1637,44 @@ function mayFilterPend(){
   }).join('');
 }
 
-function mayRenderInc(){
-  // Summary cards
-  var advs=['MARCO','DANIEL'];
-  var acClr={MARCO:'#2B4FE8',DANIEL:'#FF4B6E'};
-  document.getElementById('may-inc-cards').innerHTML = advs.map(function(a){
-    var d=INCENTIVOS[a]; var clr=acClr[a];
+// ── Incentivos clientes nuevos / recuperados (genérico por mes) ──
+function incTipoBadge(t){
+  if(t==='NUEVO')return'<span style="background:rgba(0,229,160,.15);color:#00e5a0;padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700">NUEVO</span>';
+  if(t==='RECUPERADO')return'<span style="background:rgba(245,158,11,.15);color:#fbbf24;padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700">RECUPERADO</span>';
+  if(t==='FLOTILLA')return'<span style="background:rgba(168,85,247,.15);color:#c084fc;padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700">FLOTILLA</span>';
+  return t;
+}
+function incRender(sfx){
+  var cfg=INC_DATA[sfx];if(!cfg)return;
+  var el=document.getElementById(sfx+'-inc-cards');if(!el)return;
+  var advs=['MARCO','DANIEL'],acClr={MARCO:'#2B4FE8',DANIEL:'#FF4B6E'};
+  el.innerHTML=advs.map(function(a){
+    var d=cfg.d[a]||{rows:[],total:0},clr=acClr[a];
+    var prom=d.rows.length?Math.round(d.total/d.rows.length):0;
     return '<div class="adv-card" style="--ac:'+clr+';--ag:rgba(0,0,0,.3)">'
       +'<div class="adv-stripe"></div>'
       +'<div class="adv-name" style="color:'+clr+'">'+a+'</div>'
-      +'<div class="adv-role">Incentivos clientes nuevos/recuperados · 25 May – 25 Jun</div>'
+      +'<div class="adv-role">Incentivos clientes nuevos/recuperados · '+cfg.periodo+'</div>'
       +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px">'
         +'<div><div class="sl">Clientes</div><div class="sv" style="color:'+clr+';font-size:22px">'+d.rows.length+'</div></div>'
         +'<div><div class="sl">Total Incentivo</div><div class="sv" style="color:#f59e0b;font-size:18px">Q'+d.total.toLocaleString('es-GT')+'</div></div>'
-        +'<div><div class="sl">Promedio</div><div class="sv" style="font-size:16px">Q'+Math.round(d.total/d.rows.length)+'</div></div>'
+        +'<div><div class="sl">Promedio</div><div class="sv" style="font-size:16px">Q'+prom+'</div></div>'
       +'</div>'
     +'</div>';
   }).join('');
-  mayFilterInc();
+  incFilter(sfx);
 }
-
-function mayFilterInc(){
-  var adv = document.getElementById('may-inc-adv')?document.getElementById('may-inc-adv').value:'';
-  var all = [];
+function incFilter(sfx){
+  var cfg=INC_DATA[sfx];if(!cfg)return;
+  var selEl=document.getElementById(sfx+'-inc-adv');
+  var adv=selEl?selEl.value:'';
+  var all=[];
   ['MARCO','DANIEL'].forEach(function(a){
     if(adv&&adv!==a)return;
-    INCENTIVOS[a].rows.forEach(function(r){all.push({asesor:a,...r});});
+    ((cfg.d[a]||{rows:[]}).rows||[]).forEach(function(r){all.push(Object.assign({asesor:a},r));});
   });
-  var acClr={MARCO:'#2B4FE8',DANIEL:'#FF4B6E'};
-  var tipoBadge=function(t){
-    if(t==='NUEVO')return'<span style="background:rgba(0,229,160,.15);color:#00e5a0;padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700">NUEVO</span>';
-    if(t==='RECUPERADO')return'<span style="background:rgba(245,158,11,.15);color:#fbbf24;padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700">RECUPERADO</span>';
-    return t;
-  };
-  var tb=document.getElementById('may-tb-inc');
-  if(!tb)return;
-  tb.innerHTML = all.map(function(r,i){
+  var tb=document.getElementById(sfx+'-tb-inc');if(!tb)return;
+  tb.innerHTML=all.map(function(r,i){
     return '<tr>'
       +'<td style="color:var(--muted)">'+(i+1)+'</td>'
       +'<td style="font-family:Barlow Condensed,sans-serif;font-weight:700;font-size:14px;color:#eef0ff">'+r.orden+'</td>'
@@ -1652,12 +1682,18 @@ function mayFilterInc(){
       +'<td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">'+(r.cliente||'—')+'</td>'
       +'<td style="font-family:monospace;font-size:11px;color:var(--muted)">'+(r.placa||'—')+'</td>'
       +'<td class="vw">Q'+r.total.toLocaleString('es-GT',{maximumFractionDigits:0})+'</td>'
-      +'<td>'+tipoBadge(r.tipo)+'</td>'
+      +'<td>'+incTipoBadge(r.tipo)+'</td>'
       +'<td style="color:var(--muted);font-size:11px">'+r.tramo+'</td>'
       +'<td style="color:#f59e0b;font-weight:700;font-family:Barlow Condensed,sans-serif;font-size:16px">Q'+r.incentivo+'</td>'
     +'</tr>';
   }).join('');
+  var res=document.getElementById(sfx+'-inc-res');
+  if(res)res.innerHTML='<strong>'+all.length+'</strong> clientes · Total <strong style="color:#f59e0b">Q'+all.reduce(function(s,r){return s+r.incentivo;},0).toLocaleString('es-GT')+'</strong>';
 }
+function mayRenderInc(){incRender('may');}
+function mayFilterInc(){incFilter('may');}
+function julRenderInc(){incRender('jul');}
+function julFilterInc(){incFilter('jul');}
 
 if(!JD.pendientes) JD.pendientes = [];
 window.addEventListener('load', function(){
