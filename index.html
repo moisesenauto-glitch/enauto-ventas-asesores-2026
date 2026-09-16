@@ -25,7 +25,7 @@ body{background:var(--bg);color:var(--text);font-family:Barlow,sans-serif;min-he
 .tabs::-webkit-scrollbar{height:3px}.tabs::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 .tab{padding:11px 15px;cursor:pointer;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;flex-shrink:0}
 .tab:hover{color:var(--white)}.tab.active{color:var(--white);border-bottom-color:var(--blue)}
-.tab.t-25.active{border-bottom-color:var(--cyan)}.tab.t-feb.active{border-bottom-color:var(--red)}.tab.t-mar.active{border-bottom-color:var(--purple)}.tab.t-abr.active{border-bottom-color:var(--teal)}.tab.t-may.active{border-bottom-color:var(--orange)}.tab.t-jun.active{border-bottom-color:#10b981}.tab.t-jul.active{border-bottom-color:#8b5cf6}.tab.t-ago.active{border-bottom-color:#f59e0b}
+.tab.t-25.active{border-bottom-color:var(--cyan)}.tab.t-feb.active{border-bottom-color:var(--red)}.tab.t-mar.active{border-bottom-color:var(--purple)}.tab.t-abr.active{border-bottom-color:var(--teal)}.tab.t-may.active{border-bottom-color:var(--orange)}.tab.t-jun.active{border-bottom-color:#10b981}.tab.t-jul.active{border-bottom-color:#8b5cf6}.tab.t-ago.active{border-bottom-color:#0ea5e9}.tab.t-sep.active{border-bottom-color:#f59e0b}
 .page{display:none;padding:20px 28px 60px;animation:fadeUp .3s ease both}.page.active{display:block}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .sec{font-family:Barlow Condensed,sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;margin-top:24px;display:flex;align-items:center;gap:10px}
@@ -97,7 +97,7 @@ tbody tr{border-bottom:1px solid rgba(255,255,255,.03);transition:background .15
 .jun-warn{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:9px;padding:10px 14px;font-size:11px;color:#fbbf24;max-width:380px}
 .jun-kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:11px;margin-bottom:20px}
 @media(max-width:900px){.hdr{padding:0 14px;height:56px}.tabs{top:56px;padding:0 8px}.tab{padding:9px 10px;font-size:10px}.page{padding:14px 14px 50px}.kpis{grid-template-columns:repeat(3,1fr);gap:8px}.jun-kpis{grid-template-columns:repeat(3,1fr);gap:8px}.adv-grid{grid-template-columns:repeat(2,1fr)}.two-col{grid-template-columns:1fr}.det-grid{grid-template-columns:1fr}#jun-adv-cards{grid-template-columns:1fr 1fr!important}}
-@media(max-width:600px){.hdr{padding:0 10px;height:52px}.hdr-ttl{display:none}.yr-chip{display:none}.logo{height:34px}.refresh-btn{padding:4px 8px;font-size:10px}.tabs{top:52px}.tab{padding:8px 9px;font-size:10px}.page{padding:10px 10px 50px}.kpis{grid-template-columns:repeat(2,1fr);gap:7px}.kpi{padding:11px 12px}.kpi-val{font-size:17px}.jun-kpis{grid-template-columns:repeat(2,1fr);gap:7px}.adv-grid{grid-template-columns:1fr}.two-col{grid-template-columns:1fr}#adv-ene,#adv-feb,#adv-mar,#adv-abr,#adv-may,#adv-jun,#adv-jul{grid-template-columns:1fr!important;max-width:100%!important}#jun-adv-cards,#ago-adv-cards{grid-template-columns:1fr!important}.jun-hero{padding:14px;flex-direction:column}.jun-warn{max-width:100%}.search-bar{flex-direction:column}.ctrl input,.ctrl select,.mtbl-filter input,.mtbl-filter select{min-width:0;width:100%}.mtbl-filter{flex-direction:column}.tbl-scroll{max-height:300px}.det-grid{grid-template-columns:1fr}.cc{padding:12px}.brows{grid-template-columns:1fr}.btot{flex-direction:column;align-items:flex-start;gap:4px}}
+@media(max-width:600px){.hdr{padding:0 10px;height:52px}.hdr-ttl{display:none}.yr-chip{display:none}.logo{height:34px}.refresh-btn{padding:4px 8px;font-size:10px}.tabs{top:52px}.tab{padding:8px 9px;font-size:10px}.page{padding:10px 10px 50px}.kpis{grid-template-columns:repeat(2,1fr);gap:7px}.kpi{padding:11px 12px}.kpi-val{font-size:17px}.jun-kpis{grid-template-columns:repeat(2,1fr);gap:7px}.adv-grid{grid-template-columns:1fr}.two-col{grid-template-columns:1fr}#adv-ene,#adv-feb,#adv-mar,#adv-abr,#adv-may,#adv-jun,#adv-jul,#adv-ago{grid-template-columns:1fr!important;max-width:100%!important}#jun-adv-cards,#sep-adv-cards{grid-template-columns:1fr!important}.jun-hero{padding:14px;flex-direction:column}.jun-warn{max-width:100%}.search-bar{flex-direction:column}.ctrl input,.ctrl select,.mtbl-filter input,.mtbl-filter select{min-width:0;width:100%}.mtbl-filter{flex-direction:column}.tbl-scroll{max-height:300px}.det-grid{grid-template-columns:1fr}.cc{padding:12px}.brows{grid-template-columns:1fr}.btot{flex-direction:column;align-items:flex-start;gap:4px}}
 
 </style>
 </head>
@@ -119,7 +119,8 @@ tbody tr{border-bottom:1px solid rgba(255,255,255,.03);transition:background .15
   <div class="tab t-may" onclick="showTab('may26')">Mayo 2026</div>
   <div class="tab t-jun" onclick="showTab('jun26')">Junio 2026</div>
   <div class="tab t-jul" onclick="showTab('jul26')">Julio 2026</div>
-  <div class="tab t-ago" onclick="showTab('ago26')">🔄 Agosto 2026</div>
+  <div class="tab t-ago" onclick="showTab('ago26')">Agosto 2026</div>
+  <div class="tab t-sep" onclick="showTab('sep26')">🔄 Septiembre 2026</div>
   <div class="tab" onclick="showTab('busq')">🔍 Búsqueda</div>
 </nav>
 
@@ -443,71 +444,103 @@ tbody tr{border-bottom:1px solid rgba(255,255,255,.03);transition:background .15
 
 
 <div class="page" id="page-ago26">
+  <div class="sec">Resumen — Agosto 2026</div><div class='bonus-badge'>💰 Incluye cálculo de comisión</div>
+  <div class="kpis" id="kpi-ago"></div>
+  <div class="sec" style="margin-top:26px">Rendimiento por Asesor</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1080px" id="adv-ago"></div>
+  <div class="two-col" style="margin-top:18px">
+    <div class="cc"><div class="cc-ttl">Mecánica vs Pintura</div>
+      <div class="cc-sub"><span style="color:#3d9bff">■ Mec</span> &nbsp;<span style="color:#ff8c00">■ Pin</span></div>
+      <div style="position:relative;height:270px"><canvas id="c-ago-area"></canvas></div></div>
+    <div class="cc"><div class="cc-ttl">vs Meta Q.115,000</div>
+      <div class="cc-sub">Progreso mensual</div>
+      <div style="position:relative;height:270px"><canvas id="c-ago-meta"></canvas></div></div>
+  </div>
+  <div class="sec" style="margin-top:26px">Órdenes — Agosto 2026</div>
+  <div class="mtbl-filter">
+    <div class="mf-g"><label>Buscar</label><input id="mf-txt-ago" placeholder="Orden, cliente o placa..." oninput="filterTbl('ago')" style="min-width:200px"></div>
+    <div class="mf-g"><label>Asesor</label>
+      <select id="mf-adv-ago" onchange="filterTbl('ago')">
+        <option value="">Todos</option><option>MARCO</option><option>DANIEL</option></select></div>
+    <div class="mf-g"><label>Tipo</label>
+      <select id="mf-tp-ago" onchange="filterTbl('ago')">
+        <option value="">Todos</option>
+        <option value="MECANICA">Mecánica</option><option value="PINTURA">Pintura</option><option value="AMBOS">Mec+Pin</option></select></div>
+    <button class="btn-clr" onclick="clrFilter('ago')">✕ Limpiar</button>
+  </div>
+  <div class="mtbl-info" id="mf-res-ago"></div>
+  <div class="tbl-wrap"><div class="tbl-scroll"><table>
+    <thead><tr><th>#</th><th>Orden</th><th>Asesor</th><th>Cliente</th><th>Vehículo</th><th>Placa</th><th>Tipo</th><th>Total</th><th>Utilidad</th><th>% Util.</th><th>Ord.2025</th></tr></thead>
+    <tbody id="tb-ago"></tbody></table></div></div>
+</div>
+
+
+<div class="page" id="page-sep26">
   <div class="jun-hero">
     <div>
-      <div class="jul-badge">Resultados &nbsp;·&nbsp; Agosto 2026</div>
+      <div class="jul-badge">Resultados &nbsp;·&nbsp; Septiembre 2026</div>
       <div class="jul-title">Resultados Preliminares</div>
-      <div class="jul-sub">Pagado reporte (AR) pendiente confirmación en banco · % utilidad basado en promedio histórico Ene–Jul</div>
+      <div class="jul-sub">Pagado reporte (AR) pendiente confirmación en banco · % utilidad basado en promedio histórico Ene–Ago</div>
     </div>
     <div class="jul-warn">⚠️ Datos preliminares — la utilidad proyectada es una estimación sobre el cobrado reportado. Se vuelve definitiva cuando el cierre del mes marca las órdenes como pagadas.</div>
   </div>
-  <div class="jul-kpis" id="ago-kpis"></div>
-  <div class="sec">Rendimiento por Asesor — Agosto 2026</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1000px;margin-bottom:20px" id="ago-adv-cards"></div>
+  <div class="jul-kpis" id="sep-kpis"></div>
+  <div class="sec">Rendimiento por Asesor — Septiembre 2026</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1000px;margin-bottom:20px" id="sep-adv-cards"></div>
 
   <div class="sec">🚗 Carros Entregados Pendientes de Pago</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1000px;margin-bottom:14px" id="ago-pend-cards"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1000px;margin-bottom:14px" id="sep-pend-cards"></div>
   <div class="mtbl-filter">
-    <div class="mf-g"><label>Buscar</label><input id="ago-pend-txt" placeholder="Orden, cliente o placa..." oninput="filterAgoPendCars()" style="min-width:200px"></div>
+    <div class="mf-g"><label>Buscar</label><input id="sep-pend-txt" placeholder="Orden, cliente o placa..." oninput="filterPrelPendCars()" style="min-width:200px"></div>
     <div class="mf-g"><label>Asesor</label>
-      <select id="ago-pend-adv" onchange="filterAgoPendCars()">
+      <select id="sep-pend-adv" onchange="filterPrelPendCars()">
         <option value="">Todos</option><option>MARCO</option><option>DANIEL</option></select></div>
-    <button class="btn-clr" onclick="document.getElementById('ago-pend-txt').value='';document.getElementById('ago-pend-adv').value='';filterAgoPendCars()">✕ Limpiar</button>
+    <button class="btn-clr" onclick="document.getElementById('sep-pend-txt').value='';document.getElementById('sep-pend-adv').value='';filterPrelPendCars()">✕ Limpiar</button>
   </div>
-  <div class="mtbl-info" id="ago-pend-res-info"></div>
+  <div class="mtbl-info" id="sep-pend-res-info"></div>
   <div class="tbl-wrap" style="margin-bottom:24px"><div class="tbl-scroll">
     <table><thead><tr>
       <th>#</th><th>Orden</th><th>Asesor</th><th>Cliente</th><th>Vehículo</th><th>Placa</th>
       <th>Fecha Salida</th><th>Días sin pago</th><th>Pendiente</th>
-    </tr></thead><tbody id="tb-ago-pend-cars"></tbody></table>
+    </tr></thead><tbody id="tb-sep-pend-cars"></tbody></table>
   </div></div>
 
   <div class="two-col" style="margin-bottom:18px">
     <div class="cc">
       <div class="cc-ttl">Cobrado vs Utilidad Proyectada</div>
       <div class="cc-sub">Pagado reporte (AR) y estimación de utilidad por asesor</div>
-      <div style="position:relative;height:270px"><canvas id="c-ago-cobrado"></canvas></div>
+      <div style="position:relative;height:270px"><canvas id="c-sep-cobrado"></canvas></div>
     </div>
     <div class="cc">
-      <div class="cc-ttl">Carros Ingresados en Agosto</div>
+      <div class="cc-ttl">Carros Ingresados en Septiembre</div>
       <div class="cc-sub">Distribución por asesor</div>
-      <div style="position:relative;height:270px"><canvas id="c-ago-ing"></canvas></div>
+      <div style="position:relative;height:270px"><canvas id="c-sep-ing"></canvas></div>
     </div>
   </div>
   <div class="cc full" style="margin-bottom:18px">
-    <div class="cc-ttl">Origen de los Pagos de Agosto</div>
-    <div class="cc-sub">¿Los carros pagados en Agosto ingresaron en Agosto o en meses anteriores?</div>
-    <div style="position:relative;height:200px"><canvas id="c-ago-origen"></canvas></div>
+    <div class="cc-ttl">Origen de los Pagos de Septiembre</div>
+    <div class="cc-sub">¿Los carros pagados en Septiembre ingresaron en Septiembre o en meses anteriores?</div>
+    <div style="position:relative;height:200px"><canvas id="c-sep-origen"></canvas></div>
   </div>
-  <div class="sec">Pagos Reportados — Agosto 2026</div>
+  <div class="sec">Pagos Reportados — Septiembre 2026</div>
   <div class="mtbl-filter">
-    <div class="mf-g"><label>Buscar</label><input id="mf-txt-ago" placeholder="Orden, cliente o placa..." oninput="agoTblFilter()" style="min-width:200px"></div>
+    <div class="mf-g"><label>Buscar</label><input id="mf-txt-sep" placeholder="Orden, cliente o placa..." oninput="prelTblFilter()" style="min-width:200px"></div>
     <div class="mf-g"><label>Asesor</label>
-      <select id="mf-adv-ago" onchange="agoTblFilter()">
+      <select id="mf-adv-sep" onchange="prelTblFilter()">
         <option value="">Todos</option><option>MARCO</option><option>DANIEL</option></select></div>
     <div class="mf-g"><label>Origen</label>
-      <select id="mf-src-ago" onchange="agoTblFilter()">
+      <select id="mf-src-sep" onchange="prelTblFilter()">
         <option value="">Todos</option>
-        <option value="mes">Ingresaron en Agosto</option>
+        <option value="mes">Ingresaron en Septiembre</option>
         <option value="prev">Meses anteriores</option></select></div>
-    <button class="btn-clr" onclick="agoTblClear()">✕ Limpiar</button>
+    <button class="btn-clr" onclick="prelTblClear()">✕ Limpiar</button>
   </div>
-  <div class="mtbl-info" id="mf-res-ago"></div>
+  <div class="mtbl-info" id="mf-res-sep"></div>
   <div class="tbl-wrap"><div class="tbl-scroll">
     <table><thead><tr>
       <th>#</th><th>Orden</th><th>Asesor</th><th>Cliente</th><th>Vehículo</th><th>Placa</th>
       <th>Tipo</th><th>Fecha Ingreso</th><th>Pagado (AR)</th><th>Bancos (AQ)</th><th>Origen</th>
-    </tr></thead><tbody id="tb-ago"></tbody></table>
+    </tr></thead><tbody id="tb-sep"></tbody></table>
   </div></div>
 </div>
 
@@ -526,7 +559,8 @@ id="page-busq">
 <option value="ABRIL">Abril</option>
 <option value="MAYO">Mayo</option>
 <option value="JUNIO">Junio</option>
-<option value="JULIO">Julio</option></select></div>
+<option value="JULIO">Julio</option>
+<option value="AGOSTO">Agosto</option></select></div>
     <div class="ctrl"><label>Ord. 2025</label>
       <select id="s-25"><option value="">Todos</option><option value="si">Sí</option><option value="no">No</option></select></div>
     <button class="btn-p" onclick="runSearch()">Buscar</button>
@@ -551,12 +585,12 @@ const JD  = {"payments":[{"orden":"18398","asesor":"MARCO","cliente":"CORPORACIO
 const GOAL=115000,BASE_SAL=7000;
 const MES_ORDER=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
 const MS={ENERO:'Ene',FEBRERO:'Feb',MARZO:'Mar',ABRIL:'Abr',MAYO:'May',JUNIO:'Jun',JULIO:'Jul',AGOSTO:'Ago',SEPTIEMBRE:'Sep',OCTUBRE:'Oct',NOVIEMBRE:'Nov',DICIEMBRE:'Dic'};
-const ML={ENERO:'Enero',FEBRERO:'Febrero',MARZO:'Marzo',ABRIL:'Abril',MAYO:'Mayo',JUNIO:'Junio',JULIO:'Julio'};
-const M26=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO'];
+const ML={ENERO:'Enero',FEBRERO:'Febrero',MARZO:'Marzo',ABRIL:'Abril',MAYO:'Mayo',JUNIO:'Junio',JULIO:'Julio',AGOSTO:'Agosto'};
+const M26=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO'];
 const AC={MARCO:'#2B4FE8',DANIEL:'#FF4B6E',SERGIO:'#00d4ff',IRVIN:'#ffd166'};
 const AG={MARCO:'rgba(43,79,232,.3)',DANIEL:'rgba(255,75,110,.3)',SERGIO:'rgba(0,212,255,.25)',IRVIN:'rgba(255,209,102,.2)'};
 const AF={MARCO:'Marco Antonio Orozco',DANIEL:'Rony Daniel López',SERGIO:'Sergio (2025)',IRVIN:'Irvin (2025)'};
-const MACC={ENERO:'#2B4FE8',FEBRERO:'#FF4B6E',MARZO:'#a855f7',ABRIL:'#00b894',MAYO:'#e67e22',JUNIO:'#10b981',JULIO:'#8b5cf6'};
+const MACC={ENERO:'#2B4FE8',FEBRERO:'#FF4B6E',MARZO:'#a855f7',ABRIL:'#00b894',MAYO:'#e67e22',JUNIO:'#10b981',JULIO:'#8b5cf6',AGOSTO:'#0ea5e9'};
 const MEC='#3d9bff',PIN='#ff8c00';
 const TS={backgroundColor:'rgba(10,12,28,.97)',borderColor:'rgba(255,255,255,.1)',borderWidth:1,titleColor:'#eef0ff',bodyColor:'#bbbddd',padding:12};
 const ESC=[
@@ -631,7 +665,7 @@ const barLabels={id:'barLabels',afterDatasetsDraw(chart){
 Chart.register(stackLabels);
 
 // ── Tabs ──────────────────────────────────────────────────────
-const TAB_MAP={t25:0,ene26:1,feb26:2,mar26:3,abr26:4,may26:5,jun26:6,jul26:7,ago26:8,busq:9};
+const TAB_MAP={t25:0,ene26:1,feb26:2,mar26:3,abr26:4,may26:5,jun26:6,jul26:7,ago26:8,sep26:9,busq:10};
 function showTab(t){
   document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -703,8 +737,8 @@ function buildMonthly(adv){
     mec.push(Math.round(adv==='ALL'?D.monthly25[m]?.mecanica||0:D.adv_monthly25[adv]?.[m]?.mecanica||0));
     pin.push(Math.round(adv==='ALL'?D.monthly25[m]?.pintura||0:D.adv_monthly25[adv]?.[m]?.pintura||0));
   }
-  const c26=['rgba(0,212,255,.85)','rgba(0,212,255,.85)','rgba(0,212,255,.85)','rgba(0,184,148,.85)','rgba(230,126,34,.85)','rgba(16,185,129,.85)','rgba(139,92,246,.85)'];
-  const c26p=['rgba(0,212,255,.45)','rgba(0,212,255,.45)','rgba(0,212,255,.45)','rgba(0,184,148,.45)','rgba(230,126,34,.45)','rgba(16,185,129,.45)','rgba(139,92,246,.45)'];
+  const c26=['rgba(0,212,255,.85)','rgba(0,212,255,.85)','rgba(0,212,255,.85)','rgba(0,184,148,.85)','rgba(230,126,34,.85)','rgba(16,185,129,.85)','rgba(139,92,246,.85)','rgba(14,165,233,.85)'];
+  const c26p=['rgba(0,212,255,.45)','rgba(0,212,255,.45)','rgba(0,212,255,.45)','rgba(0,184,148,.45)','rgba(230,126,34,.45)','rgba(16,185,129,.45)','rgba(139,92,246,.45)','rgba(14,165,233,.45)'];
   M26.forEach((mes,idx)=>{
     const agg=buildAgg26(mes);
     lbl.push(MS[mes]+' 26');
@@ -821,8 +855,8 @@ function bonusCard(a,mes,util){
 function renderMonth(mes,sfx){
   const rows=D.orders26.filter(r=>r.mes===mes),agg=buildAgg26(mes);
   const totCob=rows.reduce((s,r)=>s+r.total_general,0),totUtil=rows.reduce((s,r)=>s+r.utilidad_general,0);
-  const lbl=({ENERO:'Enero',FEBRERO:'Febrero',MARZO:'Marzo',ABRIL:'Abril',MAYO:'Mayo',JUNIO:'Junio',JULIO:'Julio'})[mes]||mes;
-  const acc=MACC[mes]||'#2B4FE8',hasBonus=mes==='ABRIL'||mes==='MAYO'||mes==='JUNIO'||mes==='JULIO';
+  const lbl=({ENERO:'Enero',FEBRERO:'Febrero',MARZO:'Marzo',ABRIL:'Abril',MAYO:'Mayo',JUNIO:'Junio',JULIO:'Julio',AGOSTO:'Agosto'})[mes]||mes;
+  const acc=MACC[mes]||'#2B4FE8',hasBonus=mes==='ABRIL'||mes==='MAYO'||mes==='JUNIO'||mes==='JULIO'||mes==='AGOSTO';
   document.getElementById('kpi-'+sfx).innerHTML=
     kpiCard('Órdenes',rows.length,'PENDIENTE = 0','linear-gradient(90deg,'+acc+',#00d4ff)')
    +kpiCard('Total Facturado','Q '+totCob.toLocaleString('es-GT',{maximumFractionDigits:0}),lbl+' 2026','linear-gradient(90deg,'+acc+',#4a6fff)')
@@ -883,7 +917,7 @@ function renderMonth(mes,sfx){
 
 // ── JUNIO 2026 ────────────────────────────────────────────────
 let cJunPag=null,cJunIng=null,cJunPie=null;
-let cAgoPag=null,cAgoIng=null,cAgoPie=null;
+let cPrelPag=null,cPrelIng=null,cPrelPie=null;
 
 function renderJune(){
   renderMonth('JUNIO','jun');
@@ -894,32 +928,43 @@ function renderJulio(){
   renderMonth('JULIO','jul');
 }
 
-// ── AGOSTO 2026 (preliminar) ─────────────────────────────────
-function renderAgosto(){
+// ── MES PRELIMINAR (en curso) ────────────────────────────────
+// Para pasar al siguiente mes basta con cambiar este bloque:
+//   sfx    = sufijo de los ids en el HTML de la pestaña (y el id page-<sfx>26)
+//   mesIdx = número de mes base 0 (0=enero … 8=septiembre)
+//   base   = meses ya cerrados que alimentan el % de utilidad histórico
+const PRELIM={
+  sfx:'sep', mes:'Septiembre', abrev:'Sep', prevMes:'Agosto', prevIdx:7, mesIdx:8,
+  base:['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO']
+};
+
+function renderPrelim(){
+  const S=PRELIM.sfx;
   const pays=JD.payments||[],ings=JD.ingresados||[],avg=JD.avg_util||{},meta=JD.meta||{};
   const AC2={MARCO:'#2B4FE8',DANIEL:'#FF4B6E'};
+  const el=document.getElementById(S+'-kpis'); if(!el)return;
   const totPag=pays.reduce((s,r)=>s+r.pagado_reporte,0);
   const totProj=(meta.marco_proj||0)+(meta.daniel_proj||0);
   const totIng=ings.length;
-  document.getElementById('ago-kpis').innerHTML=
-    kpiCard('Pagos Reportados Agosto',pays.length+' órdenes','Pendiente confirmación banco','linear-gradient(90deg,#f59e0b,#f97316)','#fbbf24')
+  el.innerHTML=
+    kpiCard('Pagos Reportados '+PRELIM.mes,pays.length+' órdenes','Pendiente confirmación banco','linear-gradient(90deg,#f59e0b,#f97316)','#fbbf24')
    +kpiCard('Total Cobrado (AR)','Q '+totPag.toLocaleString('es-GT',{maximumFractionDigits:0}),'Pagado reporte del mes','linear-gradient(90deg,#00e5a0,#00d4ff)','#00e5a0')
    +kpiCard('Util. Proyectada','Q '+totProj.toLocaleString('es-GT',{maximumFractionDigits:0}),'Estimado según % histórico','linear-gradient(90deg,#a855f7,#ec4899)','#c084fc')
-   +kpiCard('Carros Ingresados Ago.',totIng+' carros','Fecha de ingreso en agosto','linear-gradient(90deg,#2B4FE8,#4a6fff)','#7a9fff')
+   +kpiCard('Carros Ingresados '+PRELIM.abrev+'.',totIng+' carros','Fecha de ingreso en '+PRELIM.mes.toLowerCase(),'linear-gradient(90deg,#2B4FE8,#4a6fff)','#7a9fff')
    +kpiCard('Marco Cobrado (AR)','Q '+(meta.marco_pag_rep||0).toLocaleString('es-GT',{maximumFractionDigits:0}),'Proyección: Q'+(meta.marco_proj||0).toLocaleString('es-GT',{maximumFractionDigits:0}),'linear-gradient(90deg,#2B4FE8,#2B4FE8)','#7a9fff')
    +kpiCard('Daniel Cobrado (AR)','Q '+(meta.daniel_pag_rep||0).toLocaleString('es-GT',{maximumFractionDigits:0}),'Proyección: Q'+(meta.daniel_proj||0).toLocaleString('es-GT',{maximumFractionDigits:0}),'linear-gradient(90deg,#FF4B6E,#FF4B6E)','#ff8fa0');
-  renderJunCards(pays,ings,avg,meta,AC2,'ago');
-  renderPendCars(JD.pendientes||[],AC2,'ago-pend-cards');
-  renderAgoCharts(pays,ings,AC2);
-  agoTblFilter();
-  filterAgoPendCars();
+  renderJunCards(pays,ings,avg,meta,AC2,S);
+  renderPendCars(JD.pendientes||[],AC2,S+'-pend-cards');
+  renderPrelCharts(pays,ings,AC2);
+  prelTblFilter();
+  filterPrelPendCars();
 }
 
-function renderAgoCharts(pays,ings,AC2){
-  const advs=['MARCO','DANIEL'];
-  const ctx1=document.getElementById('c-ago-cobrado').getContext('2d');
-  if(cAgoPag)cAgoPag.destroy();
-  cAgoPag=new Chart(ctx1,{type:'bar',plugins:[barLabels],
+function renderPrelCharts(pays,ings,AC2){
+  const S=PRELIM.sfx,advs=['MARCO','DANIEL'];
+  const e1=document.getElementById('c-'+S+'-cobrado'); if(!e1)return;
+  if(cPrelPag)cPrelPag.destroy();
+  cPrelPag=new Chart(e1.getContext('2d'),{type:'bar',plugins:[barLabels],
     data:{labels:advs,datasets:[
       {label:'Cobrado (AR)',data:advs.map(a=>Math.round(pays.filter(r=>r.asesor===a).reduce((s,r)=>s+r.pagado_reporte,0))),backgroundColor:advs.map(a=>AC2[a]+'bb'),borderColor:advs.map(a=>AC2[a]),borderWidth:1,borderRadius:6},
       {label:'Util. Proyectada',data:advs.map(a=>{const pag=pays.filter(r=>r.asesor===a).reduce((s,r)=>s+r.pagado_reporte,0);return Math.round(pag*((JD.avg_util||{})[a]||0.62));}),backgroundColor:['rgba(245,158,11,.4)','rgba(245,158,11,.4)'],borderColor:['#f59e0b','#f59e0b'],borderWidth:1,borderRadius:6},
@@ -929,27 +974,27 @@ function renderAgoCharts(pays,ings,AC2){
                y:{border:{color:'transparent'},grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#5a5e8a',font:{family:'Barlow Condensed',size:11},callback:v=>'Q '+(v/1000).toFixed(0)+'k'}}},
       plugins:{legend:{labels:{color:'#bbbddd',font:{family:'Barlow Condensed',size:12}}},tooltip:{...TS,callbacks:{label:c=>'  '+c.dataset.label+': Q'+c.raw.toLocaleString('es-GT',{maximumFractionDigits:0})}}}}});
 
-  const ctx2=document.getElementById('c-ago-ing').getContext('2d');
-  if(cAgoIng)cAgoIng.destroy();
+  const e2=document.getElementById('c-'+S+'-ing');
+  if(cPrelIng)cPrelIng.destroy();
   const ingCounts=advs.map(a=>ings.filter(r=>r.asesor===a).length);
   const otro=ings.filter(r=>['MARCO','DANIEL'].indexOf(r.asesor)<0).length;
-  cAgoIng=new Chart(ctx2,{type:'doughnut',
+  cPrelIng=new Chart(e2.getContext('2d'),{type:'doughnut',
     data:{labels:[...advs,'Otro'],datasets:[{data:[...ingCounts,otro],backgroundColor:[AC2.MARCO+'cc',AC2.DANIEL+'cc','rgba(100,100,100,.5)'],borderColor:[AC2.MARCO,AC2.DANIEL,'#444'],borderWidth:2,hoverOffset:6}]},
     options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{
       legend:{position:'bottom',labels:{color:'#bbbddd',font:{family:'Barlow Condensed',size:13},padding:12}},
       tooltip:{...TS,callbacks:{label:c=>'  '+c.label+': '+c.raw+' carros'}}
     }}});
 
-  const ctx3=document.getElementById('c-ago-origen').getContext('2d');
-  if(cAgoPie)cAgoPie.destroy();
+  const e3=document.getElementById('c-'+S+'-origen');
+  if(cPrelPie)cPrelPie.destroy();
   const origenData=advs.map(a=>({
     a,
     mes:pays.filter(r=>r.asesor===a&&r.es_jun_ingreso).length,
     prev:pays.filter(r=>r.asesor===a&&!r.es_jun_ingreso).length,
   }));
-  cAgoPie=new Chart(ctx3,{type:'bar',
+  cPrelPie=new Chart(e3.getContext('2d'),{type:'bar',
     data:{labels:advs,datasets:[
-      {label:'Ingresaron en Agosto',data:origenData.map(d=>d.mes),backgroundColor:'rgba(0,229,160,.6)',borderColor:'#00e5a0',borderWidth:1,borderRadius:4},
+      {label:'Ingresaron en '+PRELIM.mes,data:origenData.map(d=>d.mes),backgroundColor:'rgba(0,229,160,.6)',borderColor:'#00e5a0',borderWidth:1,borderRadius:4},
       {label:'Meses anteriores',data:origenData.map(d=>d.prev),backgroundColor:'rgba(245,158,11,.5)',borderColor:'#f59e0b',borderWidth:1,borderRadius:4},
     ]},
     options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:16}},
@@ -958,15 +1003,17 @@ function renderAgoCharts(pays,ings,AC2){
       plugins:{legend:{labels:{color:'#bbbddd',font:{family:'Barlow Condensed',size:12}}},tooltip:{...TS}}}});
 }
 
-function agoTblClear(){
-  ['mf-txt-ago','mf-adv-ago','mf-src-ago'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
-  agoTblFilter();
+function prelTblClear(){
+  const S=PRELIM.sfx;
+  ['mf-txt-'+S,'mf-adv-'+S,'mf-src-'+S].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  prelTblFilter();
 }
 
-function agoTblFilter(){
-  const txt=(document.getElementById('mf-txt-ago')?.value||'').toLowerCase().trim();
-  const adv=document.getElementById('mf-adv-ago')?.value||'';
-  const src=document.getElementById('mf-src-ago')?.value||'';
+function prelTblFilter(){
+  const S=PRELIM.sfx;
+  const txt=(document.getElementById('mf-txt-'+S)?.value||'').toLowerCase().trim();
+  const adv=document.getElementById('mf-adv-'+S)?.value||'';
+  const src=document.getElementById('mf-src-'+S)?.value||'';
   const all=[...(JD.payments||[])];
   const filtered=all.filter(r=>{
     if(adv&&r.asesor!==adv)return false;
@@ -975,10 +1022,10 @@ function agoTblFilter(){
     if(txt&&!String(r.orden).includes(txt)&&!(r.cliente||'').toLowerCase().includes(txt)&&!(r.placa||'').toLowerCase().includes(txt))return false;
     return true;
   });
-  const tb=document.getElementById('tb-ago');
+  const tb=document.getElementById('tb-'+S);
   if(tb)tb.innerHTML=filtered.map((r,i)=>{
     const origenBadge=r.es_jun_ingreso
-      ?'<span style="background:rgba(0,229,160,.12);color:#00e5a0;padding:2px 7px;border-radius:99px;font-size:9px;font-weight:700">Ago.2026</span>'
+      ?'<span style="background:rgba(0,229,160,.12);color:#00e5a0;padding:2px 7px;border-radius:99px;font-size:9px;font-weight:700">'+PRELIM.abrev+'.2026</span>'
       :'<span style="background:rgba(245,158,11,.12);color:#f59e0b;padding:2px 7px;border-radius:99px;font-size:9px;font-weight:700">'+r.origen+'</span>';
     return'<tr>'
       +'<td style="color:var(--muted)">'+(i+1)+'</td>'
@@ -994,20 +1041,21 @@ function agoTblFilter(){
       +'<td>'+origenBadge+'</td>'
     +'</tr>';
   }).join('');
-  const res=document.getElementById('mf-res-ago');
+  const res=document.getElementById('mf-res-'+S);
   if(res)res.innerHTML=filtered.length===all.length?'<strong>'+all.length+'</strong> registros':'Mostrando <strong>'+filtered.length+'</strong> de <strong>'+all.length+'</strong>';
 }
 
-function filterAgoPendCars(){
+function filterPrelPendCars(){
+  const S=PRELIM.sfx;
   var pend=JD.pendientes||[];
-  var txt=(document.getElementById('ago-pend-txt')?.value||'').toLowerCase().trim();
-  var adv=document.getElementById('ago-pend-adv')?.value||'';
+  var txt=(document.getElementById(S+'-pend-txt')?.value||'').toLowerCase().trim();
+  var adv=document.getElementById(S+'-pend-adv')?.value||'';
   var filtered=pend.filter(function(r){
     if(adv&&r.asesor!==adv)return false;
     if(txt&&!String(r.orden).includes(txt)&&!(r.cliente||'').toLowerCase().includes(txt)&&!(r.placa||'').toLowerCase().includes(txt))return false;
     return true;
   });
-  var tb=document.getElementById('tb-ago-pend-cars');
+  var tb=document.getElementById('tb-'+S+'-pend-cars');
   if(tb)tb.innerHTML=filtered.map(function(r,i){
     var diasBadge=r.dias!==null&&r.dias!==undefined
       ?'<span style="background:'+(r.dias>14?'rgba(255,75,110,.2)':r.dias>7?'rgba(245,158,11,.2)':'rgba(0,229,160,.15)')+';color:'+(r.dias>14?'#ff8fa0':r.dias>7?'#fbbf24':'#00e5a0')+';padding:2px 9px;border-radius:99px;font-size:10px;font-weight:700">'+r.dias+' días</span>'
@@ -1024,7 +1072,7 @@ function filterAgoPendCars(){
       +'<td style="color:#f59e0b">Q'+r.pendiente.toLocaleString('es-GT',{maximumFractionDigits:0})+'</td>'
     +'</tr>';
   }).join('');
-  var res=document.getElementById('ago-pend-res-info');
+  var res=document.getElementById(S+'-pend-res-info');
   if(res)res.innerHTML=filtered.length===pend.length?'<strong>'+pend.length+'</strong> carros pendientes':'Mostrando <strong>'+filtered.length+'</strong> de <strong>'+pend.length+'</strong> carros';
 }
 
@@ -1097,7 +1145,7 @@ function renderJunCards(pays,ings,avg,meta,AC2,sfx){
       +'<div class="adv-stripe"></div><div class="adv-name">'+a+'</div>'
       +'<div class="adv-role">Seguimiento — '+MNAME(sfx)+' 2026</div>'
       +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">'
-        +'<div><div class="sl">Pagos reportados</div><div class="sv" style="color:'+AC2[a]+';font-size:18px">'+pa.length+' órdenes</div></div>'
+        +'<div><div class="sl">Pagos reportados</div><div class="sv" style="color:'+AC2[a]+';font-size:18px">'+(pa.length===1?'1 orden':pa.length+' órdenes')+'</div></div>'
         +'<div><div class="sl">Cobrado AR</div><div class="sv" style="color:#00e5a0">Q'+pag.toLocaleString('es-GT',{maximumFractionDigits:0})+'</div></div>'
         +'<div><div class="sl">Carros ingresados</div><div class="sv" style="color:var(--muted)">'+ia.length+' carros</div></div>'
       +'</div>'
@@ -1111,7 +1159,7 @@ function renderJunCards(pays,ings,avg,meta,AC2,sfx){
         +'<div style="font-size:10px;color:var(--muted)">= Q'+pag.toLocaleString('es-GT',{maximumFractionDigits:0})+' cobrado × '+avgPct+'%</div>'
         +'<div style="margin-top:8px;padding:6px 10px;background:rgba(0,0,0,.2);border-radius:7px;font-size:10px;color:var(--muted)">'
           +'Bancos confirmado (AQ): <span style="color:'+(ban>0?'#00e5a0':'#5a5e8a')+'">Q'+ban.toLocaleString('es-GT',{maximumFractionDigits:0})+'</span>'
-          +' <span style="opacity:.5">|</span> Pendiente confirmar: <span style="color:#f59e0b">Q'+(pag-ban).toLocaleString('es-GT',{maximumFractionDigits:0})+'</span>'
+          +' <span style="opacity:.5">|</span> Pendiente confirmar: <span style="color:#f59e0b">Q'+Math.max(0,pag-ban).toLocaleString('es-GT',{maximumFractionDigits:0})+'</span>'
         +'</div>'
       +'</div>'
       // Origin breakdown
@@ -1307,11 +1355,10 @@ function showDet(orden){
 // ── Init ──────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded',()=>{
   render25();
-  [{m:'ENERO',s:'ene'},{m:'FEBRERO',s:'feb'},{m:'MARZO',s:'mar'},{m:'ABRIL',s:'abr'},{m:'MAYO',s:'may'}]
+  [{m:'ENERO',s:'ene'},{m:'FEBRERO',s:'feb'},{m:'MARZO',s:'mar'},{m:'ABRIL',s:'abr'},{m:'MAYO',s:'may'},
+   {m:'JUNIO',s:'jun'},{m:'JULIO',s:'jul'},{m:'AGOSTO',s:'ago'}]
     .forEach(({m,s})=>renderMonth(m,s));
-  renderJune();
-  renderJulio();
-  renderAgosto();
+  renderPrelim();
   mayRenderPend();
   mayRenderInc();
   julRenderInc();
@@ -1346,7 +1393,7 @@ function showBar(msg,ok){
 }
 
 function parseCSVtoOrders(rows){
-  const PAST={'ENERO':1,'FEBRERO':2,'MARZO':3,'ABRIL':4,'MAYO':5,'JUNIO':6,'JULIO':7};
+  const PAST={'ENERO':1,'FEBRERO':2,'MARZO':3,'ABRIL':4,'MAYO':5,'JUNIO':6,'JULIO':7,'AGOSTO':8};
   const orders=[];
   rows.forEach(function(r){
     const fup=String(r['FECHA ULTIMO PAGO_1']||'').trim().toUpperCase();
@@ -1373,14 +1420,14 @@ function parseCSVtoOrders(rows){
   return orders;
 }
 
-function parseCSVtoAgosto(rows){
-  // Pagos con FECHA REPORTE DE PAGO dentro de agosto 2026 (vista preliminar)
+function parseCSVtoPrelim(rows){
+  // Pagos con FECHA REPORTE DE PAGO dentro del mes en curso (PRELIM)
   var avgUtil={MARCO:JD.avg_util?JD.avg_util.MARCO:0.607,DANIEL:JD.avg_util?JD.avg_util.DANIEL:0.643};
   ['MARCO','DANIEL'].forEach(function(a){
     var vals=[];
     rows.forEach(function(r){
       var fup=String(r['FECHA ULTIMO PAGO_1']||'').trim().toUpperCase();
-      if(['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO'].indexOf(fup)<0)return;
+      if(PRELIM.base.indexOf(fup)<0)return;
       if(shortAL(r['IDASESOR']||'')!==a)return;
       if(safeN(r['PENDIENTE'])!==0)return;
       var t=safeN(r['TOTAL GENERAL']),u=safeN(r['UTILIDAD GENERAL']);
@@ -1388,28 +1435,28 @@ function parseCSVtoAgosto(rows){
     });
     if(vals.length>5)avgUtil[a]=Math.round(vals.reduce(function(s,v){return s+v;},0)/vals.length*10000)/10000;
   });
-  // Pagos de agosto: pagado reporte > 0 con FECHA REPORTE DE PAGO en agosto
+  // Pagos del mes: pagado reporte > 0 con FECHA REPORTE DE PAGO dentro del mes
   var payments=[],seen=new Set(),ingresados=[];
   rows.forEach(function(r){
     var pagRep=safeN(r['pagado reporte']);
     if(pagRep<=0)return;
     var dPago=parseDL(r['FECHA REPORTE DE PAGO']);
-    if(!dPago||dPago.getFullYear()!==2026||dPago.getMonth()!==7)return;  // 7 = agosto (base 0)
+    if(!dPago||dPago.getFullYear()!==2026||dPago.getMonth()!==PRELIM.mesIdx)return;
     var fup=String(r['FECHA ULTIMO PAGO_1']||'').trim().toUpperCase();
     var bancos=safeN(r['BANCOS']);
     var dIng=parseDL(r['FECHA DE INGRESO']);
-    var esAgo=!!(dIng&&dIng.getFullYear()===2026&&dIng.getMonth()===7);
+    var esMes=!!(dIng&&dIng.getFullYear()===2026&&dIng.getMonth()===PRELIM.mesIdx);
     payments.push({orden:r['ORDEN']||'',asesor:shortAL(r['IDASESOR']||''),
       cliente:r['NOMBRE CLIENTE']||'',vehiculo:r['IDMARCALINEA']||'',
       placa:r['PLACA']||'',tipo:r['TIPO_SERVICIO']||'',
       fecha_ingreso:r['FECHA DE INGRESO']||'',
       pagado_reporte:pagRep,bancos:bancos,pendiente:safeN(r['PENDIENTE']),
-      total:safeN(r['TOTAL GENERAL']),es_jun_ingreso:esAgo,
-      origen:esAgo?'Agosto 2026':(dIng&&dIng.getMonth()===6?'Julio 2026':'Anterior')});
+      total:safeN(r['TOTAL GENERAL']),es_jun_ingreso:esMes,
+      origen:esMes?(PRELIM.mes+' 2026'):(dIng&&dIng.getMonth()===PRELIM.prevIdx?(PRELIM.prevMes+' 2026'):'Anterior')});
   });
   rows.forEach(function(r){
     var dIng=parseDL(r['FECHA DE INGRESO']);
-    if(!dIng||dIng.getFullYear()!==2026||dIng.getMonth()!==7)return;
+    if(!dIng||dIng.getFullYear()!==2026||dIng.getMonth()!==PRELIM.mesIdx)return;
     if(seen.has(r['ORDEN']))return;seen.add(r['ORDEN']);
     ingresados.push({orden:r['ORDEN']||'',asesor:shortAL(r['IDASESOR']||''),
       cliente:r['NOMBRE CLIENTE']||'',vehiculo:r['IDMARCALINEA']||'',
@@ -1537,10 +1584,10 @@ async function fetchLiveData(){
     var result=Papa.parse(text,{header:true,skipEmptyLines:true,dynamicTyping:false});
     var rows=result.data;
     if(rows.length<5)throw new Error('Pocas filas: '+rows.length);
-    // Ene-Abr estáticos. Mayo + Junio (confirmados) + Julio (preliminar) en vivo.
+    // Ene-Abr estáticos. Mayo–Agosto (cerrados) + mes en curso (preliminar) en vivo.
     var allOrders=parseCSVtoOrders(rows);
     // Meses cerrados en vivo (PENDIENTE=0 y FECHA ULTIMO PAGO_1 = el mes)
-    var CIERRES=[{m:'MAYO',s:'may'},{m:'JUNIO',s:'jun'},{m:'JULIO',s:'jul'}];
+    var CIERRES=[{m:'MAYO',s:'may'},{m:'JUNIO',s:'jun'},{m:'JULIO',s:'jul'},{m:'AGOSTO',s:'ago'}];
     CIERRES.forEach(function(x){
       var nuevas=allOrders.filter(function(o){return o.mes===x.m;});
       if(nuevas.length>0){
@@ -1552,20 +1599,20 @@ async function fetchLiveData(){
       if(hasData){renderMonth(x.m,x.s);}
     });
     buildMonthly(curF);
-    // Agosto: resultados preliminares (FECHA REPORTE DE PAGO en agosto)
-    var newAgo=parseCSVtoAgosto(rows);
-    JD.payments=newAgo.payments;
-    JD.ingresados=newAgo.ingresados;
-    JD.avg_util=newAgo.avg_util;
-    JD.meta=newAgo.meta;
-    JD.pendientes=newAgo.pendientes||[];
-    renderAgosto();
+    // Mes en curso: resultados preliminares (ver constante PRELIM)
+    var newPrel=parseCSVtoPrelim(rows);
+    JD.payments=newPrel.payments;
+    JD.ingresados=newPrel.ingresados;
+    JD.avg_util=newPrel.avg_util;
+    JD.meta=newPrel.meta;
+    JD.pendientes=newPrel.pendientes||[];
+    renderPrelim();
     mayRenderPend();
     mayRenderInc();
     julRenderInc();
     renderBusq(D.orders26);
     var ahora=new Date().toLocaleString('es-GT');
-    showBar('✅ Mayo, Junio, Julio y Agosto actualizados · '+ahora, true);
+    showBar('✅ Mayo a Agosto (cierre) y '+PRELIM.mes+' (preliminar) actualizados · '+ahora, true);
   }catch(e){
     console.error('Error al actualizar:',e.message);
     showBar('⚠️ '+e.message, false);
