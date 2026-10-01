@@ -472,6 +472,21 @@ tbody tr{border-bottom:1px solid rgba(255,255,255,.03);transition:background .15
   <div class="tbl-wrap"><div class="tbl-scroll"><table>
     <thead><tr><th>#</th><th>Orden</th><th>Asesor</th><th>Cliente</th><th>Vehículo</th><th>Placa</th><th>Tipo</th><th>Total</th><th>Utilidad</th><th>% Util.</th><th>Ord.2025</th></tr></thead>
     <tbody id="tb-ago"></tbody></table></div></div>
+
+  <!-- ── Detalle de incentivos ── -->
+  <div class="sec" style="margin-top:28px">🎯 Detalle de Incentivos — Agosto 2026</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px" id="ago-inc-cards"></div>
+  <div class="mtbl-filter">
+    <div class="mf-g"><label>Asesor</label>
+      <select id="ago-inc-adv" onchange="agoFilterInc()">
+        <option value="">Todos</option><option>MARCO</option><option>DANIEL</option></select></div>
+  </div>
+  <div class="mtbl-info" id="ago-inc-res"></div>
+  <div class="tbl-wrap"><div class="tbl-scroll"><table>
+    <thead><tr><th>#</th><th>Orden</th><th>Asesor</th><th>Cliente</th><th>Placa</th>
+      <th>Total Orden</th><th>Tipo Cliente</th><th>Tramo</th><th>Incentivo Q</th></tr></thead>
+    <tbody id="ago-tb-inc"></tbody>
+  </table></div></div>
 </div>
 
 
@@ -829,27 +844,51 @@ function clrFilter(sfx){
 }
 const INCENTIVOS = {MARCO:{rows:[{"orden": "18590", "cliente": "ROSARIO GUERRA", "placa": "P599KXF", "tipo": "NUEVO", "tramo": "Tramo 4 (Q5001+)", "total": 25381, "incentivo": 350}, {"orden": "18625", "cliente": "INVENTAS", "placa": "P063DHB", "tipo": "RECUPERADO", "tramo": "Tramo 3 (Q3501-5000)", "total": 3620, "incentivo": 250}, {"orden": "18624", "cliente": "ALEX ALVAREZ", "placa": "P457GDB", "tipo": "NUEVO", "tramo": "Tramo 4 (Q5001+)", "total": 7020, "incentivo": 350}, {"orden": "18646", "cliente": "JOSE DOMINGUEZ", "placa": "P160JCM", "tipo": "NUEVO", "tramo": "Tramo 3 (Q3501-5000)", "total": 4390, "incentivo": 250}, {"orden": "18662", "cliente": "OSBERTO CACAO", "placa": "P576GLS", "tipo": "NUEVO", "tramo": "Tramo 4 (Q5001+)", "total": 7757, "incentivo": 350}, {"orden": "18681", "cliente": "WILLSON CUC", "placa": "P433LRF", "tipo": "NUEVO", "tramo": "Tramo 4 (Q5001+)", "total": 15455, "incentivo": 350}, {"orden": "18628", "cliente": "ALEJANDRO DE LEON", "placa": "P773JPX", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800-2000)", "total": 890, "incentivo": 100}, {"orden": "18669", "cliente": "ELVIN ORDOÑEZ BANGUAT", "placa": "P800KVK", "tipo": "NUEVO", "tramo": "Tramo 4 (Q5001+)", "total": 15163, "incentivo": 350}],total:2350},DANIEL:{rows:[{"orden": "18620", "cliente": "DANIEL ROCA", "placa": "P287HYZ", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800-2000)", "total": 1010, "incentivo": 100}, {"orden": "18606", "cliente": "ERICK MCKNIGHT", "placa": "P177FSM", "tipo": "NUEVO", "tramo": "Tramo 4 (Q5001+)", "total": 5955, "incentivo": 350}, {"orden": "18638", "cliente": "JOHAN REGALADO", "placa": "P193JVC", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800-2000)", "total": 1770, "incentivo": 100}, {"orden": "18660", "cliente": "MUSIA FRANCO GORDILLO", "placa": "P762GLT", "tipo": "NUEVO", "tramo": "Tramo 4 (Q5001+)", "total": 7475, "incentivo": 350}, {"orden": "18651", "cliente": "ANGELICA ORRELLANA", "placa": "P432LLM", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800-2000)", "total": 1470, "incentivo": 100}, {"orden": "18654", "cliente": "RONALD ENRIQUE GARCIA", "placa": "P412FCL", "tipo": "NUEVO", "tramo": "Tramo 2 (Q2001-3500)", "total": 2415, "incentivo": 175}],total:1175}};
 const INCENTIVOS_JUL = {MARCO:{rows:[{"orden": "18774", "cliente": "MILTON ESCOBAR", "placa": "P879HWF", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800–3,500)", "total": 1645, "incentivo": 75}, {"orden": "18798", "cliente": "ANDRES NUÑEZ", "placa": "P046HXT", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800–3,500)", "total": 2430, "incentivo": 75}, {"orden": "18797", "cliente": "ALEJANDRO ESCOBAR", "placa": "P869GVF", "tipo": "NUEVO", "tramo": "Tramo 3 (Q5,001–15,000)", "total": 13673, "incentivo": 175}],total:325},DANIEL:{rows:[{"orden": "18826", "cliente": "EMPAQUES Y COMPLEMENTOS SOCIEDAD ANONIMA", "placa": "P747KNM", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800–3,500)", "total": 820, "incentivo": 75}, {"orden": "18818", "cliente": "FELIX RODRIGUEZ", "placa": "P656LHV", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800–3,500)", "total": 2110, "incentivo": 75}, {"orden": "18832", "cliente": "INGRID ROJAS", "placa": "P852FPC", "tipo": "NUEVO", "tramo": "Tramo 3 (Q5,001–15,000)", "total": 6000, "incentivo": 175}, {"orden": "18854", "cliente": "EDWIN JOEL PANTEUL", "placa": "P927KNM", "tipo": "NUEVO", "tramo": "Tramo 3 (Q5,001–15,000)", "total": 8950, "incentivo": 175}, {"orden": "18836", "cliente": "COMERCIAL ALBIN", "placa": "P163FZJ", "tipo": "RECUPERADO", "tramo": "Tramo 1 (Q800–3,500)", "total": 3236, "incentivo": 75}, {"orden": "18777", "cliente": "SERVITEL", "placa": "P784FZV", "tipo": "RECUPERADO", "tramo": "Tramo 1 (Q800–3,500)", "total": 1891, "incentivo": 75}, {"orden": "18776", "cliente": "ANDREA GARCIA", "placa": "P216LFL", "tipo": "RECUPERADO", "tramo": "Tramo 4 (Q15,001+)", "total": 15149, "incentivo": 225}],total:875}};
+const INCENTIVOS_AGO = {MARCO:{rows:[{"orden": "18867", "cliente": "GLADYS ESTRADA", "placa": "P462GRK", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800–3,500)", "total": 1401, "incentivo": 75}, {"orden": "18869", "cliente": "MARIA ISABEL AGUERO UMAÑA", "placa": "P443HTQ", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800–3,500)", "total": 1310, "incentivo": 75}, {"orden": "18870", "cliente": "LUIS JIMENEZ", "placa": "P399GKS", "tipo": "NUEVO", "tramo": "Tramo 3 (Q5,001–15,000)", "total": 11413, "incentivo": 175}, {"orden": "18873", "cliente": "ENRIQUE PELAEZ", "placa": "P341FZH", "tipo": "NUEVO", "tramo": "Tramo 3 (Q5,001–15,000)", "total": 8448, "incentivo": 175}, {"orden": "18887", "cliente": "MYNOR MENDOZA", "placa": "P069FMX", "tipo": "NUEVO", "tramo": "Tramo 4 (Q15,001+)", "total": 16556, "incentivo": 225}, {"orden": "18890", "cliente": "CARLOS PALACIOS", "placa": "P559FTS", "tipo": "NUEVO", "tramo": "Tramo 3 (Q5,001–15,000)", "total": 7386, "incentivo": 175}, {"orden": "18895", "cliente": "JOSE ANDRES TAHUITE", "placa": "P706FZP", "tipo": "NUEVO", "tramo": "Tramo 3 (Q5,001–15,000)", "total": 7510, "incentivo": 175}, {"orden": "18913", "cliente": "MELANY LARA RIOS", "placa": "P879GNL", "tipo": "NUEVO", "tramo": "Tramo 2 (Q3,501–5,000)", "total": 3747, "incentivo": 125}],total:1200},DANIEL:{rows:[{"orden": "18879", "cliente": "DIEGO RAMOS", "placa": "PO-033GYT", "tipo": "NUEVO", "tramo": "Tramo 2 (Q3,501–5,000)", "total": 3710, "incentivo": 125}, {"orden": "18884", "cliente": "EDGAR HERNANDEZ", "placa": "P722JFK", "tipo": "RECUPERADO", "tramo": "Tramo 1 (Q800–3,500)", "total": 1315, "incentivo": 75}, {"orden": "18848", "cliente": "MARVIN PEREZ LEMUS", "placa": "P474KCL", "tipo": "NUEVO", "tramo": "Tramo 3 (Q5,001–15,000)", "total": 12260, "incentivo": 175}],total:375}};
+// regla50:true  -> si la producci\u00f3n (utilidad) del asesor no llega a INC_PROD_MIN,
+//                  solo se le paga INC_FACTOR del incentivo. Vigente desde agosto 2026.
 const INC_DATA={
-  may:{d:INCENTIVOS,    periodo:'25 May \u2013 25 Jun'},
-  jul:{d:INCENTIVOS_JUL,periodo:'26 Jul \u2013 25 Ago'}
+  may:{d:INCENTIVOS,    periodo:'25 May \u2013 25 Jun', mesKey:'MAYO'},
+  jul:{d:INCENTIVOS_JUL,periodo:'26 Jul \u2013 25 Ago', mesKey:'JULIO'},
+  ago:{d:INCENTIVOS_AGO,periodo:'26 Ago \u2013 25 Sep', mesKey:'AGOSTO', regla50:true}
 };
-const INC_MES={Mayo:'may',Julio:'jul'};
+const INC_MES={Mayo:'may',Julio:'jul',Agosto:'ago'};
 const BONO_META=500,BONO_META_MIN=115000;
+const INC_PROD_MIN=80000,INC_FACTOR=0.5;
+function Qn(v){return 'Q'+(v||0).toLocaleString('es-GT',{minimumFractionDigits:(v%1?2:0),maximumFractionDigits:2});}
+
+// Devuelve {bruto, pago, reducido} del incentivo de un asesor en un mes dado
+function incCalc(ik,a,util){
+  var cfg=ik?INC_DATA[ik]:null;
+  var bruto=(cfg&&cfg.d[a])?cfg.d[a].total:0;
+  var reducido=!!(cfg&&cfg.regla50&&bruto>0&&util<INC_PROD_MIN);
+  var pago=reducido?Math.round(bruto*INC_FACTOR*100)/100:bruto;
+  return{bruto:bruto,pago:pago,reducido:reducido};
+}
 function bonusCard(a,mes,util){
   const b=calcBonus(util),e=b.esc;
   const ik=INC_MES[mes];
-  const inc=(ik&&INC_DATA[ik]&&INC_DATA[ik].d[a])?INC_DATA[ik].d[a].total:0;
+  const ic=incCalc(ik,a,util);
+  const inc=ic.pago;
   const meta500=util>=BONO_META_MIN?BONO_META:0;
   const grandTotal=b.total+inc+meta500;
   const extra=(inc>0||meta500>0);
+  const aviso50=ic.reducido
+    ?'<div style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.35);border-radius:8px;padding:7px 10px;margin-bottom:9px;font-size:10px;color:#fbbf24;line-height:1.5">'
+      +'\u26a0\ufe0f Producci\u00f3n de '+Q(util)+' \u2014 <strong>no alcanz\u00f3 el m\u00ednimo de '+Q0(INC_PROD_MIN)+'</strong>, '
+      +'por eso el incentivo se paga al <strong>50%</strong>: de '+Q(ic.bruto)+' se pagan '+Q(ic.pago)+'.'
+    +'</div>'
+    :'';
   return'<div class="bonus-card"><div class="bonus-hdr">'
     +'<div class="bonus-ttl">💰 Comisión '+mes+' 2026</div>'
     +'<div class="esc-badge" style="background:'+e.clr+'33;color:'+e.clr+';border:1px solid '+e.clr+'55">'+e.label+' — '+(e.rate*100).toFixed(2)+'%</div>'
   +'</div><div style="font-size:10px;color:var(--muted);margin-bottom:9px">'+e.desc+(meta500>0?' &nbsp;\u00b7&nbsp; <span style="color:#00e5a0;font-weight:700">\ud83c\udfc5 Super\u00f3 Q115,000 de utilidad</span>':'')+'</div>'
+  +aviso50
   +'<div class="brows"><div class="brow"><div class="bl">Sueldo Base</div><div class="bv">'+Q(BASE_SAL)+'</div></div>'
   +'<div class="brow"><div class="bl">Bono Utilidad</div><div class="bv" style="color:'+(b.bono>0?'var(--green)':'var(--muted)')+'">'+Q(b.bono)+'</div></div>'
   +(meta500>0?'<div class="brow"><div class="bl">Bono Meta Q115,000</div><div class="bv" style="color:var(--green)">'+Q(meta500)+'</div></div>':'')
-  +(inc>0?'<div class="brow"><div class="bl">Incentivo Clientes Nuevos/Recup.</div><div class="bv" style="color:#f59e0b">'+Q(inc)+'</div></div>':'')
+  +(inc>0?'<div class="brow"><div class="bl">Incentivo Clientes Nuevos/Recup.'+(ic.reducido?' <span style="color:#fbbf24;font-weight:700">(50%)</span>':'')+'</div>'
+      +'<div class="bv" style="color:#f59e0b">'+Q(inc)+(ic.reducido?' <span style="font-size:11px;color:var(--muted);text-decoration:line-through">'+Q(ic.bruto)+'</span>':'')+'</div></div>':'')
   +'<div class="btot"><div class="bl">'+(extra?'Total Final':'Total a Recibir')+'</div><div class="bv">'+Q(grandTotal)+'</div></div></div></div>';
 }
 function renderMonth(mes,sfx){
@@ -1362,6 +1401,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   mayRenderPend();
   mayRenderInc();
   julRenderInc();
+  agoRenderInc();
   renderBusq(D.orders26);
   document.getElementById('res-info').innerHTML='Todos los <strong style="color:var(--white)">'+D.orders26.length+'</strong> registros';
   document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
@@ -1610,6 +1650,7 @@ async function fetchLiveData(){
     mayRenderPend();
     mayRenderInc();
     julRenderInc();
+    agoRenderInc();
     renderBusq(D.orders26);
     var ahora=new Date().toLocaleString('es-GT');
     showBar('✅ Mayo a Agosto (cierre) y '+PRELIM.mes+' (preliminar) actualizados · '+ahora, true);
@@ -1695,18 +1736,25 @@ function incRender(sfx){
   var cfg=INC_DATA[sfx];if(!cfg)return;
   var el=document.getElementById(sfx+'-inc-cards');if(!el)return;
   var advs=['MARCO','DANIEL'],acClr={MARCO:'#2B4FE8',DANIEL:'#FF4B6E'};
+  var agg=cfg.mesKey?buildAgg26(cfg.mesKey):{};
   el.innerHTML=advs.map(function(a){
     var d=cfg.d[a]||{rows:[],total:0},clr=acClr[a];
-    var prom=d.rows.length?Math.round(d.total/d.rows.length):0;
+    var util=(agg[a]||{}).util||0;
+    var ic=incCalc(sfx,a,util);
     return '<div class="adv-card" style="--ac:'+clr+';--ag:rgba(0,0,0,.3)">'
       +'<div class="adv-stripe"></div>'
       +'<div class="adv-name" style="color:'+clr+'">'+a+'</div>'
       +'<div class="adv-role">Incentivos clientes nuevos/recuperados · '+cfg.periodo+'</div>'
       +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px">'
         +'<div><div class="sl">Clientes</div><div class="sv" style="color:'+clr+';font-size:22px">'+d.rows.length+'</div></div>'
-        +'<div><div class="sl">Total Incentivo</div><div class="sv" style="color:#f59e0b;font-size:18px">Q'+d.total.toLocaleString('es-GT')+'</div></div>'
-        +'<div><div class="sl">Promedio</div><div class="sv" style="font-size:16px">Q'+prom+'</div></div>'
+        +'<div><div class="sl">Total Incentivo</div><div class="sv" style="color:#f59e0b;font-size:18px'+(ic.reducido?';text-decoration:line-through;opacity:.65':'')+'">Q'+d.total.toLocaleString('es-GT')+'</div></div>'
+        +'<div><div class="sl">A Pagar'+(ic.reducido?' (50%)':'')+'</div><div class="sv" style="color:'+(ic.reducido?'#fbbf24':'#00e5a0')+';font-size:18px">'+Qn(ic.pago)+'</div></div>'
       +'</div>'
+      +(ic.reducido
+        ?'<div style="margin-top:10px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.35);border-radius:8px;padding:7px 10px;font-size:10px;color:#fbbf24;line-height:1.5">'
+          +'\u26a0\ufe0f Producci\u00f3n de Q'+Math.round(util).toLocaleString('es-GT')+' \u2014 <strong>no alcanz\u00f3 el m\u00ednimo de Q'+INC_PROD_MIN.toLocaleString('es-GT')+'</strong>, se paga el <strong>50%</strong> del incentivo.'
+        +'</div>'
+        :(cfg.regla50?'<div style="margin-top:10px;font-size:10px;color:#00e5a0">\u2713 Producci\u00f3n de Q'+Math.round(util).toLocaleString('es-GT')+' \u2014 super\u00f3 el m\u00ednimo de Q'+INC_PROD_MIN.toLocaleString('es-GT')+', incentivo completo (100%).</div>':''))
     +'</div>';
   }).join('');
   incFilter(sfx);
@@ -1735,12 +1783,26 @@ function incFilter(sfx){
     +'</tr>';
   }).join('');
   var res=document.getElementById(sfx+'-inc-res');
-  if(res)res.innerHTML='<strong>'+all.length+'</strong> clientes · Total <strong style="color:#f59e0b">Q'+all.reduce(function(s,r){return s+r.incentivo;},0).toLocaleString('es-GT')+'</strong>';
+  if(res){
+    var bruto=all.reduce(function(s,r){return s+r.incentivo;},0);
+    var agg2=cfg.mesKey?buildAgg26(cfg.mesKey):{};
+    var pagoTot=0,hayReduccion=false;
+    ['MARCO','DANIEL'].forEach(function(a){
+      if(adv&&adv!==a)return;
+      var ic=incCalc(sfx,a,(agg2[a]||{}).util||0);
+      pagoTot+=ic.pago; if(ic.reducido)hayReduccion=true;
+    });
+    res.innerHTML='<strong>'+all.length+'</strong> clientes · Total <strong style="color:#f59e0b">Q'+bruto.toLocaleString('es-GT')+'</strong>'
+      +(hayReduccion?' · A pagar <strong style="color:#fbbf24">'+Qn(pagoTot)+'</strong>'
+        +' <span style="color:#fbbf24">\u00b7 Regla: producci\u00f3n menor a Q'+INC_PROD_MIN.toLocaleString('es-GT')+' \u2192 50% del incentivo</span>':'');
+  }
 }
 function mayRenderInc(){incRender('may');}
 function mayFilterInc(){incFilter('may');}
 function julRenderInc(){incRender('jul');}
 function julFilterInc(){incFilter('jul');}
+function agoRenderInc(){incRender('ago');}
+function agoFilterInc(){incFilter('ago');}
 
 if(!JD.pendientes) JD.pendientes = [];
 window.addEventListener('load', function(){
