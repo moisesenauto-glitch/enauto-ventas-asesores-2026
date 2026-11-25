@@ -25,7 +25,7 @@ body{background:var(--bg);color:var(--text);font-family:Barlow,sans-serif;min-he
 .tabs::-webkit-scrollbar{height:3px}.tabs::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 .tab{padding:11px 15px;cursor:pointer;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;flex-shrink:0}
 .tab:hover{color:var(--white)}.tab.active{color:var(--white);border-bottom-color:var(--blue)}
-.tab.t-25.active{border-bottom-color:var(--cyan)}.tab.t-feb.active{border-bottom-color:var(--red)}.tab.t-mar.active{border-bottom-color:var(--purple)}.tab.t-abr.active{border-bottom-color:var(--teal)}.tab.t-may.active{border-bottom-color:var(--orange)}.tab.t-jun.active{border-bottom-color:#10b981}.tab.t-jul.active{border-bottom-color:#8b5cf6}.tab.t-ago.active{border-bottom-color:#0ea5e9}.tab.t-sep.active{border-bottom-color:#ec4899}.tab.t-oct.active{border-bottom-color:#f59e0b}
+.tab.t-25.active{border-bottom-color:var(--cyan)}.tab.t-feb.active{border-bottom-color:var(--red)}.tab.t-mar.active{border-bottom-color:var(--purple)}.tab.t-abr.active{border-bottom-color:var(--teal)}.tab.t-may.active{border-bottom-color:var(--orange)}.tab.t-jun.active{border-bottom-color:#10b981}.tab.t-jul.active{border-bottom-color:#8b5cf6}.tab.t-ago.active{border-bottom-color:#0ea5e9}.tab.t-sep.active{border-bottom-color:#ec4899}.tab.t-oct.active{border-bottom-color:#f59e0b}.t-nov.active{border-bottom-color:#14b8a6}
 .page{display:none;padding:20px 28px 60px;animation:fadeUp .3s ease both}.page.active{display:block}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .sec{font-family:Barlow Condensed,sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;margin-top:24px;display:flex;align-items:center;gap:10px}
@@ -121,7 +121,8 @@ tbody tr{border-bottom:1px solid rgba(255,255,255,.03);transition:background .15
   <div class="tab t-jul" onclick="showTab('jul26')">Julio 2026</div>
   <div class="tab t-ago" onclick="showTab('ago26')">Agosto 2026</div>
   <div class="tab t-sep" onclick="showTab('sep26')">Septiembre 2026</div>
-  <div class="tab t-oct" onclick="showTab('oct26')">🔄 Octubre 2026</div>
+  <div class="tab t-oct" onclick="showTab('oct26')">Octubre 2026</div>
+  <div class="tab t-nov" onclick="showTab('nov26')">🔄 Noviembre 2026</div>
   <div class="tab" onclick="showTab('busq')">🔍 Búsqueda</div>
 </nav>
 
@@ -539,71 +540,118 @@ tbody tr{border-bottom:1px solid rgba(255,255,255,.03);transition:background .15
 
 
 <div class="page" id="page-oct26">
+  <div class="sec">Resumen — Octubre 2026</div><div class='bonus-badge'>💰 Incluye cálculo de comisión</div>
+  <div class="kpis" id="kpi-oct"></div>
+  <div class="sec" style="margin-top:26px">Rendimiento por Asesor</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1080px" id="adv-oct"></div>
+  <div class="two-col" style="margin-top:18px">
+    <div class="cc"><div class="cc-ttl">Mecánica vs Pintura</div>
+      <div class="cc-sub"><span style="color:#3d9bff">■ Mec</span> &nbsp;<span style="color:#ff8c00">■ Pin</span></div>
+      <div style="position:relative;height:270px"><canvas id="c-oct-area"></canvas></div></div>
+    <div class="cc"><div class="cc-ttl">vs Meta Q.115,000</div>
+      <div class="cc-sub">Progreso mensual</div>
+      <div style="position:relative;height:270px"><canvas id="c-oct-meta"></canvas></div></div>
+  </div>
+  <div class="sec" style="margin-top:26px">Órdenes — Octubre 2026</div>
+  <div class="mtbl-filter">
+    <div class="mf-g"><label>Buscar</label><input id="mf-txt-oct" placeholder="Orden, cliente o placa..." oninput="filterTbl('oct')" style="min-width:200px"></div>
+    <div class="mf-g"><label>Asesor</label>
+      <select id="mf-adv-oct" onchange="filterTbl('oct')">
+        <option value="">Todos</option><option>MARCO</option><option>DANIEL</option></select></div>
+    <div class="mf-g"><label>Tipo</label>
+      <select id="mf-tp-oct" onchange="filterTbl('oct')">
+        <option value="">Todos</option>
+        <option value="MECANICA">Mecánica</option><option value="PINTURA">Pintura</option><option value="AMBOS">Mec+Pin</option></select></div>
+    <button class="btn-clr" onclick="clrFilter('oct')">✕ Limpiar</button>
+  </div>
+  <div class="mtbl-info" id="mf-res-oct"></div>
+  <div class="tbl-wrap"><div class="tbl-scroll"><table>
+    <thead><tr><th>#</th><th>Orden</th><th>Asesor</th><th>Cliente</th><th>Vehículo</th><th>Placa</th><th>Tipo</th><th>Total</th><th>Utilidad</th><th>% Util.</th><th>Ord.2025</th></tr></thead>
+    <tbody id="tb-oct"></tbody></table></div></div>
+
+  <!-- ── Detalle de incentivos ── -->
+  <div class="sec" style="margin-top:28px">🎯 Detalle de Incentivos — Octubre 2026</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px" id="oct-inc-cards"></div>
+  <div class="mtbl-filter">
+    <div class="mf-g"><label>Asesor</label>
+      <select id="oct-inc-adv" onchange="octFilterInc()">
+        <option value="">Todos</option><option>MARCO</option><option>DANIEL</option></select></div>
+  </div>
+  <div class="mtbl-info" id="oct-inc-res"></div>
+  <div class="tbl-wrap"><div class="tbl-scroll"><table>
+    <thead><tr><th>#</th><th>Orden</th><th>Asesor</th><th>Cliente</th><th>Placa</th>
+      <th>Total Orden</th><th>Tipo Cliente</th><th>Tramo</th><th>Incentivo Q</th></tr></thead>
+    <tbody id="oct-tb-inc"></tbody>
+  </table></div></div>
+</div>
+
+
+<div class="page" id="page-nov26">
   <div class="jun-hero">
     <div>
-      <div class="jul-badge">Resultados &nbsp;·&nbsp; Octubre 2026</div>
+      <div class="jul-badge">Resultados &nbsp;·&nbsp; Noviembre 2026</div>
       <div class="jul-title">Resultados Preliminares</div>
-      <div class="jul-sub">Pagado reporte (AR) pendiente confirmación en banco · % utilidad basado en promedio histórico Ene–Sep</div>
+      <div class="jul-sub">Pagado reporte (AR) pendiente confirmación en banco · % utilidad basado en promedio histórico Ene–Oct</div>
     </div>
     <div class="jul-warn">⚠️ Datos preliminares — la utilidad proyectada es una estimación sobre el cobrado reportado. Se vuelve definitiva cuando el cierre del mes marca las órdenes como pagadas.</div>
   </div>
-  <div class="jul-kpis" id="oct-kpis"></div>
-  <div class="sec">Rendimiento por Asesor — Octubre 2026</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1000px;margin-bottom:20px" id="oct-adv-cards"></div>
+  <div class="jul-kpis" id="nov-kpis"></div>
+  <div class="sec">Rendimiento por Asesor — Noviembre 2026</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1000px;margin-bottom:20px" id="nov-adv-cards"></div>
 
   <div class="sec">🚗 Carros Entregados Pendientes de Pago</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1000px;margin-bottom:14px" id="oct-pend-cards"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1000px;margin-bottom:14px" id="nov-pend-cards"></div>
   <div class="mtbl-filter">
-    <div class="mf-g"><label>Buscar</label><input id="oct-pend-txt" placeholder="Orden, cliente o placa..." oninput="filterPrelPendCars()" style="min-width:200px"></div>
+    <div class="mf-g"><label>Buscar</label><input id="nov-pend-txt" placeholder="Orden, cliente o placa..." oninput="filterPrelPendCars()" style="min-width:200px"></div>
     <div class="mf-g"><label>Asesor</label>
-      <select id="oct-pend-adv" onchange="filterPrelPendCars()">
+      <select id="nov-pend-adv" onchange="filterPrelPendCars()">
         <option value="">Todos</option><option>MARCO</option><option>DANIEL</option></select></div>
-    <button class="btn-clr" onclick="document.getElementById('oct-pend-txt').value='';document.getElementById('oct-pend-adv').value='';filterPrelPendCars()">✕ Limpiar</button>
+    <button class="btn-clr" onclick="document.getElementById('nov-pend-txt').value='';document.getElementById('nov-pend-adv').value='';filterPrelPendCars()">✕ Limpiar</button>
   </div>
-  <div class="mtbl-info" id="oct-pend-res-info"></div>
+  <div class="mtbl-info" id="nov-pend-res-info"></div>
   <div class="tbl-wrap" style="margin-bottom:24px"><div class="tbl-scroll">
     <table><thead><tr>
       <th>#</th><th>Orden</th><th>Asesor</th><th>Cliente</th><th>Vehículo</th><th>Placa</th>
       <th>Fecha Salida</th><th>Días sin pago</th><th>Pendiente</th>
-    </tr></thead><tbody id="tb-oct-pend-cars"></tbody></table>
+    </tr></thead><tbody id="tb-nov-pend-cars"></tbody></table>
   </div></div>
 
   <div class="two-col" style="margin-bottom:18px">
     <div class="cc">
       <div class="cc-ttl">Cobrado vs Utilidad Proyectada</div>
       <div class="cc-sub">Pagado reporte (AR) y estimación de utilidad por asesor</div>
-      <div style="position:relative;height:270px"><canvas id="c-oct-cobrado"></canvas></div>
+      <div style="position:relative;height:270px"><canvas id="c-nov-cobrado"></canvas></div>
     </div>
     <div class="cc">
-      <div class="cc-ttl">Carros Ingresados en Octubre</div>
+      <div class="cc-ttl">Carros Ingresados en Noviembre</div>
       <div class="cc-sub">Distribución por asesor</div>
-      <div style="position:relative;height:270px"><canvas id="c-oct-ing"></canvas></div>
+      <div style="position:relative;height:270px"><canvas id="c-nov-ing"></canvas></div>
     </div>
   </div>
   <div class="cc full" style="margin-bottom:18px">
-    <div class="cc-ttl">Origen de los Pagos de Octubre</div>
-    <div class="cc-sub">¿Los carros pagados en Octubre ingresaron en Octubre o en meses anteriores?</div>
-    <div style="position:relative;height:200px"><canvas id="c-oct-origen"></canvas></div>
+    <div class="cc-ttl">Origen de los Pagos de Noviembre</div>
+    <div class="cc-sub">¿Los carros pagados en Noviembre ingresaron en Noviembre o en meses anteriores?</div>
+    <div style="position:relative;height:200px"><canvas id="c-nov-origen"></canvas></div>
   </div>
-  <div class="sec">Pagos Reportados — Octubre 2026</div>
+  <div class="sec">Pagos Reportados — Noviembre 2026</div>
   <div class="mtbl-filter">
-    <div class="mf-g"><label>Buscar</label><input id="mf-txt-oct" placeholder="Orden, cliente o placa..." oninput="prelTblFilter()" style="min-width:200px"></div>
+    <div class="mf-g"><label>Buscar</label><input id="mf-txt-nov" placeholder="Orden, cliente o placa..." oninput="prelTblFilter()" style="min-width:200px"></div>
     <div class="mf-g"><label>Asesor</label>
-      <select id="mf-adv-oct" onchange="prelTblFilter()">
+      <select id="mf-adv-nov" onchange="prelTblFilter()">
         <option value="">Todos</option><option>MARCO</option><option>DANIEL</option></select></div>
     <div class="mf-g"><label>Origen</label>
-      <select id="mf-src-oct" onchange="prelTblFilter()">
+      <select id="mf-src-nov" onchange="prelTblFilter()">
         <option value="">Todos</option>
-        <option value="mes">Ingresaron en Octubre</option>
+        <option value="mes">Ingresaron en Noviembre</option>
         <option value="prev">Meses anteriores</option></select></div>
     <button class="btn-clr" onclick="prelTblClear()">✕ Limpiar</button>
   </div>
-  <div class="mtbl-info" id="mf-res-oct"></div>
+  <div class="mtbl-info" id="mf-res-nov"></div>
   <div class="tbl-wrap"><div class="tbl-scroll">
     <table><thead><tr>
       <th>#</th><th>Orden</th><th>Asesor</th><th>Cliente</th><th>Vehículo</th><th>Placa</th>
       <th>Tipo</th><th>Fecha Ingreso</th><th>Pagado (AR)</th><th>Bancos (AQ)</th><th>Origen</th>
-    </tr></thead><tbody id="tb-oct"></tbody></table>
+    </tr></thead><tbody id="tb-nov"></tbody></table>
   </div></div>
 </div>
 
@@ -654,7 +702,7 @@ const M26=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SE
 const AC={MARCO:'#2B4FE8',DANIEL:'#FF4B6E',SERGIO:'#00d4ff',IRVIN:'#ffd166'};
 const AG={MARCO:'rgba(43,79,232,.3)',DANIEL:'rgba(255,75,110,.3)',SERGIO:'rgba(0,212,255,.25)',IRVIN:'rgba(255,209,102,.2)'};
 const AF={MARCO:'Marco Antonio Orozco',DANIEL:'Rony Daniel López',SERGIO:'Sergio (2025)',IRVIN:'Irvin (2025)'};
-const MACC={ENERO:'#2B4FE8',FEBRERO:'#FF4B6E',MARZO:'#a855f7',ABRIL:'#00b894',MAYO:'#e67e22',JUNIO:'#10b981',JULIO:'#8b5cf6',AGOSTO:'#0ea5e9',SEPTIEMBRE:'#ec4899'};
+const MACC={ENERO:'#2B4FE8',FEBRERO:'#FF4B6E',MARZO:'#a855f7',ABRIL:'#00b894',MAYO:'#e67e22',JUNIO:'#10b981',JULIO:'#8b5cf6',AGOSTO:'#0ea5e9',SEPTIEMBRE:'#ec4899',OCTUBRE:'#f59e0b'};
 const MEC='#3d9bff',PIN='#ff8c00';
 const TS={backgroundColor:'rgba(10,12,28,.97)',borderColor:'rgba(255,255,255,.1)',borderWidth:1,titleColor:'#eef0ff',bodyColor:'#bbbddd',padding:12};
 const ESC=[
@@ -729,7 +777,7 @@ const barLabels={id:'barLabels',afterDatasetsDraw(chart){
 Chart.register(stackLabels);
 
 // ── Tabs ──────────────────────────────────────────────────────
-const TAB_MAP={t25:0,ene26:1,feb26:2,mar26:3,abr26:4,may26:5,jun26:6,jul26:7,ago26:8,sep26:9,oct26:10,busq:11};
+const TAB_MAP={t25:0,ene26:1,feb26:2,mar26:3,abr26:4,may26:5,jun26:6,jul26:7,ago26:8,sep26:9,oct26:10,nov26:11,busq:12};
 function showTab(t){
   document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -897,13 +945,16 @@ const INCENTIVOS_AGO = {MARCO:{rows:[{"orden": "18867", "cliente": "GLADYS ESTRA
 // regla50:true  -> si la producci\u00f3n (utilidad) del asesor no llega a INC_PROD_MIN,
 //                  solo se le paga INC_FACTOR del incentivo. Vigente desde agosto 2026.
 const INCENTIVOS_SEP = {MARCO:{rows:[{"orden": "18939", "cliente": "RICARDO CALDERON", "placa": "P624JPQ", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800–3,500)", "total": 1890, "incentivo": 75}, {"orden": "18941", "cliente": "HERNAN JERONIMO", "placa": "P112KMH", "tipo": "NUEVO", "tramo": "Tramo 2 (Q3,501–5,000)", "total": 4573, "incentivo": 125}, {"orden": "18945", "cliente": "MARLON CACERES CASTAÑAZA", "placa": "P829FLZ", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800–3,500)", "total": 1036, "incentivo": 75}, {"orden": "18963", "cliente": "JORGE SANCHEZ", "placa": "P806HZP", "tipo": "NUEVO", "tramo": "Tramo 3 (Q5,001–15,000)", "total": 9484, "incentivo": 175}, {"orden": "18967", "cliente": "SERGIO MONROY", "placa": "P918FFW", "tipo": "NUEVO", "tramo": "Tramo 3 (Q5,001–15,000)", "total": 5128, "incentivo": 175}, {"orden": "18981", "cliente": "OLIVER FRANZINI", "placa": "P386FZF", "tipo": "RECUPERADO", "tramo": "Tramo 3 (Q5,001–15,000)", "total": 6339, "incentivo": 175}, {"orden": "18987", "cliente": "JUAN JOSE ITURBIDE", "placa": "P497GRP", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800–3,500)", "total": 1239, "incentivo": 75}, {"orden": "18992", "cliente": "LUIS HERNANDEZ LOPEZ", "placa": "P273JNX", "tipo": "RECUPERADO", "tramo": "Tramo 3 (Q5,001–15,000)", "total": 5731, "incentivo": 175}, {"orden": "19001", "cliente": "DENNIS NAJERA", "placa": "P172FPG", "tipo": "NUEVO", "tramo": "Tramo 2 (Q3,501–5,000)", "total": 4577, "incentivo": 125}, {"orden": "18907", "cliente": "MANOLO COTI", "placa": "P873JLF", "tipo": "NUEVO", "tramo": "Tramo 3 (Q5,001–15,000)", "total": 7380, "incentivo": 175}],total:1350},DANIEL:{rows:[{"orden": "18960", "cliente": "ROLANDO RODENAS", "placa": "P636KPM", "tipo": "NUEVO", "tramo": "Tramo 4 (Q15,001+)", "total": 22535, "incentivo": 225}, {"orden": "18965", "cliente": "JORGE GOMEZ", "placa": "P446LJS", "tipo": "RECUPERADO", "tramo": "Tramo 4 (Q15,001+)", "total": 20525, "incentivo": 225}, {"orden": "18988", "cliente": "JOSE MEJIA", "placa": "P095LDB", "tipo": "NUEVO", "tramo": "Tramo 3 (Q5,001–15,000)", "total": 10755, "incentivo": 175}, {"orden": "18957", "cliente": "ALFONSO MURALLES", "placa": "P288KNF", "tipo": "NUEVO", "tramo": "Tramo 1 (Q800–3,500)", "total": 925, "incentivo": 75}],total:700}};
+// Incentivos de Octubre: pega aqui las filas de clientes nuevos/recuperados
+const INCENTIVOS_OCT = {MARCO:{rows:[],total:0},DANIEL:{rows:[],total:0}};
 const INC_DATA={
   may:{d:INCENTIVOS,    periodo:'25 May \u2013 25 Jun', mesKey:'MAYO'},
   jul:{d:INCENTIVOS_JUL,periodo:'26 Jul \u2013 25 Ago', mesKey:'JULIO'},
   ago:{d:INCENTIVOS_AGO,periodo:'26 Ago \u2013 25 Sep', mesKey:'AGOSTO', regla50:true},
-  sep:{d:INCENTIVOS_SEP,periodo:'26 Sep \u2013 25 Oct', mesKey:'SEPTIEMBRE', regla50:true}
+  sep:{d:INCENTIVOS_SEP,periodo:'26 Sep \u2013 25 Oct', mesKey:'SEPTIEMBRE', regla50:true},
+  oct:{d:INCENTIVOS_OCT,periodo:'26 Oct \u2013 25 Nov', mesKey:'OCTUBRE', regla50:true}
 };
-const INC_MES={Mayo:'may',Julio:'jul',Agosto:'ago',Septiembre:'sep'};
+const INC_MES={Mayo:'may',Julio:'jul',Agosto:'ago',Septiembre:'sep',Octubre:'oct'};
 const BONO_META=500,BONO_META_MIN=115000;
 const INC_PROD_MIN=80000,INC_FACTOR=0.5;
 function Qn(v){return 'Q'+(v||0).toLocaleString('es-GT',{minimumFractionDigits:(v%1?2:0),maximumFractionDigits:2});}
@@ -945,8 +996,8 @@ function bonusCard(a,mes,util){
 function renderMonth(mes,sfx){
   const rows=D.orders26.filter(r=>r.mes===mes),agg=buildAgg26(mes);
   const totCob=rows.reduce((s,r)=>s+r.total_general,0),totUtil=rows.reduce((s,r)=>s+r.utilidad_general,0);
-  const lbl=({ENERO:'Enero',FEBRERO:'Febrero',MARZO:'Marzo',ABRIL:'Abril',MAYO:'Mayo',JUNIO:'Junio',JULIO:'Julio',AGOSTO:'Agosto',SEPTIEMBRE:'Septiembre'})[mes]||mes;
-  const acc=MACC[mes]||'#2B4FE8',hasBonus=mes==='ABRIL'||mes==='MAYO'||mes==='JUNIO'||mes==='JULIO'||mes==='AGOSTO'||mes==='SEPTIEMBRE';
+  const lbl=({ENERO:'Enero',FEBRERO:'Febrero',MARZO:'Marzo',ABRIL:'Abril',MAYO:'Mayo',JUNIO:'Junio',JULIO:'Julio',AGOSTO:'Agosto',SEPTIEMBRE:'Septiembre',OCTUBRE:'Octubre'})[mes]||mes;
+  const acc=MACC[mes]||'#2B4FE8',hasBonus=mes==='ABRIL'||mes==='MAYO'||mes==='JUNIO'||mes==='JULIO'||mes==='AGOSTO'||mes==='SEPTIEMBRE'||mes==='OCTUBRE';
   document.getElementById('kpi-'+sfx).innerHTML=
     kpiCard('Órdenes',rows.length,'PENDIENTE = 0','linear-gradient(90deg,'+acc+',#00d4ff)')
    +kpiCard('Total Facturado','Q '+totCob.toLocaleString('es-GT',{maximumFractionDigits:0}),lbl+' 2026','linear-gradient(90deg,'+acc+',#4a6fff)')
@@ -1012,7 +1063,7 @@ let cPrelPag=null,cPrelIng=null,cPrelPie=null;
 function renderJune(){
   renderMonth('JUNIO','jun');
 }
-function MNAME(s){return {jun:'Junio',jul:'Julio',ago:'Agosto',sep:'Septiembre',oct:'Octubre'}[s]||'Junio';}
+function MNAME(s){return {jun:'Junio',jul:'Julio',ago:'Agosto',sep:'Septiembre',oct:'Octubre',nov:'Noviembre'}[s]||'Junio';}
 
 function renderJulio(){
   renderMonth('JULIO','jul');
@@ -1024,8 +1075,8 @@ function renderJulio(){
 //   mesIdx = número de mes base 0 (0=enero … 8=septiembre)
 //   base   = meses ya cerrados que alimentan el % de utilidad histórico
 const PRELIM={
-  sfx:'oct', mes:'Octubre', abrev:'Oct', prevMes:'Septiembre', prevIdx:8, mesIdx:9,
-  base:['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE']
+  sfx:'nov', mes:'Noviembre', abrev:'Nov', prevMes:'Octubre', prevIdx:9, mesIdx:10,
+  base:['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE']
 };
 
 function renderPrelim(){
@@ -1446,7 +1497,7 @@ function showDet(orden){
 window.addEventListener('DOMContentLoaded',()=>{
   render25();
   [{m:'ENERO',s:'ene'},{m:'FEBRERO',s:'feb'},{m:'MARZO',s:'mar'},{m:'ABRIL',s:'abr'},{m:'MAYO',s:'may'},
-   {m:'JUNIO',s:'jun'},{m:'JULIO',s:'jul'},{m:'AGOSTO',s:'ago'},{m:'SEPTIEMBRE',s:'sep'}]
+   {m:'JUNIO',s:'jun'},{m:'JULIO',s:'jul'},{m:'AGOSTO',s:'ago'},{m:'SEPTIEMBRE',s:'sep'},{m:'OCTUBRE',s:'oct'}]
     .forEach(({m,s})=>renderMonth(m,s));
   renderPrelim();
   mayRenderPend();
@@ -1454,6 +1505,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   julRenderInc();
   agoRenderInc();
   sepRenderInc();
+  octRenderInc();
   renderBusq(D.orders26);
   document.getElementById('res-info').innerHTML='Todos los <strong style="color:var(--white)">'+D.orders26.length+'</strong> registros';
   document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
@@ -1485,7 +1537,7 @@ function showBar(msg,ok){
 }
 
 function parseCSVtoOrders(rows){
-  const PAST={'ENERO':1,'FEBRERO':2,'MARZO':3,'ABRIL':4,'MAYO':5,'JUNIO':6,'JULIO':7,'AGOSTO':8,'SEPTIEMBRE':9};
+  const PAST={'ENERO':1,'FEBRERO':2,'MARZO':3,'ABRIL':4,'MAYO':5,'JUNIO':6,'JULIO':7,'AGOSTO':8,'SEPTIEMBRE':9,'OCTUBRE':10};
   const orders=[];
   rows.forEach(function(r){
     const fup=String(r['FECHA ULTIMO PAGO_1']||'').trim().toUpperCase();
@@ -1679,7 +1731,7 @@ async function fetchLiveData(){
     // Ene-Abr estáticos. Meses de CIERRES + mes en curso (preliminar) en vivo.
     var allOrders=parseCSVtoOrders(rows);
     // Meses cerrados en vivo (PENDIENTE=0 y FECHA ULTIMO PAGO_1 = el mes)
-    var CIERRES=[{m:'MAYO',s:'may'},{m:'JUNIO',s:'jun'},{m:'JULIO',s:'jul'},{m:'AGOSTO',s:'ago'},{m:'SEPTIEMBRE',s:'sep'}];
+    var CIERRES=[{m:'MAYO',s:'may'},{m:'JUNIO',s:'jun'},{m:'JULIO',s:'jul'},{m:'AGOSTO',s:'ago'},{m:'SEPTIEMBRE',s:'sep'},{m:'OCTUBRE',s:'oct'}];
     CIERRES.forEach(function(x){
       var nuevas=allOrders.filter(function(o){return o.mes===x.m;});
       if(nuevas.length>0){
@@ -1704,6 +1756,7 @@ async function fetchLiveData(){
     julRenderInc();
     agoRenderInc();
     sepRenderInc();
+    octRenderInc();
     renderBusq(D.orders26);
     var ahora=new Date().toLocaleString('es-GT');
     showBar('✅ Meses cerrados y '+PRELIM.mes+' (preliminar) actualizados · '+ahora, true);
@@ -1807,7 +1860,7 @@ function incRender(sfx){
         ?'<div style="margin-top:10px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.35);border-radius:8px;padding:7px 10px;font-size:10px;color:#fbbf24;line-height:1.5">'
           +'\u26a0\ufe0f Producci\u00f3n de Q'+Math.round(util).toLocaleString('es-GT')+' \u2014 <strong>no alcanz\u00f3 el m\u00ednimo de Q'+INC_PROD_MIN.toLocaleString('es-GT')+'</strong>, se paga el <strong>50%</strong> del incentivo.'
         +'</div>'
-        :(cfg.regla50?'<div style="margin-top:10px;font-size:10px;color:#00e5a0">\u2713 Producci\u00f3n de Q'+Math.round(util).toLocaleString('es-GT')+' \u2014 super\u00f3 el m\u00ednimo de Q'+INC_PROD_MIN.toLocaleString('es-GT')+', incentivo completo (100%).</div>':''))
+        :(cfg.regla50&&util>=INC_PROD_MIN?'<div style="margin-top:10px;font-size:10px;color:#00e5a0">\u2713 Producci\u00f3n de Q'+Math.round(util).toLocaleString('es-GT')+' \u2014 super\u00f3 el m\u00ednimo de Q'+INC_PROD_MIN.toLocaleString('es-GT')+', incentivo completo (100%).</div>':''))
     +'</div>';
   }).join('');
   incFilter(sfx);
@@ -1858,6 +1911,8 @@ function agoRenderInc(){incRender('ago');}
 function agoFilterInc(){incFilter('ago');}
 function sepRenderInc(){incRender('sep');}
 function sepFilterInc(){incFilter('sep');}
+function octRenderInc(){incRender('oct');}
+function octFilterInc(){incFilter('oct');}
 
 if(!JD.pendientes) JD.pendientes = [];
 window.addEventListener('load', function(){
