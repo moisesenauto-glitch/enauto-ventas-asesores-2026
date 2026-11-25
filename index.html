@@ -69,7 +69,7 @@ tbody tr{border-bottom:1px solid rgba(255,255,255,.03);transition:background .15
 .mf-g{display:flex;flex-direction:column;gap:4px}.mf-g label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
 .mtbl-filter input,.mtbl-filter select{background:var(--card);border:1px solid var(--border);color:var(--white);border-radius:7px;padding:7px 11px;font-family:Barlow,sans-serif;font-size:12px;outline:none;transition:border-color .2s}
 .mtbl-filter input:focus,.mtbl-filter select:focus{border-color:var(--blue)}.mtbl-filter input{min-width:190px}.mtbl-filter select option{background:var(--bg3)}
-.btn-clr{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:7px 11px;font-size:11px;cursor:pointer;font-family:Barlow,sans-serif;transition:all .2s;align-self:flex-end}.btn-clr:hover{border-color:var(--muted);color:var(--white)}
+.btn-clr{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:7px 11px;font-size:11px;cursor:pointer;font-family:Barlow,sans-serif;transition:all .2s;align-self:flex-end}.btn-clr:hover{border-color:var(--muted);color:var(--white)}.btn-exp{background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.38);color:#00e5a0}.btn-exp:hover{background:rgba(0,229,160,.16);border-color:#00e5a0;color:#00e5a0}.btn-exp.pdf{background:rgba(255,75,110,.08);border-color:rgba(255,75,110,.38);color:#ff8fa0}.btn-exp.pdf:hover{background:rgba(255,75,110,.16);border-color:#FF4B6E;color:#ff8fa0}.btn-exp[disabled]{opacity:.5;cursor:progress}
 .mtbl-info{font-size:11px;color:var(--muted);margin-bottom:8px}.mtbl-info strong{color:var(--white)}
 .search-bar{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:15px 18px;display:flex;gap:11px;align-items:flex-end;flex-wrap:wrap;margin-bottom:15px}
 .ctrl{display:flex;flex-direction:column;gap:5px}.ctrl label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
@@ -672,7 +672,8 @@ id="page-busq">
 <option value="JUNIO">Junio</option>
 <option value="JULIO">Julio</option>
 <option value="AGOSTO">Agosto</option>
-<option value="SEPTIEMBRE">Septiembre</option></select></div>
+<option value="SEPTIEMBRE">Septiembre</option>
+<option value="OCTUBRE">Octubre</option></select></div>
     <div class="ctrl"><label>Ord. 2025</label>
       <select id="s-25"><option value="">Todos</option><option value="si">Sí</option><option value="no">No</option></select></div>
     <button class="btn-p" onclick="runSearch()">Buscar</button>
@@ -1507,6 +1508,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   sepRenderInc();
   octRenderInc();
   renderBusq(D.orders26);
+  expBotones();
   document.getElementById('res-info').innerHTML='Todos los <strong style="color:var(--white)">'+D.orders26.length+'</strong> registros';
   document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
   document.querySelector('.t-25').classList.add('active');
@@ -1913,6 +1915,181 @@ function sepRenderInc(){incRender('sep');}
 function sepFilterInc(){incFilter('sep');}
 function octRenderInc(){incRender('oct');}
 function octFilterInc(){incFilter('oct');}
+
+// ── Exportar detalle a Excel / PDF ───────────────────────
+// Exporta EXACTAMENTE lo que la tabla muestra en pantalla: mismas columnas,
+// mismas filas y el mismo orden. Si hay un filtro activo (asesor, tipo, texto),
+// el archivo sale ya filtrado porque la tabla solo contiene esas filas.
+const EXP_XLSX='https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+const EXP_PDF ='https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js';
+const EXP_PDFT='https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js';
+
+function expCargar(url){
+  return new Promise(function(ok,err){
+    var s=document.createElement('script');
+    s.src=url; s.onload=function(){ok();}; s.onerror=function(){err(new Error('No se pudo cargar '+url));};
+    document.head.appendChild(s);
+  });
+}
+// tabla asociada a una barra de filtros (el siguiente .tbl-wrap)
+function expTabla(bar){
+  var n=bar;
+  while(n){ if(n.classList&&n.classList.contains('tbl-wrap'))return n.querySelector('table'); n=n.nextElementSibling; }
+  return null;
+}
+// titulo de la seccion (el .sec anterior) y asesor filtrado
+function expCtx(bar){
+  var s=bar.previousElementSibling, sec='';
+  while(s){ if(s.classList&&s.classList.contains('sec')){sec=s.textContent.trim();break;} s=s.previousElementSibling; }
+  if(!sec){ var ta=document.querySelector('.tab.active'); sec=ta?('B\u00fasqueda \u2014 '+ta.textContent.trim()):'Detalle'; }
+  var sel=bar.querySelector('select[id*="adv"]');
+  var adv=(sel&&sel.value)?sel.value:'TODOS';
+  return {sec:sec, adv:adv};
+}
+function expArchivo(ctx){
+  var d=new Date(), p=function(n){return (n<10?'0':'')+n;};
+  var base=(ctx.sec+'_'+ctx.adv).normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^A-Za-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+  return base+'_'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate());
+}
+// texto visible -> numero cuando la celda es moneda o porcentaje (para Excel)
+function expVal(v){
+  var s=String(v).replace(/\u00a0/g,' ').trim(), m, n;
+  m=s.match(/^Q\s*(-?[\d.,]+)$/);        if(m){n=parseFloat(m[1].replace(/,/g,'')); if(!isNaN(n))return n;}
+  m=s.match(/^(-?[\d.,]+)\s*%$/);        if(m){n=parseFloat(m[1].replace(/,/g,'')); if(!isNaN(n))return n;}
+  return s;
+}
+function expLeer(tabla){
+  var head=[].slice.call(tabla.querySelectorAll('thead th')).map(function(th){return th.textContent.trim();});
+  var body=[].slice.call(tabla.querySelectorAll('tbody tr')).map(function(tr){
+    return [].slice.call(tr.children).map(function(td){return td.textContent.replace(/\s+/g,' ').trim();});
+  });
+  return {head:head, body:body};
+}
+function expBajar(blob,nombre){
+  var u=URL.createObjectURL(blob), a=document.createElement('a');
+  a.href=u; a.download=nombre; document.body.appendChild(a); a.click();
+  setTimeout(function(){URL.revokeObjectURL(u); a.remove();},0);
+}
+function expCSV(d,nombre){
+  var esc=function(v){return '"'+String(v).replace(/"/g,'""')+'"';};
+  var txt='\ufeff'+[d.head].concat(d.body).map(function(r){return r.map(esc).join(',');}).join('\r\n');
+  expBajar(new Blob([txt],{type:'text/csv;charset=utf-8;'}), nombre+'.csv');
+}
+function expOcupado(btn,on,txt){
+  if(!btn)return;
+  if(on){ btn.dataset.lbl=btn.innerHTML; btn.disabled=true; btn.innerHTML=txt||'Generando...'; }
+  else  { btn.disabled=false; if(btn.dataset.lbl)btn.innerHTML=btn.dataset.lbl; }
+}
+function expPrep(btn){
+  var bar=btn.closest('.mtbl-filter')||btn.closest('.search-bar');
+  var tabla=bar?expTabla(bar):null;
+  if(!tabla){showBar('\u26a0\ufe0f No encontr\u00e9 la tabla de este detalle',false);return null;}
+  var d=expLeer(tabla);
+  if(!d.body.length){showBar('\u26a0\ufe0f No hay filas que exportar con el filtro actual',false);return null;}
+  var ctx=expCtx(bar);
+  return {d:d, ctx:ctx, nombre:expArchivo(ctx)};
+}
+
+async function expExcel(btn){
+  var x=expPrep(btn); if(!x)return;
+  expOcupado(btn,true,'\u2b07 Excel...');
+  try{
+    if(typeof XLSX==='undefined') await expCargar(EXP_XLSX);
+    var filas=[[x.ctx.sec],['Asesor: '+x.ctx.adv+'  \u00b7  '+x.d.body.length+' registros  \u00b7  '+new Date().toLocaleString('es-GT')],[]];
+    filas.push(x.d.head);
+    x.d.body.forEach(function(r){ filas.push(r.map(expVal)); });
+    var ws=XLSX.utils.aoa_to_sheet(filas);
+    ws['!cols']=x.d.head.map(function(h,i){
+      var w=String(h).length;
+      x.d.body.forEach(function(r){ w=Math.max(w, String(r[i]||'').length); });
+      return {wch:Math.min(42,w+2)};
+    });
+    ws['!freeze']={xSplit:'0',ySplit:'4'};
+    var wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,'Detalle');
+    XLSX.writeFile(wb, x.nombre+'.xlsx');
+    showBar('\u2705 Descargado '+x.nombre+'.xlsx \u00b7 '+x.d.body.length+' filas (asesor: '+x.ctx.adv+')',true);
+  }catch(e){
+    expCSV(x.d,x.nombre);
+    showBar('\u26a0\ufe0f Sin conexi\u00f3n a la librer\u00eda de Excel \u2014 se descarg\u00f3 '+x.nombre+'.csv (se abre igual en Excel)',false);
+  }finally{ expOcupado(btn,false); }
+}
+
+async function expPDF(btn){
+  var x=expPrep(btn); if(!x)return;
+  var lat=function(s){return String(s).replace(/[\u2012-\u2015\u2212]/g,'-').replace(/[\u2018\u2019]/g,"'").replace(/[\u201c\u201d]/g,'"').replace(/\u2026/g,'...').replace(/[\u00b7\u2022]/g,'\u00b7').replace(/[^\x00-\xFF]/g,'').replace(/\s+/g,' ').trim();};
+  var titulo=lat(x.ctx.sec);
+  var sub='Asesor: '+x.ctx.adv+'   |   '+x.d.body.length+' registros   |   Generado '+new Date().toLocaleString('es-GT');
+  expOcupado(btn,true,'\u2b07 PDF...');
+  try{
+    if(!window.jspdf) await expCargar(EXP_PDF);
+    var jsPDF=window.jspdf.jsPDF;
+    if(!jsPDF.API.autoTable) await expCargar(EXP_PDFT);
+    var doc=new jsPDF({orientation:'landscape',unit:'pt',format:'letter'});
+    doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor(25,30,60);
+    doc.text('ENAUTO  '+String.fromCharCode(183)+'  '+titulo, 30, 34);
+    doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(120,124,150);
+    doc.text(lat(sub), 30, 48);
+    doc.autoTable({
+      head:[x.d.head.map(lat)],
+      body:x.d.body.map(function(r){return r.map(lat);}),
+      startY:58, theme:'grid',
+      styles:{fontSize:7,cellPadding:3.2,overflow:'linebreak',lineColor:[225,228,240],lineWidth:.4},
+      headStyles:{fillColor:[43,79,232],textColor:255,fontStyle:'bold',fontSize:7.2},
+      alternateRowStyles:{fillColor:[246,247,252]},
+      margin:{left:30,right:30,bottom:34},
+      didDrawPage:function(h){
+        var pg=doc.internal.getNumberOfPages();
+        doc.setFontSize(7.5); doc.setTextColor(150,153,175);
+        doc.text('P'+String.fromCharCode(225)+'gina '+pg, doc.internal.pageSize.getWidth()-30,
+                 doc.internal.pageSize.getHeight()-18, {align:'right'});
+      }
+    });
+    doc.save(x.nombre+'.pdf');
+    showBar('\u2705 Descargado '+x.nombre+'.pdf \u00b7 '+x.d.body.length+' filas (asesor: '+x.ctx.adv+')',true);
+  }catch(e){
+    expImprimir(x,titulo,sub);
+    showBar('\u26a0\ufe0f Sin conexi\u00f3n a la librer\u00eda de PDF \u2014 abr\u00ed la vista de impresi\u00f3n: eleg\u00ed "Guardar como PDF"',false);
+  }finally{ expOcupado(btn,false); }
+}
+
+// Respaldo si no hay internet para la librería: ventana de impresión
+function expImprimir(x,titulo,sub){
+  var esc=function(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');};
+  var h='<!doctype html><meta charset="utf-8"><title>'+esc(titulo)+'</title><style>'
+   +'body{font-family:Arial,Helvetica,sans-serif;margin:24px;color:#111}'
+   +'h1{font-size:15px;margin:0 0 4px}p{font-size:10px;color:#666;margin:0 0 14px}'
+   +'table{border-collapse:collapse;width:100%}th,td{border:1px solid #d7dae8;padding:4px 6px;font-size:9px;text-align:left}'
+   +'th{background:#2B4FE8;color:#fff}tr:nth-child(even) td{background:#f6f7fc}'
+   +'@page{size:landscape;margin:12mm}</style>'
+   +'<h1>ENAUTO \u00b7 '+esc(titulo)+'</h1><p>'+esc(sub)+'</p><table><thead><tr>'
+   +x.d.head.map(function(c){return '<th>'+esc(c)+'</th>';}).join('')+'</tr></thead><tbody>'
+   +x.d.body.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+esc(c)+'</td>';}).join('')+'</tr>';}).join('')
+   +'</tbody></table>';
+  var w=window.open('','_blank');
+  if(!w)return;
+  w.document.write(h); w.document.close();
+  setTimeout(function(){w.focus();w.print();},350);
+}
+
+// Agrega los botones a cada barra de filtros que tenga tabla debajo
+function expBotones(){
+  var barras=[].slice.call(document.querySelectorAll('.mtbl-filter,.search-bar'));
+  barras.forEach(function(bar){
+    if(bar.querySelector('.btn-exp'))return;
+    if(!expTabla(bar))return;
+    var mk=function(txt,cls,fn){
+      var b=document.createElement('button');
+      b.type='button'; b.className='btn-clr btn-exp'+(cls?' '+cls:''); b.innerHTML=txt;
+      b.title='Descarga exactamente las filas y columnas que ves en la tabla, con el filtro aplicado';
+      b.addEventListener('click',function(){fn(b);});
+      return b;
+    };
+    bar.appendChild(mk('\u2b07 Excel','',expExcel));
+    bar.appendChild(mk('\u2b07 PDF','pdf',expPDF));
+  });
+}
 
 if(!JD.pendientes) JD.pendientes = [];
 window.addEventListener('load', function(){
